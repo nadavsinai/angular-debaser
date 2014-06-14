@@ -1,0 +1,35 @@
+{
+  "name": "ng-debaser",
+  "version": "0.0.0",
+  "authors": [
+    "Christopher Hiller <chiller@decipherinc.com>"
+  ],
+  "main": "debaser.js",
+  "keywords": [
+    "angular",
+    "angularjs",
+    "mock",
+    "mock",
+    "test",
+    "unit",
+    "sinon",
+    "sinonjs",
+    "stub",
+    "di",
+    "dependency",
+    "injection"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "support",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-mocks": "~1.2.18",
+    "sinonjs": "~1.10.2"
+  }
+}
