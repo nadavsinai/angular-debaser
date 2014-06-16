@@ -78,6 +78,11 @@ module.exports = function (grunt) {
         files: '<%= jshint.lib_test.src %>',
         tasks: ['jshint:gruntfile', 'build', 'karma:dev:run']
       }
+    },
+    'bower-install-simple': {
+      options: {
+        directory: 'support'
+      }
     }
   });
 
@@ -85,7 +90,7 @@ module.exports = function (grunt) {
 
   // Default task
   grunt.registerTask('build', ['concat', 'uglify']);
-  grunt.registerTask('test', ['jshint', 'karma:continuous']);
-  grunt.registerTask('default', ['karma:dev:start', 'watch']);
+  grunt.registerTask('test', ['bower-install-simple', 'jshint', 'karma:continuous']);
+  grunt.registerTask('default', ['bower-install-simple', 'karma:dev:start', 'watch']);
 };
 
