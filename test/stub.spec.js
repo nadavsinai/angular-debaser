@@ -18,20 +18,24 @@
     var getStub,
         Stub;
 
-    getStub = function getStub(_$stubProvider_) {
-      Stub = _$stubProvider_;
+    getStub = function getStub($stubProvider) {
+      Stub = $stubProvider;
     };
 
-    beforeEach(module(getStub));
-    beforeEach(inject); // force ngMock to init the anon module fn(s)
-
-    describe('factory', function () {
-      it('should throw if attempted to use as factory', inject(function ($injector) {
-        expect(function () {
-          $injector.get('$stub');
-        }).to.throw();
-      }));
+    beforeEach(function () {
+      module(function ($stubProvider) {
+        Stub = $stubProvider;
+      });
+      inject();
     });
+//
+//    describe('factory', function () {
+//      it('should throw if attempted to use as factory', inject(function ($injector) {
+//        expect(function () {
+//          $injector.get('$stub');
+//        }).to.throw();
+//      }));
+//    });
 
     describe('findStub()', function () {
 
@@ -113,7 +117,6 @@
             };
 
         sandbox.spy(adapter, 'bar');
-        sandbox.spy(stub, 'initProp');
         expect(Stub.findStub('foo', {
           stubs: {
             foo: stub
@@ -131,8 +134,6 @@
           },
           adapter: adapter
         })).to.equal(stub);
-        expect(stub.initProp).to.have.been.calledOnce;
-        expect(stub.initProp).to.have.been.calledWith('$proxy', 'baz');
         expect(stub.$proxy).to.equal('baz');
         expect(adapter.bar).to.have.been.calledOnce;
         expect(adapter.bar).to.have.been.calledWith(stub.$opts);

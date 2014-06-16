@@ -5,6 +5,9 @@
     $provide.provider('$stub', ['decipher.debaser.stubProvider', function (StubProvider) {
       return StubProvider;
     }]);
+    $provide.provider('$sinonAdapter', ['decipher.debaser.adapters.sinonProvider', function (SinonProvider) {
+      return SinonProvider;
+    }]);
     $provide.constant('$utils', $injector.get('decipher.debaser.utils'));
     $provide.constant('$constants', $injector.get('decipher.debaser.constants'));
     $provide.constant('$options', $injector.get('decipher.debaser.options'));

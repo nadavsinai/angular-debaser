@@ -1,7 +1,7 @@
 {
   "name": "angular-debaser",
   "version": "0.0.0",
-  "description": "The big idea is \"make stubbing services when unit testing even easier\".",
+  "description": "Painless stubbing of AngularJS components",
   "main": "debaser.js",
   "directories": {
     "test": "test"

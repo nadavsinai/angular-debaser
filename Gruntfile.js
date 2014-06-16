@@ -1,5 +1,6 @@
+'use strict';
+
 module.exports = function (grunt) {
-  'use strict';
 
   require('time-grunt')(grunt);
 
@@ -19,7 +20,8 @@ module.exports = function (grunt) {
         stripBanners: true
       },
       dist: {
-        src: ['lib/debase.js', 'lib/module.js', 'lib/adapters/*.js', 'lib/stub.js', 'lib/utils.js', 'lib/config.js', 'lib/hook.js'],
+        src: ['lib/debase.js', 'lib/module.js', 'lib/adapters/*.js', 'lib/stub.js', 'lib/utils.js',
+          'lib/config.js', 'lib/hook.js'],
         dest: 'debaser.js'
       }
     },
@@ -52,10 +54,13 @@ module.exports = function (grunt) {
           './support/angular-mocks/angular-mocks.js',
           './support/sinonjs/sinon.js',
           './debaser.js',
+          './test/fixtures.js',
           './test/**/*.js'
         ],
         browsers: ['PhantomJS'],
-        reporters: ['story']
+        reporters: ['story'],
+        autoWatch: false,
+        singleRun: false
       },
       continuous: {
         options: {
@@ -76,21 +81,37 @@ module.exports = function (grunt) {
       },
       lib_test: {
         files: '<%= jshint.lib_test.src %>',
-        tasks: ['jshint:gruntfile', 'build', 'karma:dev:run']
+        tasks: ['jshint:lib_test', 'build', 'karma:dev:run']
       }
     },
     'bower-install-simple': {
       options: {
         directory: 'support'
       }
+    },
+
+    bump: {
+      options: {
+        files: ['package.json', 'bower.json'],
+        commit: true,
+        commitMessage: 'Release v%VERSION%',
+        commitFiles: ['package.json'],
+        createTag: true,
+        tagName: 'v%VERSION%',
+        tagMessage: 'Version %VERSION%',
+        gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d'
+      }
     }
   });
+
+
+
 
   require('load-grunt-tasks')(grunt);
 
   // Default task
   grunt.registerTask('build', ['concat', 'uglify']);
-  grunt.registerTask('test', ['bower-install-simple', 'jshint', 'karma:continuous']);
+  grunt.registerTask('test', ['bower-install-simple', 'jshint', 'build', 'karma:continuous']);
   grunt.registerTask('default', ['bower-install-simple', 'karma:dev:start', 'watch']);
 };
 

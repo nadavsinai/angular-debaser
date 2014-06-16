@@ -33,7 +33,7 @@
       var adapter = $utils.getAdapter(opts.adapter || $options.adapter),
           contains = $utils.contains;
 
-      auto = angular.isDefined(opts.auto) ? opts.auto : $options.auto;
+      auto = angular.isDefined(opts.autoStub) ? opts.autoStub : $options.autoStub;
       stubs = extend({}, $options.stubs, opts.stubs);
       ignores = extend({}, $options.ignores, $utils.makeSet(opts.ignores || []));
       angular.module(moduleName)._invokeQueue.forEach(function (item) {
@@ -64,7 +64,7 @@
           });
         }
       });
-      debase._enabled = false;
+
     };
     moduleFunction.$inject =
       ['$provide', '$injector', 'decipher.debaser.utils', 'decipher.debaser.options',
@@ -72,13 +72,67 @@
 
     window.beforeEach(function () {
       angular.mock.module(moduleName, moduleFunction);
-      window.inject();
+      angular.mock.inject();
     });
 
   };
   debase.options = function options(opts) {
     var global_opts = angular.injector(['decipher.debaser']).get('decipher.debaser.options');
     angular.extend(global_opts, opts);
+  };
+
+  debase.stub = function stub(type) {
+    var new_stub,
+        args = arguments,
+        getBase = function getBase(stub) {
+          return function base() {
+            return stub;
+          };
+        },
+        stubber = function (global_opts, constants, utils, Stub, $injector) {
+          var STUB_TYPES = constants.STUB_TYPES,
+              adapter,
+              proxy;
+
+          if (!type) {
+            throw new Error('Parameter required');
+          }
+          if (angular.isString(type)) {
+            type = type.toLowerCase();
+            if (!utils.contains(STUB_TYPES, type)) {
+              throw new Error('Unknown stub type "' + type + '".  Valid types are: ' +
+                STUB_TYPES.join(', ') + '. To use a custom value, do not use this function.');
+            }
+            adapter = utils.getAdapter(global_opts.adapter, $injector);
+            proxy = adapter[type].apply(null, Array.prototype.slice.call(args, 1));
+            new_stub = new Stub(angular.extend({}, proxy, {
+              $type: type,
+              $proxy: proxy
+            }));
+            
+            if(angular.isObject(proxy) || angular.isArray(proxy)) {
+              angular.forEach(new_stub.$proxy, function (value) {
+                if (angular.isFunction(value)) {
+                  value.base = getBase(new_stub);
+                }
+              });
+            } else if (angular.isFunction(proxy)) {
+              proxy.base = getBase(new_stub);
+            }
+          } else {
+            new_stub = new Stub(angular.extend({}, type, {
+              $proxy: type
+            }));
+          }
+
+        };
+    stubber.$inject =
+      ['decipher.debaser.options', 'decipher.debaser.constants', 'decipher.debaser.utils',
+        'decipher.debaser.stubProvider', '$injector'];
+
+    angular.injector(['decipher.debaser', stubber]);
+
+    return new_stub;
   };
 
   window.debase = debase;
@@ -107,106 +161,108 @@
       COMPONENTS: COMPONENTS
     })
     .constant('decipher.debaser.options', {
-      adapter: '$' + (sinon ? 'sinon' : 'vanilla') + 'Debaser',
+      adapter: 'decipher.debaser.adapters.sinon',
       ignores: {},
       stubs: {},
-      auto: false
+      autoStub: false,
+      autoScope: true
     });
 
 
 })(window.angular, window.beforeEach, window.sinon);
 
-(function (angular) {
-  'use strict';
-
-  angular.module('decipher.debaser').provider('decipher.debaser.adapters.sinon', function () {
-
-    //TODO implement
-
-    this.$get = function () {
-      throw new Error('not implemented');
-    };
-
-  });
-
-})(window.angular);
-
-(function (angular) {
+(function (window, angular, sinon) {
   'use strict';
 
   angular.module('decipher.debaser')
-    .provider('decipher.debaser.adapters.vanilla', function () {
-      var isFloat = function isFloat(n) {
-            var num = Number(n);
-            return num | 0 === n;
+    .provider('decipher.debaser.adapters.sinon', function SinonAdapterProvider() {
+
+      var sandbox,
+          addHook = function () {
+            var args = arguments,
+                stub;
+            stub = arguments.length === 1 && angular.isObject(arguments[0]) ?
+              sinon.stub(angular.copy(arguments[0])) :
+              sinon.stub();
+            window.beforeEach(function (anon_stub) {
+              return function () {
+                var sb = sandbox || sinon.sandbox.create('decipher.debaser.adapters.sinon'),
+                    i = args.length;
+                while (i-- && i > 0) {
+                  if (angular.isFunction(args[i].restore)) {
+                    args[i].restore();
+                  }
+                }
+                stub = sb.stub.apply(sb, args);
+                angular.extend(stub, anon_stub);
+              };
+            }(stub));
+            return stub;
+          },
+          newApply = function newApply(Constructor) {
+            return function () {
+              var Temp = function () {
+                  },
+                  instance,
+                  retval;
+              Temp.prototype = Constructor.prototype;
+              instance = new Temp();
+              retval = Constructor.apply(instance, arguments);
+              return Object(retval) === retval ? retval : instance;
+            };
+          },
+          sinonAdapter = function sinonAdapter() {
+            window.beforeEach(function debaser_createSandbox() {
+              sandbox = sinon.sandbox.create('decipher.debaser.adapters.sinon');
+            });
+
+            window.afterEach(function debaser_restoreSandbox() {
+              sandbox && sandbox.restore();
+            });
+
+            return {
+              'object': function (obj) {
+                if (obj) {
+                  return addHook(obj);
+                }
+                return {};
+              },
+              'function': function (fn) {
+                if (arguments.length > 1) {
+                  return addHook.apply(null, arguments);
+                }
+                return sinon.spy(fn);
+              },
+              'array': function (arr) {
+                if (arr) {
+                  return arr.map(function (item, idx) {
+                    return angular.isFunction(item) ? addHook.apply(null, [arr, idx]) : item;
+                  });
+                }
+                return [];
+              },
+              'regexp': function () {
+                var instance = newApply(RegExp)(arguments);
+                addHook(null, instance);
+                return instance;
+              },
+              'date': function () {
+                var instance = newApply(Date)(arguments);
+                addHook(null, instance);
+                return instance;
+              }
+            };
           };
 
-      //TODO: forget about this garbage and match sinon stub api
-      return {
-        'object': function (opts) {
-          return new Object(opts);
-        },
-        'function': function (opts) {
-          var prototype = opts.prototype,
-              returns = opts.returns,
-              returnsArg = opts.returnsArg,
-              callsArg = opts.callsArg,
-              callsArgWith = opts.callsArgParams,
-              callsArgContext = opts.callsArgContext || null,
-              context = opts.context || null,
-              body = '';
-
-          if (callsArg) {
-            if (isFloat(callsArg) || isNaN(callsArg)) {
-              throw new Error('callsArg must be an integer');
-            }
-            if (callsArgWith && !angular.isArray(callsArgWith)) {
-              throw new Error('callsArgWith must be an array of parameters');
-            }
-            body += 'arguments[target].apply(callCtx, params);';
-          }
-
-          if (returnsArg) {
-            if (isFloat(returnsArg) || isNaN(returnsArg)) {
-              throw new Error('returnsArg must be an integer');
-            }
-            body += 'return arguments[identity];';
-          }
-          else if (returns) {
-            body += 'return retval;';
-          }
-
-          return function (body, ctx, target, callCtx, params, identity, retval,
-            prototype) {
-            var fn = new Function(body).bind(ctx);
-            if (prototype) {
-              fn.prototype = Object.create(prototype);
-            }
-            return fn;
-          }(body, context, callsArg, callsArgContext, callsArgWith || [],
-            returnsArg, returns, prototype);
-        },
-        'array': function () {
-          if (arguments.length === 0) {
-            return [];
-          }
-          return Array.prototype.slice.apply(arguments);
-        },
-        'regexp': function () {
-          return new RegExp();
-        },
-        'date': function () {
-          return new Date();
-        },
-        $get: function () {
-          throw new Error('not implemented');
-        }
-
+      sinonAdapter.$get = function () {
+        throw new Error('not implemented');
       };
+
+      return sinonAdapter;
 
     });
 
-})(window.angular);
+})(window, window.angular, window.sinon);
 
 (function (angular) {
 
@@ -219,13 +275,6 @@
         this.$opts = opts || {};
       };
 
-      Stub.prototype.initProp = function initProp(prop, val) {
-        if (angular.isUndefined(this[prop])) {
-          this[prop] = val;
-        }
-      };
-
-      //TODO unify this and findStub?
       Stub.prototype.provide = function provide() {
         var fn = this.$opts.provider ? 'constant' : 'value';
         $provide[fn](this.$name, this.$proxy);
@@ -236,7 +285,19 @@
             adapter,
             ignores,
             stub,
-            type;
+            type,
+            makeAdapterStub = function makeAdapterStub(stub_name) {
+              if (adapter[stub_name]) {
+                return new Stub({
+                  $type: stub_name,
+                  $name: name,
+                  $proxy: adapter[stub]()
+                });
+              } else {
+                throw new Error('Unknown stub type "' + stub_name + '".  Valid types are: ' +
+                  $constants.STUB_TYPES.join(', '));
+              }
+            };
 
         opts = opts || {};
         stubs = opts.stubs;
@@ -269,21 +330,13 @@
         if (stub) {
           // if the stub is a string, we try to see if the type is supported.
           if (angular.isString(stub)) {
-            stub = stub.toLowerCase();
-            if (adapter[stub]) {
-              stub = new Stub({
-                $type: stub,
-                $name: name,
-                $proxy: adapter[stub]()
-              });
-            } else {
-              throw new Error('Unknown stub type "' + stub + '".  Valid types are: ' +
-                $constants.STUB_TYPES.join(', '));
-            }
+            stub = makeAdapterStub(stub.toLowerCase());
           } else if (stub.constructor === Stub) {
             if (stub.$type) {
-              stub.initProp('$proxy', adapter[stub.$type](stub.$opts));
+              stub.$proxy = stub.$proxy || adapter[stub.$type](stub.$opts);
             }
+          } else if (angular.isFunction(stub) && stub.name && adapter[stub.name.toLowerCase()]) {
+            stub = makeAdapterStub(stub.name.toLowerCase());
           } else {
             stub = new Stub({
               $name: name,
@@ -296,7 +349,8 @@
       Stub.findStub.cache = {};
 
       Stub.$get = function $get() {
-        throw new Error('not implemented');
+        //TODO throw
+        return Stub;
       };
 
       return Stub;
@@ -309,6 +363,7 @@
 
   var contains,
       makeSet,
+      config,
       getAdapter;
 
   contains = function contains(collection, member) {
@@ -325,7 +380,8 @@
     return o;
   };
 
-  getAdapter = function getAdapter(name) {
+  getAdapter = function getAdapter(name, $injector) {
+    var injector;
     if (getAdapter.cache[name]) {
       return getAdapter.cache[name];
     }
@@ -333,8 +389,12 @@
       return (getAdapter.cache[name] = name);
     }
     try {
-      return (getAdapter.cache[name] = angular.injector(['decipher.debaser']).get(name));
+      injector = $injector || angular.injector(['decipher.debaser']);
+      return (getAdapter.cache[name] = injector.get(name + 'Provider')());
     } catch (e) {
+      window.console.error(e.message);
+      window.console.error(e.stack);
+      window.console.error(e);
       throw new Error('debaser: unknown adapter "' + name + '"');
     }
   };
@@ -347,37 +407,30 @@
   });
 })(window.angular);
 
-(function(angular, debase) {
+(function (angular) {
   'use strict';
 
-  angular.module('decipher.debaser').config(['$injector', 'decipher.debaser.utils', 'decipher.debaser.constants',
-      'decipher.debaser.stubProvider', 'decipher.debaser.options',
-      function ($injector, utils, constants, Stub, global_opts) {
-        debase.stub = function stub(type, opts) {
-          var STUB_TYPES = constants.STUB_TYPES,
-              contains = utils.contains;
+  angular.module('decipher.debaser').config(['$injector', 'decipher.debaser.options', '$provide',
+    function ($injector, global_opts, $provide) {
 
-          opts = angular.extend({}, global_opts, opts);
-          if (!type) {
-            throw new Error('Parameter required');
-          }
-          if (angular.isString(type)) {
-            type = type.toLowerCase();
-            if (!contains(STUB_TYPES, type)) {
-              throw new Error('Unknown stub type "' + type + '".  Valid types are: ' +
-                STUB_TYPES.join(', ') + '. To use a custom value, do not use this function.');
-            }
-            return new Stub({
-              $type: type
-            }, opts);
-          }
-          return new Stub({
-            $proxy: type.bind(opts.context || null)
-          }, opts);
-        };
-        debase._enabled = true;
+      if (global_opts.autoScope) {
+        $provide.decorator('$controller', function ($delegate, $injector) {
+          var $rootScope = $injector.get('$rootScope');
+          return function (name, locals) {
+            var instance;
+            locals = locals || {};
+            locals.$scope = locals.$scope || $rootScope.$new();
+            instance = $delegate(name, locals);
+            instance.scope = function scope() {
+              return locals.$scope;
+            };
+            return instance;
+          };
+        });
+      }
+
       }]);
-})(window.angular, window.debase);
+})(window.angular);
 
 (function (angular, beforeEach) {
   'use strict';

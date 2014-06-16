@@ -1,6 +1,6 @@
 {
   "name": "angular-debaser",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "authors": [
     "Christopher Hiller <chiller@decipherinc.com>"
   ],
@@ -32,9 +32,7 @@
   ],
   "dependencies": {
     "angular-mocks": "*",
-    "angular": "*"
-  },
-  "devDependencies": {
+    "angular": "*",
     "sinonjs": "*"
   }
 }

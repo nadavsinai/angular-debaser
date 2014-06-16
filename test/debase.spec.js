@@ -41,7 +41,7 @@
             }
           },
           baz,
-          beforeEach = sandbox.stub(window, 'beforeEach').callsArg(0);
+          beforeEach = sandbox.stub(window, 'beforeEach').yieldsOn(this);
 
       angular.module('foo', [])
         .controller('bar', function ($scope, baz) {
@@ -64,6 +64,44 @@
       expect(baz).to.deep.equal({});
     });
 
+    it('should work with sinon adapter', function () {
+      var baz = {
+            spam: function () {
+              return 'eggs';
+            }
+          },
+          $controller,
+          beforeEach = sandbox.stub(window, 'beforeEach').yieldsOn(this),
+          stubs = {
+            baz: debase.stub('object', baz).spam.returns('ham').base()
+          },
+          scope,
+          stub;
+      angular.module('foo', [])
+        .controller('bar', function ($scope, baz) {
+          $scope.quux = function () {
+            return baz.spam();
+          };
+        });
+
+      debase('foo', 'bar', {
+        stubs: stubs
+      });
+
+      inject(function (_baz_, _$controller_) {
+        stub = _baz_;
+        $controller = _$controller_;
+      });
+      expect(stub).to.be.an('object');
+      expect(stub.spam).to.be.a('function');
+      expect(stub.spam).to.have.property('callCount');
+      expect(stub.spam()).to.equal('ham');
+
+      scope = $controller('bar').scope();
+
+      expect(scope.quux()).to.equal('ham');
+
+    });
 
     describe('options()', function () {
       it('should modify global options', inject(function ($options) {
