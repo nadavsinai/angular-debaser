@@ -1,0 +1,48 @@
+{
+  "name": "angular-debaser",
+  "version": "0.0.0",
+  "description": "The big idea is \"make stubbing services when unit testing even easier\".",
+  "main": "debaser.js",
+  "directories": {
+    "test": "test"
+  },
+  "private": true,
+  "devDependencies": {
+    "chai": "^1.9.1",
+    "grunt": "^0.4.5",
+    "grunt-bump": "0.0.14",
+    "grunt-cli": "^0.1.13",
+    "grunt-contrib-concat": "^0.4.0",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-uglify": "^0.5.0",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-karma": "^0.8.3",
+    "karma": "^0.12.16",
+    "karma-chai-sinon": "^0.1.3",
+    "karma-chrome-launcher": "^0.1.4",
+    "karma-mocha": "^0.1.3",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "karma-story-reporter": "^0.2.2",
+    "load-grunt-tasks": "^0.5.0",
+    "mocha": "^1.20.1",
+    "sinon": "^1.10.2",
+    "sinon-chai": "^2.5.0",
+    "time-grunt": "^0.3.2"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/decipherinc/angular-debaser"
+  },
+  "author": {
+    "name": "Christopher Hiller",
+    "email": "chiller@decipherinc.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/decipherinc/angular-debaser/issues"
+  },
+  "homepage": "https://github.com/decipherinc/angular-debaser"
+}

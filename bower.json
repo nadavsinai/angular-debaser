@@ -1,9 +1,10 @@
 {
-  "name": "ng-debaser",
+  "name": "angular-debaser",
   "version": "0.0.0",
   "authors": [
     "Christopher Hiller <chiller@decipherinc.com>"
   ],
+  "description": "Painless stubbing of AngularJS components",
   "main": "debaser.js",
   "keywords": [
     "angular",
@@ -22,14 +23,18 @@
   "license": "MIT",
   "ignore": [
     "**/.*",
+    "Gruntfile.js",
+    "lib",
+    "package.json",
     "node_modules",
-    "bower_components",
     "support",
-    "test",
-    "tests"
+    "test"
   ],
   "dependencies": {
-    "angular-mocks": "~1.2.18",
-    "sinonjs": "~1.10.2"
+    "angular-mocks": "*",
+    "angular": "*"
+  },
+  "devDependencies": {
+    "sinonjs": "*"
   }
 }
