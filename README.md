@@ -105,7 +105,7 @@ Required, but not marked as dependencies:
 
 ## License
 
-Copyright &copy; 2014 [Decipher, Inc.](http://decipherinc.com).  Licensed MIT.
+Copyright &copy; 2014 [Decipher, Inc.](http://decipherinc.com)  Licensed MIT.
 
 ## Maintainer
 
