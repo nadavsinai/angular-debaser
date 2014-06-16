@@ -47,7 +47,7 @@ describe('Foo controller', function() {
       // if you start chaining things, you may want to use `base()`.  if you didn't
       // here, you would not get a provider.
       // this is equivalent to:
-      // `debaser.stub('function', sinon.stub().returns('havarti'), {provider: true});
+      // `debaser.stub('function', sinon.stub().returns('havarti'), {provider: true});`
       Cheese: debaser.stub('function', null, {
         provider: true
       }).returns('havarti').base()
