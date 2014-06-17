@@ -64,13 +64,45 @@ module.exports = function (grunt) {
       },
       continuous: {
         options: {
-          singleRun: true
+          singleRun: true,
+          port: 9876
         }
       },
       dev: {
         options: {
           browsers: ['Chrome'],
-          background: true
+          background: true,
+          port: 9877
+        }
+      },
+      'unstable-dev': {
+        options: {
+          browsers: ['Chrome'],
+          background: true,
+          port: 9878,
+          files: [
+            './support/angular-unstable/angular.js',
+            './support/angular-mocks-unstable/angular-mocks.js',
+            './support/sinonjs/sinon.js',
+            './debaser.js',
+            './test/fixtures.js',
+            './test/**/*.js'
+          ]
+        }
+      },
+      'unstable-continuous': {
+        options: {
+          browsers: ['Phantomjs'],
+          singleRun: true,
+          port: 9879,
+          files: [
+            './support/angular-unstable/angular.js',
+            './support/angular-mocks-unstable/angular-mocks.js',
+            './support/sinonjs/sinon.js',
+            './debaser.js',
+            './test/fixtures.js',
+            './test/**/*.js'
+          ]
         }
       }
     },
@@ -81,7 +113,7 @@ module.exports = function (grunt) {
       },
       lib_test: {
         files: '<%= jshint.lib_test.src %>',
-        tasks: ['jshint:lib_test', 'build', 'karma:dev:run']
+        tasks: ['jshint:lib_test', 'build', 'karma:dev:run', 'karma:unstable-dev:run']
       }
     },
     'bower-install-simple': {
@@ -110,6 +142,6 @@ module.exports = function (grunt) {
   // Default task
   grunt.registerTask('build', ['concat', 'uglify']);
   grunt.registerTask('test', ['bower-install-simple', 'jshint', 'build', 'karma:continuous']);
-  grunt.registerTask('default', ['bower-install-simple', 'karma:dev:start', 'watch']);
+  grunt.registerTask('default', ['bower-install-simple', 'karma:dev:start', 'karma:unstable-dev:start', 'watch']);
 };
 

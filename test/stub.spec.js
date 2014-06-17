@@ -15,27 +15,23 @@
 
   describe('decipher.debaser.stub', function () {
 
-    var getStub,
-        Stub;
-
-    getStub = function getStub($stubProvider) {
-      Stub = $stubProvider;
-    };
+    var Stub;
 
     beforeEach(function () {
       module(function ($stubProvider) {
-        Stub = $stubProvider;
+        Stub = angular.isObject($stubProvider) ? $stubProvider.Stub : $stubProvider;
       });
       inject();
     });
-//
-//    describe('factory', function () {
-//      it('should throw if attempted to use as factory', inject(function ($injector) {
-//        expect(function () {
-//          $injector.get('$stub');
-//        }).to.throw();
-//      }));
-//    });
+
+    describe('factory', function () {
+      //TODO do this for sinon adapter
+      it('should throw if attempted to use as factory', inject(function ($injector) {
+        expect(function () {
+          $injector.get('$stub');
+        }).to.throw('not implemented');
+      }));
+    });
 
     describe('findStub()', function () {
 
@@ -136,7 +132,6 @@
         })).to.equal(stub);
         expect(stub.$proxy).to.equal('baz');
         expect(adapter.bar).to.have.been.calledOnce;
-        expect(adapter.bar).to.have.been.calledWith(stub.$opts);
       });
 
       it('should allow custom functions', function () {

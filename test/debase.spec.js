@@ -66,22 +66,27 @@
 
     it('should work with sinon adapter', function () {
       var baz = {
-            spam: function () {
+            spam2: function () {
               return 'eggs';
             }
           },
           $controller,
           beforeEach = sandbox.stub(window, 'beforeEach').yieldsOn(this),
           stubs = {
-            baz: debase.stub('object', baz).spam.returns('ham').base()
+            baz: debase.stub('object', baz).getStub().spam2.returns('ham').base(),
+            herp: debase.stub('function', function($q) {
+              return $q.when('derp');
+            }, {inject: ['$q']})
           },
           scope,
           stub;
       angular.module('foo', [])
-        .controller('bar', function ($scope, baz) {
+        .controller('bar', function ($scope, baz, herp) {
           $scope.quux = function () {
-            return baz.spam();
+            return baz.spam2();
           };
+          $scope.herp = herp;
+
         });
 
       debase('foo', 'bar', {
@@ -93,13 +98,15 @@
         $controller = _$controller_;
       });
       expect(stub).to.be.an('object');
-      expect(stub.spam).to.be.a('function');
-      expect(stub.spam).to.have.property('callCount');
-      expect(stub.spam()).to.equal('ham');
+      expect(stub.spam2).to.be.a('function');
+      expect(stub.spam2).to.have.property('callCount');
+      expect(stub.spam2()).to.equal('ham');
 
       scope = $controller('bar').scope();
 
       expect(scope.quux()).to.equal('ham');
+      expect(scope.herp()).to.be.an('object');
+      expect(scope.herp()).to.have.property('then');
 
     });
 

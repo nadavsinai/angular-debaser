@@ -34,5 +34,9 @@
     "angular-mocks": "*",
     "angular": "*",
     "sinonjs": "*"
+  },
+  "devDependencies": {
+    "angular-unstable": "1.1.5",
+    "angular-mocks-unstable": "1.1.5"
   }
 }

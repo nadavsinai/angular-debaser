@@ -2,6 +2,8 @@
 
 Stubbing so easy your Andalusian dog could do it.
 
+***WARNING: API in flux.***
+
 ## Synopsis
 
 Given:
@@ -97,6 +99,48 @@ Required, but not marked as dependencies:
   - [Jasmine](http://jasmine.github.io/)
 
 ## Roadmap
+
+### Potential API Change
+
+Think I want to do this instead; easier to learn.
+
+```js
+var stubs;
+beforeEach(debase(function($debaser, $injector, someConstant) {
+  // won't be able to simply inject services above, since we have not bootstrapped yet.
+  var $q = $injector.get('$q'),
+    // if you need this, you need to make sure it exists first.
+    someValue = $injector.get('someConstant');
+    
+  stubs = $debaser
+    .module('myModule') // module under test
+    .withModule('myDepdenency') // fake module
+    .func('myFunc') // value
+    .object('myObj') // value
+    .withFunc('myNestedFunc')
+    // any call to `func` or `object` will take you out of the previous context
+    .object('myOtherObj')
+    .func('myInjectingFunc') // support sinon.stub() api
+    .onCall(0)    
+    .returns($q.when(true)))
+    .onCall(1)
+    .returns($q.when(false)))
+    .debaser() // will need to get out of sinon's `Call` object; return `stub` prop
+    .object('myProvider')
+    .provider() // gives you a constant instead
+    .withFunc('myCustomFunc', function($q) { 
+      // do stuff
+    }) // actually returns a spy
+    .injects($q)
+    .object('myFactory')
+    .injects($q) // calling injects() on an object will give you a factory
+    .func('dunno')
+    .injects($q) // will this actually do anything?
+    .stub(myConstant) // delegates to sinon.stub()
+    .stub(myValue, 'someFunction') // ditto
+    .spy(myValue, 'someOtherFunction'); // sinon.spy()
+}));
+```
 
 - Create basic adapter for use w/o SinonJS; basic stubs with no spying.
 - Support SinonJS `.onCall()` method

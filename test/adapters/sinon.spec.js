@@ -11,7 +11,7 @@
     beforeEach(function () {
       sandbox = sinon.sandbox.create('adapters.sinon');
       module('decipher.debaser', function ($sinonAdapterProvider) {
-        adapter = $sinonAdapterProvider();
+        adapter = angular.isObject($sinonAdapterProvider) ? $sinonAdapterProvider.adapter() : $sinonAdapterProvider();
       });
       inject();
       sandbox.stub(window, 'beforeEach');
@@ -52,10 +52,11 @@
       expect(adapter.function(obj.fn)).to.be.a('function');
       expect(adapter.function(obj.fn)).to.have.property('callCount');
       expect(adapter.function(obj.fn)()).to.equal('foo');
+      window.beforeEach.reset();
       stub = adapter.function(obj, 'fn').returns('bar');
       expect(obj.fn()).to.equal('foo');
       expect(stub()).to.equal('bar');
-      window.beforeEach.firstCall.args[0](stub);
+      window.beforeEach.firstCall.args[0]();
       expect(obj.fn()).to.equal('bar');
     });
 

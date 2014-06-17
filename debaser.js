@@ -1,4 +1,4 @@
-/*! angular-debaser - v0.1.0 - 2014-06-16
+/*! angular-debaser - v0.1.0 - 2014-06-17
 * https://github.com/decipherinc/angular-debaser
 * Copyright (c) 2014 Decipher, Inc.; Licensed MIT */
 (function (window, angular) {
@@ -33,6 +33,7 @@
       var adapter = $utils.getAdapter(opts.adapter || $options.adapter),
           contains = $utils.contains;
 
+      Stub = angular.isObject(Stub) ? Stub.Stub : Stub;
       auto = angular.isDefined(opts.autoStub) ? opts.autoStub : $options.autoStub;
       stubs = extend({}, $options.stubs, opts.stubs);
       ignores = extend({}, $options.ignores, $utils.makeSet(opts.ignores || []));
@@ -59,7 +60,7 @@
               ignores: ignores
             });
             if (stub) {
-              stub.provide();
+              stub.provide($provide);
             }
           });
         }
@@ -81,19 +82,19 @@
     angular.extend(global_opts, opts);
   };
 
-  debase.stub = function stub(type) {
+  debase.stub = function stub(type, value, opts) {
     var new_stub,
-        args = arguments,
         getBase = function getBase(stub) {
           return function base() {
             return stub;
           };
         },
-        stubber = function (global_opts, constants, utils, Stub, $injector) {
+        stubber = function (global_opts, constants, utils, Stub) {
           var STUB_TYPES = constants.STUB_TYPES,
               adapter,
               proxy;
 
+          Stub = angular.isObject(Stub) ? Stub.Stub : Stub;
           if (!type) {
             throw new Error('Parameter required');
           }
@@ -103,12 +104,12 @@
               throw new Error('Unknown stub type "' + type + '".  Valid types are: ' +
                 STUB_TYPES.join(', ') + '. To use a custom value, do not use this function.');
             }
-            adapter = utils.getAdapter(global_opts.adapter, $injector);
-            proxy = adapter[type].apply(null, Array.prototype.slice.call(args, 1));
-            new_stub = new Stub(angular.extend({}, proxy, {
+            adapter = utils.getAdapter(opts.adapter || global_opts.adapter);
+            proxy = adapter[type](value);
+            new_stub = new Stub({
               $type: type,
               $proxy: proxy
-            }));
+            }, opts);
 
             if (angular.isObject(proxy) || angular.isArray(proxy)) {
               angular.forEach(new_stub.$proxy, function (value) {
@@ -122,10 +123,11 @@
           } else {
             new_stub = new Stub(angular.extend({}, type, {
               $proxy: type
-            }));
+            }), opts);
           }
 
         };
+    opts = opts || {};
     stubber.$inject =
       ['decipher.debaser.options', 'decipher.debaser.constants', 'decipher.debaser.utils',
         'decipher.debaser.stubProvider', '$injector'];
@@ -181,9 +183,13 @@
           addHook = function () {
             var args = arguments,
                 stub;
-            stub = arguments.length === 1 && angular.isObject(arguments[0]) ?
-              sinon.stub(angular.copy(arguments[0])) :
-              sinon.stub();
+            if (arguments.length === 1 && angular.isObject(arguments[0])) {
+              stub = sinon.stub(angular.copy(arguments[0]));
+            } else if (arguments.length === 1 && angular.isFunction(arguments[0])) {
+              stub = sinon.spy(arguments[0]);
+            } else {
+              stub = sinon.stub.apply(null, [angular.copy(arguments[0])].concat(Array.prototype.slice.apply(arguments, [1])));
+            }
             window.beforeEach(function (anon_stub) {
               return function () {
                 var sb = sandbox || sinon.sandbox.create('decipher.debaser.adapters.sinon'),
@@ -193,8 +199,12 @@
                     args[i].restore();
                   }
                 }
-                stub = sb.stub.apply(sb, args);
-                angular.extend(stub, anon_stub);
+                try {
+                  stub = sb.stub.apply(sb, args);
+                } catch (e) {
+                  stub = sb.spy.apply(sb, args);
+                }
+                sinon.extend(stub, anon_stub);
               };
             }(stub));
             return stub;
@@ -228,10 +238,7 @@
                 return {};
               },
               'function': function (fn) {
-                if (arguments.length > 1) {
-                  return addHook.apply(null, arguments);
-                }
-                return sinon.spy(fn);
+                return addHook.apply(null, arguments);
               },
               'array': function (arr) {
                 if (arr) {
@@ -254,8 +261,14 @@
             };
           };
 
-      sinonAdapter.$get = function () {
+      sinonAdapter.$get = this.$get = function () {
         throw new Error('not implemented');
+      };
+
+      angular.extend(this, {sinonAdapter: sinonAdapter});
+
+      this.adapter = function adapter() {
+        return sinonAdapter();
       };
 
       return sinonAdapter;
@@ -269,15 +282,57 @@
   'use strict';
 
   angular.module('decipher.debaser').provider('decipher.debaser.stub',
-    ['$provide', 'decipher.debaser.constants', function StubProvider($provide, $constants) {
+    ['decipher.debaser.constants', function StubProvider($constants) {
       var Stub = function Stub(stub, opts) {
         angular.extend(this, stub);
         this.$opts = opts || {};
       };
 
-      Stub.prototype.provide = function provide() {
-        var fn = this.$opts.provider ? 'constant' : 'value';
-        $provide[fn](this.$name, this.$proxy);
+      Stub.prototype.$debased = true;
+
+      Stub.prototype.getStub = function getStub() {
+        return this.$proxy;
+      };
+
+      Stub.prototype.provide = function provide($provide) {
+        var fn,
+            proxy = this.$proxy,
+            inject = this.$opts.inject || [],
+            provider;
+
+        if (!angular.isFunction(proxy)) {
+          provider = proxy;
+          fn = this.$opts.provider ? 'constant' : 'value';
+        } else {
+          if (inject.length) {
+            proxy.$inject = proxy.$inject || inject;
+            proxy.$get = proxy.$get || angular.noop;
+            if (this.$opts.provider) {
+              // XXX: you will be SOL here if before version 1.x.x
+              provider = ['$injector', function ($injector) {
+                return function () {
+                  return $injector.invoke(proxy);
+                };
+              }];
+              fn = 'provider';
+            }
+            else {
+              provider = ['$injector', function ($injector) {
+                return function () {
+                  return $injector.invoke(proxy);
+                };
+              }];
+              fn = 'factory';
+            }
+          }
+          else {
+            provider = proxy;
+            fn = this.$opts.provider ? 'constant' : 'value';
+          }
+        }
+
+        $provide[fn](this.$name, provider);
+
       };
 
       Stub.findStub = function findStub(name, opts) {
@@ -331,10 +386,11 @@
           // if the stub is a string, we try to see if the type is supported.
           if (angular.isString(stub)) {
             stub = makeAdapterStub(stub.toLowerCase());
-          } else if (stub.constructor === Stub) {
+          } else if (stub.$debased === true) {
             if (stub.$type) {
-              stub.$proxy = stub.$proxy || adapter[stub.$type](stub.$opts);
+              stub.$proxy = stub.$proxy || adapter[stub.$type]();
             }
+            stub.$name = stub.$name || name;
           } else if (angular.isFunction(stub) && stub.name && adapter[stub.name.toLowerCase()]) {
             stub = makeAdapterStub(stub.name.toLowerCase());
           } else {
@@ -348,10 +404,11 @@
       };
       Stub.findStub.cache = {};
 
-      Stub.$get = function $get() {
-        //TODO throw
-        return Stub;
+      Stub.$get = this.$get = function $get() {
+        throw new Error('not implemented');
       };
+
+      angular.extend(this, {Stub: Stub});
 
       return Stub;
     }]);
@@ -380,8 +437,13 @@
     return o;
   };
 
-  getAdapter = function getAdapter(name, $injector) {
-    var injector;
+
+  getAdapter = function getAdapter(name) {
+    var adapter,
+        _getAdapter = function($adapter) {
+            adapter = angular.isObject($adapter) ? $adapter.adapter() : $adapter();
+        };
+      _getAdapter.$inject = [name + 'Provider'];
     if (getAdapter.cache[name]) {
       return getAdapter.cache[name];
     }
@@ -389,8 +451,8 @@
       return (getAdapter.cache[name] = name);
     }
     try {
-      injector = $injector || angular.injector(['decipher.debaser']);
-      return (getAdapter.cache[name] = injector.get(name + 'Provider')());
+      angular.injector(['decipher.debaser', _getAdapter]);
+      return (getAdapter.cache[name] = adapter);
     } catch (e) {
       window.console.error(e.message);
       window.console.error(e.stack);
@@ -428,6 +490,15 @@
           };
         });
       }
+
+      $provide.decorator('decipher.debaser.stub', function ($delegate) {
+        return angular.isObject($delegate) ? $delegate.Stub : $delegate;
+      });
+      $provide.decorator('decipher.debaser.adapters.sinon', function ($delegate) {
+        return angular.isObject($delegate) ? $delegate.sinonAdapter : $delegate;
+      });
+
+
 
       }]);
 })(window.angular);
