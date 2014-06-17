@@ -73,7 +73,6 @@
 
     window.beforeEach(function () {
       angular.mock.module(moduleName, moduleFunction);
-      angular.mock.inject();
     });
 
   };
