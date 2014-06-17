@@ -1,4 +1,4 @@
-/*! angular-debaser - v0.0.0 - 2014-06-16
+/*! angular-debaser - v0.1.0 - 2014-06-16
 * https://github.com/decipherinc/angular-debaser
 * Copyright (c) 2014 Decipher, Inc.; Licensed MIT */
 (function (window, angular) {
@@ -109,8 +109,8 @@
               $type: type,
               $proxy: proxy
             }));
-            
-            if(angular.isObject(proxy) || angular.isArray(proxy)) {
+
+            if (angular.isObject(proxy) || angular.isArray(proxy)) {
               angular.forEach(new_stub.$proxy, function (value) {
                 if (angular.isFunction(value)) {
                   value.base = getBase(new_stub);
