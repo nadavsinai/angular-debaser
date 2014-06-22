@@ -48,14 +48,12 @@ module.exports = function (grunt) {
     },
     karma: {
       options: {
-        frameworks: ['mocha', 'chai-sinon'],
+        frameworks: ['mocha', 'chai', 'chai-as-promised', 'sinon-chai'],
         files: [
           './support/angular/angular.js',
           './support/angular-mocks/angular-mocks.js',
-          './support/sinonjs/sinon.js',
-          './debaser.js',
-          './test/fixtures.js',
-          './test/**/*.js'
+          './lib/debaser.js',
+          './test/debaser.spec.js'
         ],
         browsers: ['PhantomJS'],
         reporters: ['story'],
@@ -113,7 +111,7 @@ module.exports = function (grunt) {
       },
       lib_test: {
         files: '<%= jshint.lib_test.src %>',
-        tasks: ['jshint:lib_test', 'build', 'karma:dev:run', 'karma:unstable-dev:run']
+        tasks: ['jshint:lib_test', 'karma:dev:run']
       }
     },
     'bower-install-simple': {
@@ -142,6 +140,6 @@ module.exports = function (grunt) {
   // Default task
   grunt.registerTask('build', ['concat', 'uglify']);
   grunt.registerTask('test', ['bower-install-simple', 'jshint', 'build', 'karma:continuous']);
-  grunt.registerTask('default', ['bower-install-simple', 'karma:dev:start', 'karma:unstable-dev:start', 'watch']);
+  grunt.registerTask('default', ['bower-install-simple', 'karma:dev:start',  'watch']);
 };
 
