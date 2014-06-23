@@ -53,6 +53,7 @@ module.exports = function (grunt) {
           './support/angular/angular.js',
           './support/angular-mocks/angular-mocks.js',
           './lib/debaser.js',
+          './lib/*.js',
           './test/debaser.spec.js'
         ],
         browsers: ['PhantomJS'],

@@ -63,7 +63,7 @@
           d = debaser('foo');
         }).not.to.throw();
         //noinspection JSUnusedAssignment
-        expect(d.name).to.equal('foo') &&
+        expect(d.$name).to.equal('foo') &&
         expect(debaser.$$debasers.foo).to.equal(d);
       });
 
@@ -97,27 +97,83 @@
 
 
     describe('Debaser', function () {
+      var Debaser;
 
-      describe('constructor', function () {
-
-        var Debaser;
-
-        beforeEach(module(function ($provide) {
-          $provide.constant('decipher.debaser.options', {});
-        }, 'decipher.debaser'));
+      beforeEach(module(function ($provide) {
+        $provide.constant('decipher.debaser.options', {});
+      }, 'decipher.debaser'));
 
         beforeEach(inject(function ($debaser) {
           Debaser = $debaser;
-          sandbox.stub($debaser.prototype, '$aspect');
+
         }));
 
+      describe('constructor', function () {
         it('should set defaults & call $aspect()', function () {
+          sandbox.stub(Debaser.prototype, '$aspect');
           var d = new Debaser();
           expect(d.name).to.be.undefined;
           expect(d.$queue).to.eql([]);
           expect(d.$aspect).to.have.been.calledOnce;
           expect(d.$aspect).to.have.been.calledWith('base');
         });
+      });
+
+      describe('$aspect', function () {
+
+        var d, Aspect;
+
+        beforeEach(inject(function ($debaser, $aspect) {
+          d = new $debaser('$aspect');
+          Aspect = $aspect;
+        }));
+
+        it('should merge queues', function () {
+          var fn = angular.noop,
+              prevAspect = d.$$aspect;
+
+          sandbox.spy(Aspect, 'create');
+          sandbox.stub(Aspect.prototype, 'merge');
+
+          prevAspect.queue().push(fn);
+          d.$aspect('module');
+          expect(Aspect.create).to.have.been.calledOnce;
+          expect(Aspect.create).to.have.been.calledWith('module', d);
+          expect(d.$$aspect.$name).to.equal('module');
+          expect(d.$$aspect).not.to.equal(prevAspect);
+          expect(d.$$aspect.merge).to.have.been.calledOnce;
+          expect(d.$$aspect.merge).to.have.been.calledWith(prevAspect);
+
+        });
+
+
+        //
+        //          d.module('foo');
+        //          expect(d.$aspect).to.have.been.calledOnce;
+        //          expect(d.$aspect).to.have.been.calledWith('module');
+        //          expect(d.$$aspect.$invokeQueue.length).to.equal(2);
+        //          item = d.$$aspect.$invokeQueue[0];
+        //          expect(item).to.be.an('object');
+        //          expect(item.object).to.equal(window.angular);
+        //          expect(item.fn_name).to.equal('module');
+        //          expect(item.args).to.eql(['foo', []]);
+        //          expect(item.ctx).to.equal(window.angular);
+        //          item = d.$$aspect.$invokeQueue[1];
+        //          expect(item).to.be.an('object');
+        //          expect(item.object).to.equal(window.angular.mock);
+        //          expect(item.fn_name).to.equal('module');
+        //          expect(item.args).to.eql(['foo']);
+        //          expect(item.ctx).to.equal(window.angular.mock);
+
+        //
+        //    it('should set the aspect to be "module"', function () {
+        //
+        //      expect(d.$aspect).to.have.been.calledOnce;
+        //      expect(d.$aspect).to.have.been.calledWith('module');
+        //      sandbox.spy(d, '$aspect');
+        //      d.module('foo');
+        //      expect(d.$$aspect.name()).to.equal('module');
+        //    });
       });
 
       describe('chainable methods', function () {
@@ -159,41 +215,16 @@
             expect(d.module('foo')).to.equal(d);
           });
 
-          it('should enqueue in the aspect', function () {
-            var item;
-            d.module('foo');
-            expect(d.$$aspect.$invokeQueue.length).to.equal(2);
-            item = d.$$aspect.$invokeQueue[0];
-            expect(item).to.be.an('object');
-            expect(item.object).to.equal(window.angular);
-            expect(item.fn_name).to.equal('module');
-            expect(item.args).to.eql(['foo', []]);
-            expect(item.ctx).to.equal(window.angular);
-            item = d.$$aspect.$invokeQueue[1];
-            expect(item).to.be.an('object');
-            expect(item.object).to.equal(window.angular.mock);
-            expect(item.fn_name).to.equal('module');
-            expect(item.args).to.eql(['foo']);
-            expect(item.ctx).to.equal(window.angular.mock);
-          });
-
           it('should create a fake module upon debase()', function () {
             sandbox.stub(window.angular, 'module');
             sandbox.stub(window.angular.mock, 'module');
+            sandbox.stub(d, '$aspect');
+            sandbox.spy(d, '$enqueue');
             d.module('foo').debase();
-            console.log(window.angular.module.getCalls());
             expect(window.angular.module).to.have.been.calledWith('foo', []);
             expect(window.angular.mock.module).to.have.been.calledWith('foo');
           });
-
-          it('should set the aspect to be "module"', function () {
-            d.module('foo');
-            expect(d.$$aspect_name).to.equal('module');
-            expect(d.$$aspect).to.be.an('object');
-            expect(d.module).to.be.a('function');
-          });
         });
-
       });
 
       describe('debase()', function () {
@@ -211,15 +242,36 @@
           expect(spy).to.have.been.called;
           expect(d.$queue.length).to.equal(0);
         });
+
         it('should return nothing', function () {
           expect(d.debase()).to.be.undefined;
         });
+
+        it('should flush the current aspect, empty the queue and reset the aspect',
+          function () {
+            var queue;
+            sandbox.spy(d.$$aspect, 'flush');
+            sandbox.spy(d, '$aspect');
+            d.module('foo');
+            expect(d.$aspect).to.have.been.calledOnce;
+            expect(d.$aspect).to.have.been.calledWith('module');
+            expect(d.$$aspect.$name).to.equal('module');
+            queue = d.$queue;
+            expect(queue.length).to.equal(0);
+            sandbox.spy(queue, 'forEach');
+            d.debase();
+            expect(queue.forEach).to.have.been.calledOnce;
+            expect(d.$queue).to.eql([]);
+            expect(d.$aspect).to.have.been.calledTwice;
+            expect(d.$aspect).to.have.been.calledWith('base');
+            expect(d.$$aspect.$name).to.equal('base');
+          });
       });
     });
 
   });
 
-  describe('e2e', function () {
+  describe.skip('e2e', function () {
     angular.module('bar', ['foo'])
       .value('baz', 'quux');
     window.debaser()
