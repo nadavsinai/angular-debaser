@@ -2,8 +2,9 @@
 
   'use strict';
 
-  var module = window.angular.mock.module,
-      inject = window.angular.mock.inject,
+  var angular = window.angular,
+      module = angular.mock.module,
+      inject = angular.mock.inject,
       sandbox;
 
   beforeEach(function () {
@@ -103,10 +104,9 @@
         $provide.constant('decipher.debaser.options', {});
       }, 'decipher.debaser'));
 
-        beforeEach(inject(function ($debaser) {
-          Debaser = $debaser;
-
-        }));
+      beforeEach(inject(function ($debaser) {
+        Debaser = $debaser;
+      }));
 
       describe('constructor', function () {
         it('should set defaults & call $aspect()', function () {
@@ -187,7 +187,7 @@
         describe('module()', function () {
 
           it('should throw if invalid parameters', function () {
-            var err = '$debaser: module() expects a string or array of strings (module names)';
+            var err = '$debaser: module() expects a string';
             expect(function () {
               d.module();
             }).to.throw(err);
@@ -205,12 +205,6 @@
             }).not.to.throw();
           });
 
-          it('should accept an array of strings', function () {
-            expect(function () {
-              d.module(['foo', 'bar']);
-            }).not.to.throw();
-          });
-
           it('should return a Debaser', function () {
             expect(d.module('foo')).to.equal(d);
           });
@@ -218,8 +212,6 @@
           it('should create a fake module upon debase()', function () {
             sandbox.stub(window.angular, 'module');
             sandbox.stub(window.angular.mock, 'module');
-            sandbox.stub(d, '$aspect');
-            sandbox.spy(d, '$enqueue');
             d.module('foo').debase();
             expect(window.angular.module).to.have.been.calledWith('foo', []);
             expect(window.angular.mock.module).to.have.been.calledWith('foo');
@@ -252,6 +244,8 @@
             var queue;
             sandbox.spy(d.$$aspect, 'flush');
             sandbox.spy(d, '$aspect');
+            sandbox.stub(angular, 'module');
+            sandbox.stub(angular.mock, 'module');
             d.module('foo');
             expect(d.$aspect).to.have.been.calledOnce;
             expect(d.$aspect).to.have.been.calledWith('module');
@@ -271,13 +265,31 @@
 
   });
 
-  describe.skip('e2e', function () {
-    angular.module('bar', ['foo'])
-      .value('baz', 'quux');
-    window.debaser()
-      .module('foo');
+  describe('e2e', function () {
+    before(function () {
+      angular.module('bar', ['foo'])
+        .value('baz', 'quux');
+      var d = window.debaser()
+        .module('foo');
+      expect(window.debase).to.be.a('function');
+      expect(d.$$aspect.$invokeQueue.length).to.equal(2);
+    });
 
-    beforeEach(window.debase);
+    beforeEach(function () {
+      sandbox.spy(angular, 'module');
+      sandbox.spy(angular.mock, 'module');
+    });
+    beforeEach(function () {
+      console.info(window.debaser.$$debasers);
+      window.debase();
+
+    });
+    beforeEach(function () {
+      expect(angular.module).to.have.been.calledOnce;
+      expect(angular.module).to.have.been.calledWith('foo', []);
+      //      expect(angular.mock.module).to.have.been.calledOnce;
+      //      expect(angular.mock.module).to.have.been.calledWith('foo');
+    });
     beforeEach(module('bar'));
 
     it('should provide dependencies for module "bar"', inject(function (baz) {

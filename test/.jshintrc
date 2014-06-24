@@ -20,6 +20,8 @@
     "afterEach": true,
     "expect": true,
     "angular": true,
-    "sinon": true
+    "sinon": true,
+    "before": true,
+    "after": true
   }
 }
