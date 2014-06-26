@@ -1,508 +1,345 @@
-/*! angular-debaser - v0.1.0 - 2014-06-20
+/*! angular-debaser - v0.1.0 - 2014-06-26
 * https://github.com/decipherinc/angular-debaser
 * Copyright (c) 2014 Decipher, Inc.; Licensed MIT */
 (function (window, angular) {
   'use strict';
 
-  var injector = angular.injector,
-      isArray = angular.isArray,
-      extend = angular.extend,
+  var DEFAULTS = {
+    debugEnabled: false
+  };
 
-      debase;
-
-  debase = function debase(moduleName, targets, opts) {
-    var ignores,
-        auto,
-        stubs,
-        moduleFunction;
-
-    if (!moduleName) {
-      throw new Error('debase requires a module name parameter');
-    }
-
-    if (!targets || (isArray(targets) && !targets.length)) {
-      throw new Error('debase requires one or more target components');
-    }
-
-    if (angular.isString(targets)) {
-      targets = [targets];
-    }
-
-    opts = opts || {};
-    moduleFunction = function moduleFunction($provide, $injector, $utils, $options, Stub) {
-      var adapter = $utils.getAdapter(opts.adapter || $options.adapter),
-          contains = $utils.contains;
-
-      Stub = angular.isObject(Stub) ? Stub.Stub : Stub;
-      auto = angular.isDefined(opts.autoStub) ? opts.autoStub : $options.autoStub;
-      stubs = extend({}, $options.stubs, opts.stubs);
-      ignores = extend({}, $options.ignores, $utils.makeSet(opts.ignores || []));
-      angular.module(moduleName)._invokeQueue.forEach(function (item) {
-        var component_type = item[1],
-            definition = item[2],
-            name = definition[0],
-            annotations;
-        if (contains(targets, name)) {
-          //TODO support $inject
-          annotations = isArray(definition[1]) ? definition[1].slice(0, -1)
-            : injector().annotate(definition[1]);
-          annotations.forEach(function (name) {
-            var stub;
-            if (auto && !stubs[name]) {
-              stubs[name] = new Stub({
-                $name: name,
-                $type: 'function'
-              });
-            }
-            stub = Stub.findStub(name, {
-              stubs: stubs,
-              adapter: adapter,
-              ignores: ignores
-            });
-            if (stub) {
-              stub.provide($provide);
-            }
-          });
+  angular.module('decipher.debaser', [])
+    .config(['decipher.debaser.options', '$logProvider', '$provide',
+      function config(options, $logProvider, $provide) {
+        // older versions of angular-mocks do not implement this function.
+        if (angular.isFunction($logProvider.debugEnabled)) {
+          $logProvider.debugEnabled(options.debugEnabled);
         }
-      });
+        $provide.decorator('$log', ['$delegate', function ($delegate) {
+          // likewise, maybe no debug() either
+          return $delegate.debug || angular.noop;
+        }]);
+      }
+    ])
+    .factory('$debaser',
+    ['$log', '$aspect', function $debaserFactory($log, aspect) {
 
+      var Debaser = function Debaser(name, injector) {
+        if (!angular.isString(name)) {
+          injector = name;
+          name = Debaser.DEFAULT_NAME;
+        }
+        this.$name = name;
+        this.$$injector = injector;
+        this.$Aspect = aspect();
+        this.$queue = [];
+        this.$aspect('base');
+        if (name !== Debaser.DEFAULT_NAME) {
+          $log('$debaser: created Debaser instance with name "' + name + '"');
+        } else {
+          $log('$debaser: created singleton Debaser instance');
+        }
+      };
+
+      Debaser.DEFAULT_NAME = '__default__';
+
+      Debaser.prototype.$aspect = function $aspect(name) {
+        var current_aspect = this.$$aspect,
+            current_aspect_name,
+            aspect;
+        if (!name) {
+          return;
+        }
+        if (current_aspect) {
+          current_aspect_name = current_aspect.name();
+          if (current_aspect_name !== 'base' && current_aspect_name !== name) {
+            Object.keys(current_aspect.proto()).forEach(function (name) {
+              delete this[name];
+            }, this);
+            this.$enqueue();
+          }
+        }
+        aspect = this.$Aspect.create(name, current_aspect);
+        angular.extend(this, aspect.proto());
+        this.$$aspect = aspect;
+      };
+
+      Debaser.prototype.$injector = function $injector() {
+        if (this.$$injector) {
+          return this.$$injector;
+        }
+        throw new Error('$debaser: no local injector');
+      };
+
+      Debaser.prototype.$enqueue = function $enqueue() {
+        var current_aspect = this.$$aspect;
+        if (!current_aspect) {
+          return;
+        }
+        this.$queue.push.apply(this.$queue, current_aspect.flush());
+      };
+
+      Debaser.prototype.debase = function debase() {
+        this.$enqueue();
+        this.$queue.forEach(function (fn) {
+          fn();
+        });
+        this.$queue = [];
+        this.$aspect('base');
+      };
+
+      return Debaser;
+    }]);
+
+
+  var setup = function setup(options) {
+    return function ($provide) {
+      $provide.constant('decipher.debaser.options',
+        angular.extend({}, DEFAULTS, options));
     };
-    moduleFunction.$inject =
-      ['$provide', '$injector', 'decipher.debaser.utils', 'decipher.debaser.options',
-        'decipher.debaser.stubProvider'];
-
-    window.beforeEach(function () {
-      angular.mock.module(moduleName, moduleFunction);
-    });
-
   };
-  debase.options = function options(opts) {
-    var global_opts = angular.injector(['decipher.debaser']).get('decipher.debaser.options');
-    angular.extend(global_opts, opts);
-  };
+  setup.$inject = ['$provide'];
 
-  debase.stub = function stub(type, value, opts) {
-    var new_stub,
-        getBase = function getBase(stub) {
-          return function base() {
-            return stub;
-          };
-        },
-        stubber = function (global_opts, constants, utils, Stub) {
-          var STUB_TYPES = constants.STUB_TYPES,
-              adapter,
-              proxy;
+  window.debaser = function debaser(name, opts) {
+    var Debaser,
+        instance,
+        debasers = window.debaser.$$debasers,
+        injector;
+    if (angular.isObject(name)) {
+      opts = name;
+      name = null;
+    }
 
-          Stub = angular.isObject(Stub) ? Stub.Stub : Stub;
-          if (!type) {
-            throw new Error('Parameter required');
-          }
-          if (angular.isString(type)) {
-            type = type.toLowerCase();
-            if (!utils.contains(STUB_TYPES, type)) {
-              throw new Error('Unknown stub type "' + type + '".  Valid types are: ' +
-                STUB_TYPES.join(', ') + '. To use a custom value, do not use this function.');
-            }
-            adapter = utils.getAdapter(opts.adapter || global_opts.adapter);
-            proxy = adapter[type](value);
-            new_stub = new Stub({
-              $type: type,
-              $proxy: proxy
-            }, opts);
+    if (!name && debasers.__default__) {
+      throw new Error('$debaser: global debaser already registered!');
+    }
 
-            if (angular.isObject(proxy) || angular.isArray(proxy)) {
-              angular.forEach(new_stub.$proxy, function (value) {
-                if (angular.isFunction(value)) {
-                  value.base = getBase(new_stub);
-                }
-              });
-            } else if (angular.isFunction(proxy)) {
-              proxy.base = getBase(new_stub);
-            }
-          } else {
-            new_stub = new Stub(angular.extend({}, type, {
-              $proxy: type
-            }), opts);
-          }
-
-        };
     opts = opts || {};
-    stubber.$inject =
-      ['decipher.debaser.options', 'decipher.debaser.constants', 'decipher.debaser.utils',
-        'decipher.debaser.stubProvider', '$injector'];
+    injector = angular.injector(['ng', setup(opts), 'decipher.debaser']);
+    Debaser = injector.get('$debaser');
 
-    angular.injector(['decipher.debaser', stubber]);
-
-    return new_stub;
+    if (name) {
+      if (!debasers[name]) {
+        debasers[name] = new Debaser(name, injector);
+      }
+      return debasers[name];
+    }
+    debasers.__default__ = instance = new Debaser(injector);
+    window.debase = instance.debase.bind(instance);
+    return instance;
   };
-
-  window.debase = debase;
+  window.debaser.$$debasers = {};
 
 })(window, window.angular);
 
-(function (angular, beforeEach, sinon) {
-  'use strict';
-
-  var STUB_TYPES = [
-        'function',
-        'object',
-        'array',
-        'regexp',
-        'date'
-      ],
-      COMPONENTS = [
-        'factory',
-        'service',
-        'provider'
-      ];
-
-  angular.module('decipher.debaser', ['ngMock'])
-    .constant('decipher.debaser.constants', {
-      STUB_TYPES: STUB_TYPES,
-      COMPONENTS: COMPONENTS
-    })
-    .constant('decipher.debaser.options', {
-      adapter: 'decipher.debaser.adapters.sinon',
-      ignores: {},
-      stubs: {},
-      autoStub: false,
-      autoScope: true
-    });
-
-
-})(window.angular, window.beforeEach, window.sinon);
-
-(function (window, angular, sinon) {
-  'use strict';
-
-  angular.module('decipher.debaser')
-    .provider('decipher.debaser.adapters.sinon', function SinonAdapterProvider() {
-
-      var sandbox,
-          addHook = function () {
-            var args = arguments,
-                stub;
-            if (arguments.length === 1 && angular.isObject(arguments[0])) {
-              stub = sinon.stub(angular.copy(arguments[0]));
-            } else if (arguments.length === 1 && angular.isFunction(arguments[0])) {
-              stub = sinon.spy(arguments[0]);
-            } else {
-              stub = sinon.stub.apply(null, [angular.copy(arguments[0])].concat(Array.prototype.slice.apply(arguments, [1])));
-            }
-            window.beforeEach(function (anon_stub) {
-              return function () {
-                var sb = sandbox || sinon.sandbox.create('decipher.debaser.adapters.sinon'),
-                    i = args.length;
-                while (i-- && i > 0) {
-                  if (angular.isFunction(args[i].restore)) {
-                    args[i].restore();
-                  }
-                }
-                try {
-                  stub = sb.stub.apply(sb, args);
-                } catch (e) {
-                  stub = sb.spy.apply(sb, args);
-                }
-                sinon.extend(stub, anon_stub);
-              };
-            }(stub));
-            return stub;
-          },
-          newApply = function newApply(Constructor) {
-            return function () {
-              var Temp = function () {
-                  },
-                  instance,
-                  retval;
-              Temp.prototype = Constructor.prototype;
-              instance = new Temp();
-              retval = Constructor.apply(instance, arguments);
-              return Object(retval) === retval ? retval : instance;
-            };
-          },
-          sinonAdapter = function sinonAdapter() {
-            window.beforeEach(function debaser_createSandbox() {
-              sandbox = sinon.sandbox.create('decipher.debaser.adapters.sinon');
-            });
-
-            window.afterEach(function debaser_restoreSandbox() {
-              sandbox && sandbox.restore();
-            });
-
-            return {
-              'object': function (obj) {
-                if (obj) {
-                  return addHook(obj);
-                }
-                return {};
-              },
-              'function': function (fn) {
-                return addHook.apply(null, arguments);
-              },
-              'array': function (arr) {
-                if (arr) {
-                  return arr.map(function (item, idx) {
-                    return angular.isFunction(item) ? addHook.apply(null, [arr, idx]) : item;
-                  });
-                }
-                return [];
-              },
-              'regexp': function () {
-                var instance = newApply(RegExp)(arguments);
-                addHook(null, instance);
-                return instance;
-              },
-              'date': function () {
-                var instance = newApply(Date)(arguments);
-                addHook(null, instance);
-                return instance;
-              }
-            };
-          };
-
-      sinonAdapter.$get = this.$get = function () {
-        throw new Error('not implemented');
-      };
-
-      angular.extend(this, {sinonAdapter: sinonAdapter});
-
-      this.adapter = function adapter() {
-        return sinonAdapter();
-      };
-
-      return sinonAdapter;
-
-    });
-
-})(window, window.angular, window.sinon);
-
 (function (angular) {
-
   'use strict';
 
-  angular.module('decipher.debaser').provider('decipher.debaser.stub',
-    ['decipher.debaser.constants', function StubProvider($constants) {
-      var Stub = function Stub(stub, opts) {
-        angular.extend(this, stub);
-        this.$opts = opts || {};
+  angular.module('decipher.debaser').factory('$aspect', ['$superpowers',
+    function $aspectFactory(superpowers) {
+      var Aspect = function Aspect(name, parent) {
+        this.$name = name;
+        this.$parent = parent;
+        this.createProxy.cache = parent ? parent.createProxy.cache : {};
+        this.$behavior = parent ? parent.$behavior : [];
+        this.$behavior.$config = this.$behavior.$config || {};
+        this.$proto = this.proto();
       };
 
-      Stub.prototype.$debased = true;
-
-      Stub.prototype.getStub = function getStub() {
-        return this.$proxy;
+      Aspect.prototype.behavior = function behavior() {
+        return this.$behavior;
       };
 
-      Stub.prototype.provide = function provide($provide) {
-        var fn,
-            proxy = this.$proxy,
-            inject = this.$opts.inject || [],
-            provider;
-
-        if (!angular.isFunction(proxy)) {
-          provider = proxy;
-          fn = this.$opts.provider ? 'constant' : 'value';
-        } else {
-          if (inject.length) {
-            proxy.$inject = proxy.$inject || inject;
-            proxy.$get = proxy.$get || angular.noop;
-            if (this.$opts.provider) {
-              // XXX: you will be SOL here if before version 1.x.x
-              provider = ['$injector', function ($injector) {
-                return function () {
-                  return $injector.invoke(proxy);
-                };
-              }];
-              fn = 'provider';
-            }
-            else {
-              provider = ['$injector', function ($injector) {
-                return function () {
-                  return $injector.invoke(proxy);
-                };
-              }];
-              fn = 'factory';
-            }
+      Aspect.prototype.proto = function proto() {
+        var o = {};
+        if (this.$proto) {
+          return this.$proto;
+        }
+        angular.forEach(superpowers, function (fn, name) {
+          if (fn.$aspect === this.$name) {
+            o[name] = this.createProxy(fn, name);
           }
-          else {
-            provider = proxy;
-            fn = this.$opts.provider ? 'constant' : 'value';
-          }
+        }, this);
+        if (this.$parent) {
+          angular.extend(o, this.$parent.proto());
         }
-
-        $provide[fn](this.$name, provider);
-
+        return o;
       };
 
-      Stub.findStub = function findStub(name, opts) {
-        var stubs,
-            adapter,
-            ignores,
-            stub,
-            type,
-            makeAdapterStub = function makeAdapterStub(stub_name) {
-              if (adapter[stub_name]) {
-                return new Stub({
-                  $type: stub_name,
-                  $name: name,
-                  $proxy: adapter[stub]()
-                });
-              } else {
-                throw new Error('Unknown stub type "' + stub_name + '".  Valid types are: ' +
-                  $constants.STUB_TYPES.join(', '));
-              }
-            };
-
-        opts = opts || {};
-        stubs = opts.stubs;
-        adapter = opts.adapter;
-        ignores = opts.ignores || [];
-
-        if (!name) {
-          throw new Error('name is required');
-        }
-
-        if (!Object.keys(stubs).length) {
-          throw new Error('define stubs!');
-        }
-
-        if (!adapter) {
-          throw new Error('where the hell is the adapter?');
-        }
-
-        // if cached, then use it
-        if (angular.isDefined(findStub.cache[name])) {
-          return findStub.cache[name];
-        }
-
-        // no stub if this injectable is ignored
-        if (ignores[name]) {
-          return (findStub.cache[name] = null);
-        }
-
-        stub = stubs[name];
-        if (stub) {
-          // if the stub is a string, we try to see if the type is supported.
-          if (angular.isString(stub)) {
-            stub = makeAdapterStub(stub.toLowerCase());
-          } else if (stub.$debased === true) {
-            if (stub.$type) {
-              stub.$proxy = stub.$proxy || adapter[stub.$type]();
-            }
-            stub.$name = stub.$name || name;
-          } else if (angular.isFunction(stub) && stub.name && adapter[stub.name.toLowerCase()]) {
-            stub = makeAdapterStub(stub.name.toLowerCase());
-          } else {
-            stub = new Stub({
-              $name: name,
-              $proxy: stub
+      Aspect.prototype.flush = function flush() {
+        var behavior = this.$behavior,
+            queue = behavior.map(function (c) {
+              return c.deserialize();
             });
-          }
-          return (findStub.cache[name] = stub);
+        return queue;
+      };
+
+      Aspect.prototype.name = function name() {
+        return this.$name;
+      };
+
+      Aspect.prototype.createProxy = function createProxy(fn, name) {
+        var proxy,
+            cache = this.createProxy.cache,
+            behavior,
+            config;
+        if (cache[name]) {
+          return cache[name];
         }
+        behavior = this.$behavior;
+        config = behavior.$config;
+        proxy = function proxy() {
+          var call = fn.apply(config, arguments);
+          if (call) {
+            behavior.push.apply(behavior, call);
+          }
+          this.$aspect(name);
+          return this;
+        };
+        cache[name] = proxy;
+        return proxy;
       };
-      Stub.findStub.cache = {};
 
-      Stub.$get = this.$get = function $get() {
-        throw new Error('not implemented');
+      Aspect.create = function create(name, parent) {
+        var aspect, cache = Aspect.create.cache;
+        if (cache[name]) {
+          return cache[name];
+        }
+        aspect = new Aspect(name, parent);
+        cache[name] = aspect;
+        return aspect;
       };
 
-      angular.extend(this, {Stub: Stub});
+      return function () {
+        Aspect.create.cache = {};
 
-      return Stub;
+        return Aspect;
+
+      };
     }]);
 
 })(window.angular);
 
-(function (angular) {
+(function(angular) {
   'use strict';
 
-  var contains,
-      makeSet,
-      config,
-      getAdapter;
+  angular.module('decipher.debaser')
+    .factory('$call', function $callFactory() {
 
-  contains = function contains(collection, member) {
-    return collection.indexOf(member) > -1;
-  };
+      var Call = function Call(object, fn_name, args, ctx) {
+        this.object = object;
+        this.fn_name = fn_name;
+        this.args = args;
+        this.ctx = ctx || null;
+      };
 
-  makeSet = function makeSet(arr) {
-    var o = {};
-    arr.forEach(function (item) {
-      if (angular.isString(item)) {
-        o[item] = true;
-      }
-    });
-    return o;
-  };
+      Call.prototype.deserialize = function deserialize() {
+        var object = this.object,
+            fn_name = this.fn_name,
+            args = this.args,
+            ctx = this.ctx;
 
-
-  getAdapter = function getAdapter(name) {
-    var adapter,
-        _getAdapter = function($adapter) {
-            adapter = angular.isObject($adapter) ? $adapter.adapter() : $adapter();
+        return function debaserCall() {
+          object[fn_name].apply(ctx, args);
         };
-      _getAdapter.$inject = [name + 'Provider'];
-    if (getAdapter.cache[name]) {
-      return getAdapter.cache[name];
-    }
-    if (!angular.isString(name)) {
-      return (getAdapter.cache[name] = name);
-    }
-    try {
-      angular.injector(['decipher.debaser', _getAdapter]);
-      return (getAdapter.cache[name] = adapter);
-    } catch (e) {
-      window.console.error(e.message);
-      window.console.error(e.stack);
-      window.console.error(e);
-      throw new Error('debaser: unknown adapter "' + name + '"');
-    }
-  };
-  getAdapter.cache = {};
+      };
 
-  angular.module('decipher.debaser').constant('decipher.debaser.utils', {
-    getAdapter: getAdapter,
-    makeSet: makeSet,
-    contains: contains
-  });
+      return function call() {
+        if (angular.isArray(arguments[0])) {
+          return Array.prototype.slice.call(arguments).map(function (arg) {
+            return new Call(arg[0], arg[1], arg[2], arg[3]);
+          });
+        }
+        return [new Call(arguments[0], arguments[1], arguments[2], arguments[3])];
+      };
+
+    });
+
 })(window.angular);
 
 (function (angular) {
   'use strict';
 
-  angular.module('decipher.debaser').config(['$injector', 'decipher.debaser.options', '$provide',
-    function ($injector, global_opts, $provide) {
+  angular.module('decipher.debaser').factory('$superpowers',
+    ['$call', '$window', function $superpowersFactory(call, $window) {
 
-      if (global_opts.autoScope) {
-        $provide.decorator('$controller', function ($delegate, $injector) {
-          var $rootScope = $injector.get('$rootScope');
-          return function (name, locals) {
-            var instance;
-            locals = locals || {};
-            locals.$scope = locals.$scope || $rootScope.$new();
-            instance = $delegate(name, locals);
-            instance.scope = function scope() {
-              return locals.$scope;
-            };
-            return instance;
-          };
+      var sinon = $window.sinon;
+
+      var module = function module(name) {
+        if (!name) {
+          return;
+        }
+        if (!angular.isString(name)) {
+          throw new Error('$debaser: module() expects a string');
+        }
+        this.module = name;
+        this.module_dependencies = [];
+        return call([angular, 'module', [this.module, this.module_dependencies],
+          angular], [angular.mock, 'module', [name], angular.mock]);
+      };
+      module.$aspect = 'base';
+
+      var withDep = function withDep() {
+        if (!arguments.length) {
+          return;
+        }
+        Array.prototype.slice.call(arguments).forEach(function (arg) {
+          if (!angular.isString(arg)) {
+            throw new Error('$debaser: withDep() expects one or more strings');
+          }
         });
-      }
+        this.module_dependencies.push.apply(this.module_dependencies,
+          arguments);
+      };
+      withDep.$aspect = 'module';
 
-      $provide.decorator('decipher.debaser.stub', function ($delegate) {
-        return angular.isObject($delegate) ? $delegate.Stub : $delegate;
+      var withDeps = function withDeps(arr) {
+        if (!arr) {
+          return;
+        }
+        if (!angular.isArray(arr)) {
+          throw new Error('$debaser: withDeps() expects an array');
+        }
+        superpowers.withDep.apply(this, arr);
+      };
+      withDeps.$aspect = 'module';
+
+      var func = function func(name) {
+        if (!name) {
+          return;
+        }
+        if (!angular.isString(name)) {
+          throw new Error('$debaser: func() expects a name');
+        }
+        this.stub = sinon.stub();
+        this.name = name;
+        this.component = 'value';
+        this.provider = function ($provide) {
+          $provide[this.component](this.name, this.stub);
+        }.bind(this);
+        this.provider.$inject = ['$provide'];
+        return call(angular.mock, 'module', [this.provider], angular.mock);
+      };
+      func.$aspect = 'base';
+
+      var superpowers = {
+        module: module,
+        withDep: withDep,
+        withDeps: withDeps,
+
+        func: func
+      };
+
+      //TODO: identify which we can really use.
+      angular.forEach(sinon.stub, function (fn, name) {
+        var sinonProxy = function sinonProxy() {
+          fn.apply(this.stub, arguments);
+        };
+        sinonProxy.$aspect = 'func';
+        superpowers[name] = sinonProxy;
       });
-      $provide.decorator('decipher.debaser.adapters.sinon', function ($delegate) {
-        return angular.isObject($delegate) ? $delegate.sinonAdapter : $delegate;
-      });
 
+      return superpowers;
+    }]);
 
-
-      }]);
 })(window.angular);
-
-(function (angular, beforeEach) {
-  'use strict';
-  beforeEach(angular.mock.module('decipher.debaser'));
-})(window.angular, window.beforeEach);

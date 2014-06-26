@@ -20,8 +20,7 @@ module.exports = function (grunt) {
         stripBanners: true
       },
       dist: {
-        src: ['lib/debase.js', 'lib/module.js', 'lib/adapters/*.js', 'lib/stub.js', 'lib/utils.js',
-          'lib/config.js', 'lib/hook.js'],
+        src: ['lib/debaser.js', 'lib/*.js'],
         dest: 'debaser.js'
       }
     },
@@ -49,13 +48,6 @@ module.exports = function (grunt) {
     karma: {
       options: {
         frameworks: ['mocha', 'chai', 'chai-as-promised', 'sinon-chai'],
-        files: [
-          './support/angular/angular.js',
-          './support/angular-mocks/angular-mocks.js',
-          './lib/debaser.js',
-          './lib/*.js',
-          './test/debaser.spec.js'
-        ],
         browsers: ['PhantomJS'],
         reporters: ['story'],
         autoWatch: false,
@@ -64,14 +56,27 @@ module.exports = function (grunt) {
       continuous: {
         options: {
           singleRun: true,
-          port: 9876
+          port: 9876,
+          files: [
+            './support/angular/angular.js',
+            './support/angular-mocks/angular-mocks.js',
+            './debaser.js',
+            './test/**/*.spec.js'
+          ]
         }
       },
       dev: {
         options: {
           browsers: ['Chrome'],
           background: true,
-          port: 9877
+          port: 9877,
+          files: [
+            './support/angular/angular.js',
+            './support/angular-mocks/angular-mocks.js',
+            './lib/debaser.js',
+            './lib/*.js',
+            './test/**/*.spec.js'
+          ]
         }
       },
       'unstable-dev': {
@@ -82,25 +87,22 @@ module.exports = function (grunt) {
           files: [
             './support/angular-unstable/angular.js',
             './support/angular-mocks-unstable/angular-mocks.js',
-            './support/sinonjs/sinon.js',
-            './debaser.js',
-            './test/fixtures.js',
-            './test/**/*.js'
+            './lib/debaser.js',
+            './lib/*.js',
+            './test/**/*.spec.js'
           ]
         }
       },
       'unstable-continuous': {
         options: {
-          browsers: ['Phantomjs'],
+          browsers: ['PhantomJS'],
           singleRun: true,
           port: 9879,
           files: [
             './support/angular-unstable/angular.js',
             './support/angular-mocks-unstable/angular-mocks.js',
-            './support/sinonjs/sinon.js',
             './debaser.js',
-            './test/fixtures.js',
-            './test/**/*.js'
+            './test/**/*.spec.js'
           ]
         }
       }
@@ -140,7 +142,7 @@ module.exports = function (grunt) {
 
   // Default task
   grunt.registerTask('build', ['concat', 'uglify']);
-  grunt.registerTask('test', ['bower-install-simple', 'jshint', 'build', 'karma:continuous']);
+  grunt.registerTask('test', ['bower-install-simple', 'jshint', 'build', 'karma:continuous', 'karma:unstable-continuous']);
   grunt.registerTask('default', ['bower-install-simple', 'karma:dev:start',  'watch']);
 };
 
