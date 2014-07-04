@@ -127,7 +127,7 @@
       });
     });
 
-    describe.only('chains', function () {
+    describe.skip('chains', function () {
       var $provide,
           pairs = {},
 

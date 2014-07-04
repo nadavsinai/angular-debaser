@@ -29,9 +29,11 @@
       it('should accept a parent aspect', function () {
         var parent, child;
         parent = new Aspect('parent');
+        parent.config.foo = 'bar';
         child = new Aspect('child', parent);
-        expect(child.queue).to.eql(parent.queue);
-        expect(child.config).to.eql(parent.config);
+        expect(child.parent).to.equal(parent);
+        sandbox.stub(parent, 'isAspectOf').returns(true);
+        expect(child.config.foo).to.eql(parent.config.foo);
       });
 
     });

@@ -70,11 +70,9 @@
 
       Debaser.prototype.$enqueue = function $enqueue() {
         var current_aspect = this.$$aspect;
-        if (!current_aspect) {
-          return;
+        if (current_aspect) {
+          this.$queue.push.apply(this.$queue, current_aspect.flush());
         }
-//        window.console.warn('enqueueing');
-        this.$queue.push.apply(this.$queue, current_aspect.flush());
       };
 
       Debaser.prototype.debase = function debase() {
@@ -256,18 +254,20 @@
             var current_aspect = this.$$aspect,
                 inherits = current_aspect.isAspectOf(name),
                 retval = this,
+                behavior = current_aspect.behavior,
+                caller = fn(current_aspect.config),
                 aspect,
-                result,
-                behavior = current_aspect.behavior;
+                result;
 
             if (!inherits && current_aspect.name !== 'base') {
               this.$enqueue();
             }
-            aspect = this.$aspect(fn._name || name);
+            aspect = this.$aspect(fn.$name || name);
             if (!inherits) {
+              caller = fn(aspect.config);
               behavior = aspect.behavior;
             }
-            result = fn.apply(this, arguments);
+            result = caller.apply(null, arguments);
 
             if (angular.isArray(result)) {
               behavior.enqueue(result);
@@ -289,7 +289,7 @@
           // which means we keep the parent.
           // if we're in a function's aspect and the new function is of
           // that aspect, then we inherit from the parent.
-          return this.name !== 'base' && name !== 'base' && superpowers[name] &&
+          return name !== 'base' && superpowers[name] &&
             superpowers[name].$aspect.indexOf(this.name) !== -1;
         };
 
@@ -353,57 +353,38 @@
 
 })(window.angular);
 
-(function(angular) {
+(function (angular) {
   'use strict';
 
   angular.module('decipher.debaser')
     .factory('$call', function $callFactory() {
 
-      var Call = function Call(cfg, opts) {
+      var Call = function Call(cfg, call) {
         this.$cfg = cfg;
-        angular.extend(this, opts);
-        this.context = this.context|| this.object || null;
-        this.callback = angular.isFunction(this.callback) || cfg.runner();
-      };
-
-      Call.prototype.toString = function toString() {
-        return JSON.stringify({
-          args: this.args,
-          callback: this.callback,
-          func: this.func,
-          $cfg: this.$cfg
-        }, null, 2);
+        this.$call = call;
+        delete this.calls;
       };
 
       Call.prototype.deserialize = function deserialize() {
-        var object = this.object,
-            func = this.func,
-            context = this.context,
-            callback = this.callback,
-            args = this.args.map(function (arg) {
-              return this.$cfg[arg];
-            }, this);
+        var call = this.$call,
+            cfg = this.$cfg;
 
         var debaserCall = function debaserCall() {
-          window.console.warn(args);
-          callback(object[func].apply(context, args));
-        }.bind(this);
+          this.callback(this.object[this.func].apply(this.context, this.args));
+        }.bind(call);
+
         debaserCall.toString = function toString() {
-          return JSON.stringify({
-            args: args,
-            func: func
-          }, null, 2);
+          return cfg._provider && cfg._provider.toString();
         };
+
         return debaserCall;
       };
 
       return function call(cfg) {
-        var calls = Array.prototype.slice.call(arguments, 1);
-        return calls.map(function (opts) {
-          return new Call(cfg, opts);
+        return cfg.calls.map(function (c) {
+          return new Call(cfg, c);
         });
       };
-
     });
 
 })(window.angular);
@@ -415,26 +396,44 @@
   angular.module('decipher.debaser').factory('$callConfig',
     function $callConfigFactory() {
 
+      /**
+       * @name CallConfig
+       * @param o
+       * @constructor
+       */
       var CallConfig = function CallConfig(o) {
         angular.extend(this, o);
-        this.callbacks = this.callbacks || [];
-        this.cb_idx = 0;
+        this._callbacks = [];
+        this._cb_idx = 0;
+        this._id = CallConfig._id++;
+        this.calls = this.calls || [];
+      };
+
+      CallConfig._id = 0;
+
+      CallConfig.prototype.addCall = function addCall(opts) {
+        if(!opts) {
+          throw new Error('$debaser: addCall() expects call options');
+        }
+        opts.callback = opts.callback || this.runner();
+        opts.context = angular.isDefined(opts.context) ? opts.context : opts.object || null;
+        this.calls.push(opts);
       };
 
       CallConfig.prototype.next = function next() {
-        if (this.callbacks[this.cb_idx]) {
-          this.callbacks[this.cb_idx++].apply(this, arguments);
+        if (this._callbacks[this._cb_idx]) {
+          this._callbacks[this._cb_idx++].apply(this, arguments);
         } else {
           this.done();
         }
       };
 
       CallConfig.prototype.done = function done() {
-        this.cb_idx = 0;
+        this._cb_idx = 0;
       };
 
       CallConfig.prototype.chain = function chain(fn) {
-        this.callbacks.push(function debaserCallbackProxy() {
+        this._callbacks.push(function debaserCallbackProxy() {
           this.next(fn.apply(this, arguments));
         }.bind(this));
       };
@@ -446,8 +445,23 @@
       };
 
       CallConfig.prototype.isChained = function isChained() {
-        return !!this.callbacks.length;
+        return !!this._callbacks.length;
       };
+
+      Object.defineProperties(CallConfig.prototype, {
+        provider: {
+          get: function getProvider() {
+            return this._provider;
+          },
+          set: function setProvider(fn) {
+            var cfg = this;
+            this._provider = function($provide) {
+              fn.call(cfg, $provide);
+            };
+            this._provider.$inject = ['$provide'];
+          }
+        }
+      });
 
       return CallConfig;
 
@@ -459,7 +473,7 @@
   'use strict';
 
   angular.module('decipher.debaser').factory('$superpowers',
-    ['$call', '$window', '$parse', function $superpowersFactory(call, $window, $parse) {
+    ['$call', '$window', function $superpowersFactory(call, $window) {
 
       var SINON_EXCLUDE = [
         'create',
@@ -481,44 +495,44 @@
       };
 
       var module = function module(name, deps) {
-        var cfg = this.$$config();
         if (!name) {
           return console.warn('$debaser: ignoring empty call to module()');
-        }
+          }
         if (!angular.isString(name)) {
           throw new Error('$debaser: module() expects a string');
         }
-        cfg.module = name;
-        cfg.module_dependencies = [];
+        this.module = name;
+        this.module_dependencies = [];
         if (deps) {
           if (!angular.isArray(deps)) {
             throw new Error('$debaser: module() expects array or undefined as second parameter');
           }
           superpowers.withDeps.call(this, deps);
         }
-        return call(cfg, {
+        this.addCall({
           object: angular,
           func: 'module',
-          args: ['module', 'module_dependencies']
-        }, {
+          args: [this.module, this.module_dependencies]
+        });
+        this.addCall({
           object: angular.mock,
           func: 'module',
-          args: ['module']
+          args: [this.module]
         });
+        return call(this);
       };
       module.$aspect = ['base'];
 
       var withDep = function withDep() {
-        var cfg = this.$$config();
         if (!arguments.length) {
           return console.warn('$debaser: ignoring empty call to withDep()');
-        }
+          }
         Array.prototype.slice.call(arguments).forEach(function (arg) {
           if (!angular.isString(arg)) {
             throw new Error('$debaser: withDep() expects one or more strings');
           }
         });
-        cfg.module_dependencies.push.apply(cfg.module_dependencies,
+        this.module_dependencies.push.apply(this.module_dependencies,
           arguments);
       };
       withDep.$aspect = ['module'];
@@ -530,7 +544,7 @@
         if (!angular.isArray(arr)) {
           throw new Error('$debaser: withDeps() expects an array');
         }
-        superpowers.withDep.apply(this, arr);
+        withDep.apply(this, arr);
       };
       withDeps.$aspect = ['module'];
 
@@ -542,17 +556,17 @@
         if (!angular.isString(name)) {
           throw new Error('$debaser: func() expects a name');
         }
-        return superpowers.object.call(this, name,
-            sinon && sinon.stub ? sinon.stub.apply(sinon, args) : function debaserStub() {
-          });
+        return object.call(this, name,
+            sinon && sinon.stub ? sinon.stub.apply(sinon, args) :
+            function debaserStub() {
+            });
       };
       func.$aspect = ['base'];
 
       var object = function object(name, base) {
-        var cfg = this.$$config();
         if (!name) {
           return console.warn('$debaser: ignoring empty call to object()');
-        }
+          }
         if (!angular.isString(name)) {
           throw new Error('$debaser: object() expects a name');
         }
@@ -560,69 +574,78 @@
           throw new Error('$debaser: object() second param should be an ' +
             'Object or undefined');
         }
-        if (!cfg.stub) {
+        if (!this.stub) {
           if (!angular.isObject(base) && !angular.isFunction(base)) {
             base = {};
           }
-          cfg.stub =
+          this.stub =
               sinon && sinon.stub && !isSinon(base) ? sinon.stub(base) : base;
         }
-        if (!cfg.isChained()) {
-          cfg.name = name;
-          cfg.component = 'value';
-          cfg.provider = function ($provide) {
-            $provide[cfg.component](cfg.name, cfg.stub);
+        if (!this.isChained()) {
+          this.name = name;
+          this.component = 'value';
+          this.provider = function ($provide) {
+            $provide[this.component](this.name, this.stub);
           };
-          cfg.provider.$inject = ['$provide'];
-          return call(cfg, {
-            object: angular.mock,
-            func: 'module',
-            args: ['provider']
-          });
+          this.addCall(
+            {
+              object: angular.mock,
+              func: 'module',
+              args: [this.provider]
+            }
+          );
+          return call(this);
         }
       };
       object.$aspect = ['base'];
 
       var withFunc = function withFunc(name) {
-        var cfg = this.$$config();
-        cfg.name = name;
-        cfg.chain(debaserConstantCallback.bind(cfg));
-        superpowers.func.apply(this, arguments);
+        this.name = name;
+        this.chain(debaserConstantCallback.bind(this));
+        func.apply(this, arguments);
       };
       withFunc.$aspect = ['module'];
 
       var withObject = function withObject(name) {
-        var cfg = this.$$config();
-        cfg.name = name;
-        cfg.chain(debaserConstantCallback.bind(cfg));
-        superpowers.object.apply(this, arguments);
+        this.name = name;
+        this.chain(debaserConstantCallback.bind(this));
+        object.apply(this, arguments);
       };
       withObject.$aspect = ['module'];
 
-      var superpowers = {
-        module: module,
-        withDep: withDep,
-        withDeps: withDeps,
-        withFunc: withFunc,
-        withObject: withObject,
+      var wrap = function wrap(fn) {
+        var debaserConfigProxy = function debaserConfigProxy(cfg) {
+          return fn.bind(cfg);
+        };
+        debaserConfigProxy.$aspect = fn.$aspect;
+        debaserConfigProxy.$name = fn.$name;
+        return debaserConfigProxy;
+      };
 
-        func: func,
-        object: object,
+      var superpowers = {
+        module: wrap(module),
+        withDep: wrap(withDep),
+        withDeps: wrap(withDeps),
+        withFunc: wrap(withFunc),
+        withObject: wrap(withObject),
+
+        func: wrap(func),
+        object: wrap(object),
 
         $SINON_EXCLUDE: SINON_EXCLUDE
       };
 
       angular.forEach(superpowers, function (fn, name) {
-        if (!fn._name) {
-          fn._name = name;
-        }
-      });
+        if (!fn.$name) {
+          fn.$name = name;
+          }
+        });
 
       if (sinon) {
         angular.forEach(sinon.stub, function (fn, name) {
           if (angular.isFunction(fn) && SINON_EXCLUDE.indexOf(name) === -1) {
             var sinonProxy = function sinonProxy() {
-              var retval = fn.apply(this.$$config().stub, arguments);
+              var retval = fn.apply(this.stub, arguments);
               if (retval && retval.stub && retval.stub.func) {
                 retval.end = function debaserEnd() {
                   return this;
@@ -631,7 +654,7 @@
               }
             };
             sinonProxy.$aspect = ['func', 'withFunc'];
-            sinonProxy._name = 'func';
+            sinonProxy.$name = 'func';
             superpowers[name] = sinonProxy;
           }
         });
