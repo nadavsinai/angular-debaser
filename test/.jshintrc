@@ -22,6 +22,9 @@
     "angular": true,
     "sinon": true,
     "before": true,
-    "after": true
+    "after": true,
+    "inject": true,
+    "module": true,
+    "sandbox": true
   }
 }

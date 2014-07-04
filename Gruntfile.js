@@ -61,7 +61,7 @@ module.exports = function (grunt) {
             './support/angular/angular.js',
             './support/angular-mocks/angular-mocks.js',
             './debaser.js',
-            './test/**/*.spec.js'
+            './test/**/*.js'
           ]
         }
       },
@@ -75,7 +75,7 @@ module.exports = function (grunt) {
             './support/angular-mocks/angular-mocks.js',
             './lib/debaser.js',
             './lib/*.js',
-            './test/**/*.spec.js'
+            './test/**/*.js'
           ]
         }
       },
@@ -114,7 +114,7 @@ module.exports = function (grunt) {
       },
       lib_test: {
         files: '<%= jshint.lib_test.src %>',
-        tasks: ['jshint:lib_test', 'karma:dev:run']
+        tasks: ['jshint:lib_test', 'build', 'karma:dev:run']
       }
     },
     'bower-install-simple': {

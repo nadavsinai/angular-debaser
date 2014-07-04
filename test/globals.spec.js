@@ -25,12 +25,10 @@
     });
 
     it('should register a singleton Debaser object', function () {
-      var d = debaser(),
-          injector = d.$$injector;
-
+      var d = debaser();
       expect(d).to.equal(debaser.$$debasers.__default__);
       expect(d).to.be.an('object');
-      expect(d instanceof injector.get('$debaser')).to.be.true;
+      expect(debaser()).to.equal(d);
     });
 
     it('should expose a global debase() function', function () {
@@ -42,9 +40,9 @@
       expect(debaser).not.to.throw();
     });
 
-    it('should throw if you call it twice', function () {
+    it('should not throw if you call it twice', function () {
       debaser();
-      expect(debaser).to.throw('$debaser: global debaser already registered!');
+      expect(debaser).not.to.throw();
     });
 
     it('should accept a name in addition to a singleton', function () {
@@ -56,12 +54,6 @@
       //noinspection JSUnusedAssignment
       expect(d.$name).to.equal('foo') &&
       expect(debaser.$$debasers.foo).to.equal(d);
-    });
-
-    it('should have separate injectors per instance', function () {
-      var d1 = debaser('foo'),
-          d2 = debaser('bar');
-      expect(d1.$injector()).not.to.equal(d2.$injector());
     });
 
     it('should setup options', function () {

@@ -43,158 +43,29 @@
 
       beforeEach(inject(function ($debaser, $aspect) {
         d = new $debaser('$aspect');
-        Aspect = $aspect();
+        Aspect = $aspect;
       }));
 
-      it('should shift aspects', function () {
-        var fn = angular.noop,
-            prevAspect = d.$$aspect,
-            stub_proto = sandbox.stub().returns({});
-        sandbox.stub(d.$Aspect, 'create').returns({
-          proto: stub_proto
-        });
-        sandbox.spy(prevAspect, 'name');
-        sandbox.stub(prevAspect, 'proto');
-        sandbox.stub(d, '$enqueue');
-
-        prevAspect.behavior().push(fn);
-        d.$aspect('module');
-        expect(d.$Aspect.create).to.have.been.calledOnce;
-        expect(d.$Aspect.create).to.have.been.calledWith('module', prevAspect);
-        expect(prevAspect.name).to.have.been.calledOnce;
-        expect(prevAspect.proto).not.to.have.been.called;
-        expect(d.$enqueue).not.to.have.been.called;
-        expect(stub_proto).to.have.been.calledOnce;
-        expect(d.$$aspect).to.eql({
-          proto: stub_proto
-        });
-
+      it('should return current Aspect', function () {
+        expect(d.$$aspect).to.equal(d.$aspect());
       });
 
-    });
+      it('should shift Aspects', function () {
+        var bar = sandbox.stub(),
+            prevAspect = d.$aspect();
 
-    describe('chainable methods', function () {
-
-      var d;
-
-      beforeEach(function () {
-        d = new Debaser();
+        sandbox.stub(Aspect.prototype, '_initProto');
+        Aspect.prototype._proto = {bar: bar};        
+        expect(d.$$aspect.name).to.equal('base');
+        expect(d.bar).to.be.undefined;
+        expect(d.$aspect()).not.to.be.undefined;
+        d.$aspect('some other aspect');
+        expect(d.$$aspect.name).to.equal('some other aspect');
+        console.log(d.$aspect().proto);
+        expect(d.bar).to.be.a('function');
+        expect(d.$aspect()).to.not.equal(prevAspect);
       });
 
-      it('should always return a Debaser', function () {
-        Object.keys(d).filter(function (key) {
-          return key.charAt(0) !== '$';
-        }).forEach(function (name) {
-          expect(d[name]()).to.equal(d);
-        });
-      });
-
-      describe('module()', function () {
-
-        it('should throw if invalid parameters', function () {
-          var err = '$debaser: module() expects a string';
-          expect(function () {
-            d.module();
-          }).not.to.throw();
-          expect(function () {
-            d.module({herp: 'derp'});
-          }).to.throw(err);
-          expect(function () {
-            d.module([1, 2, 3]);
-          }).to.throw(err);
-        });
-
-        it('should accept a string', function () {
-          expect(function () {
-            d.module('foo');
-          }).not.to.throw();
-        });
-
-        it('should create a fake module upon debase()', function () {
-          sandbox.stub(angular, 'module');
-          sandbox.stub(angular.mock, 'module');
-          d.module('foo');
-          expect(d.module).to.be.a('function');
-          d.debase();
-          expect(angular.module).to.have.been.calledWith('foo', []);
-          expect(angular.mock.module).to.have.been.calledWith('foo');
-        });
-
-        it('should set the aspect to "module"', function () {
-          d.module('foo');
-          expect(d.$$aspect.name()).to.equal('module');
-          expect(d.module).to.be.a('function');
-          expect(d.withDep).to.be.a('function');
-          expect(d.withDeps).to.be.a('function');
-        });
-
-      });
-
-      describe('withDep', function () {
-        it('should throw if invalid arguments', function () {
-          expect(function () {
-            d.module('foo').withDep();
-          }).not.to.throw();
-          expect(function () {
-            d.module('foo').withDep({});
-          }).to.throw('$debaser: withDep() expects one or more strings');
-        });
-        it('should accept a string', function () {
-          expect(function () {
-            d.module('foo').withDep('bar');
-          }).not.to.throw();
-        });
-        it('should create a fake module with a dependency upon debase()',
-          function () {
-            sandbox.stub(angular, 'module');
-            sandbox.stub(angular.mock, 'module');
-            d.module('foo').withDep('bar');
-            expect(d.withDep).to.be.a('function');
-            d.debase();
-            expect(angular.module).to.have.been.calledWith('foo',
-              ['bar']);
-            expect(angular.mock.module).to.have.been.calledWith('foo');
-          });
-      });
-
-
-      describe('withDeps', function () {
-        it('should throw if invalid arguments', function () {
-          expect(function () {
-            d.module('foo').withDeps();
-          }).not.to.throw();
-          expect(function () {
-            d.module('foo').withDeps({});
-          }).to.throw('$debaser: withDeps() expects an array');
-        });
-        it('should accept an array', function () {
-          expect(function () {
-            d.module('foo').withDeps(['bar']);
-          }).not.to.throw();
-        });
-        it('should create a fake module with a dependency upon debase()',
-          function () {
-            sandbox.stub(angular, 'module');
-            sandbox.stub(angular.mock, 'module');
-            d.module('foo').withDeps(['bar']);
-            expect(d.withDeps).to.be.a('function');
-            d.debase();
-            expect(angular.module).to.have.been.calledWith('foo',
-              ['bar']);
-            expect(angular.mock.module).to.have.been.calledWith('foo');
-          });
-      });
-
-      describe('func()', function () {
-        it('should make a value upon debase()', function () {          
-          sandbox.stub(angular.mock, 'module');
-          d.func('foo');
-          expect(d.func).to.be.a('function');
-          expect(d.withDep).to.be.undefined;
-          d.debase();
-          expect(angular.mock.module).to.have.been.calledOnce;
-        });
-      });
     });
 
     describe('debase()', function () {
@@ -227,16 +98,16 @@
           d.module('foo');
           expect(d.$aspect).to.have.been.calledOnce;
           expect(d.$aspect).to.have.been.calledWith('module');
-          expect(d.$$aspect.$name).to.equal('module');
+          expect(d.$$aspect.name).to.equal('module');
           queue = d.$queue;
           expect(queue.length).to.equal(0);
           sandbox.spy(queue, 'forEach');
           d.debase();
           expect(queue.forEach).to.have.been.calledOnce;
-          expect(d.$queue.length).to.equal(2);
+          expect(d.$queue.length).to.equal(0);
           expect(d.$aspect).to.have.been.calledTwice;
           expect(d.$aspect).to.have.been.calledWith('base');
-          expect(d.$$aspect.$name).to.equal('base');
+          expect(d.$$aspect.name).to.equal('base');
         });
     });
   });
