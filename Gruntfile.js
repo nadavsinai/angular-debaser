@@ -20,7 +20,7 @@ module.exports = function (grunt) {
         stripBanners: true
       },
       dist: {
-        src: ['lib/debaser.js', 'lib/*.js'],
+        src: ['lib/module.js', 'lib/*.js'],
         dest: 'debaser.js'
       }
     },
@@ -51,7 +51,8 @@ module.exports = function (grunt) {
         browsers: ['PhantomJS'],
         reporters: ['story'],
         autoWatch: false,
-        singleRun: false
+        singleRun: false,
+        logLevel: 'info'
       },
       continuous: {
         options: {
@@ -60,7 +61,7 @@ module.exports = function (grunt) {
           files: [
             './support/angular/angular.js',
             './support/angular-mocks/angular-mocks.js',
-            './debaser.js',
+            './debaser.min.js',
             './test/**/*.js'
           ]
         }
@@ -73,7 +74,7 @@ module.exports = function (grunt) {
           files: [
             './support/angular/angular.js',
             './support/angular-mocks/angular-mocks.js',
-            './lib/debaser.js',
+            './lib/module.js',
             './lib/*.js',
             './test/**/*.js'
           ]
@@ -87,9 +88,9 @@ module.exports = function (grunt) {
           files: [
             './support/angular-unstable/angular.js',
             './support/angular-mocks-unstable/angular-mocks.js',
-            './lib/debaser.js',
+            './lib/module.js',
             './lib/*.js',
-            './test/**/*.spec.js'
+            './test/**/*.js'
           ]
         }
       },
@@ -101,8 +102,8 @@ module.exports = function (grunt) {
           files: [
             './support/angular-unstable/angular.js',
             './support/angular-mocks-unstable/angular-mocks.js',
-            './debaser.js',
-            './test/**/*.spec.js'
+            './debaser.min.js',
+            './test/**/*.js'
           ]
         }
       }
@@ -143,6 +144,8 @@ module.exports = function (grunt) {
   // Default task
   grunt.registerTask('build', ['concat', 'uglify']);
   grunt.registerTask('test', ['bower-install-simple', 'jshint', 'build', 'karma:continuous', 'karma:unstable-continuous']);
-  grunt.registerTask('default', ['bower-install-simple', 'karma:dev:start',  'watch']);
+  grunt.registerTask('default',
+    ['bower-install-simple', 'karma:dev:start', 'karma:unstable-dev:start',
+      'watch']);
 };
 

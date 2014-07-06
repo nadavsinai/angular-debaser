@@ -2,33 +2,33 @@
 
   'use strict';
 
-  describe.only('CallConfig', function () {
+  describe('Config', function () {
 
-    var CallConfig;
+    var Config;
 
-    beforeEach(inject(function ($callConfig) {
-      CallConfig = $callConfig;
-    }));
+    beforeEach(inject(['decipher.debaser.config', function (_Config_) {
+      Config = _Config_;
+    }]));
 
     describe('constructor', function () {
 
       it('should initialize callbacks, calls, id and callback idx',
         function () {
-          var cc = new CallConfig();
+          var cc = new Config();
           expect(cc._callbacks).to.eql([]);
           expect(cc._cb_idx).to.equal(0);
-          expect(cc._id).to.equal(CallConfig._id - 1);
-          expect(cc.calls).to.eql([]);
+          expect(cc._id).to.equal(Config._id - 1);
+          expect(cc.actions).to.eql([]);
         });
 
       it('should extend itself with a passed object', function () {
-        var cc = new CallConfig({foo: 'bar'});
+        var cc = new Config({foo: 'bar'});
         expect(cc.foo).to.equal('bar');
       });
 
       it('should not overwrite calls if present', function () {
-        var cc = new CallConfig({calls: 'schmalls'});
-        expect(cc.calls).to.equal('schmalls');
+        var cc = new Config({actions: 'schmalls'});
+        expect(cc.actions).to.equal('schmalls');
       });
 
     });
@@ -38,20 +38,20 @@
       var cc;
 
       beforeEach(function () {
-        cc = new CallConfig();
+        cc = new Config();
       });
 
       describe('addCall()', function () {
         it('should throw if passed nothing', function () {
           expect(function () {
-            cc.addCall();
+            cc.addAction();
           }).to.throw('$debaser: addCall() expects call options');
         });
 
         it('should push data onto calls array', function () {
           sandbox.stub(cc, 'runner').returns('foo');
-          cc.addCall({});
-          expect(cc.calls.length).to.equal(1);
+          cc.addAction({});
+          expect(cc.actions.length).to.equal(1);
 
 
         });
@@ -59,26 +59,26 @@
         it('should use the value returned by runner() as the default callback',
           function () {
             sandbox.stub(cc, 'runner').returns('foo');
-            cc.addCall({});
-            expect(cc.calls[0].callback).to.equal('foo');
+            cc.addAction({});
+            expect(cc.actions[0].callback).to.equal('foo');
           });
 
         it('should use the null context if no object passed and no context passed',
           function () {
-            cc.addCall({});
-            expect(cc.calls[0].context).to.be.null;
+            cc.addAction({});
+            expect(cc.actions[0].context).to.be.null;
           });
 
         it('should use the object context if no context passed', function () {
           var o = {};
-          cc.addCall({object: o});
-          expect(cc.calls[0].context).to.equal(o);
+          cc.addAction({object: o});
+          expect(cc.actions[0].context).to.equal(o);
         });
 
         it('should use the context itself if defined, even if falsy',
           function () {
-            cc.addCall({context: false});
-            expect(cc.calls[0].context).to.be.false;
+            cc.addAction({context: false});
+            expect(cc.actions[0].context).to.be.false;
           });
 
       });

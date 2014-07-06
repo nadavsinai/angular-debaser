@@ -2,7 +2,7 @@
   "name": "angular-debaser",
   "version": "0.1.0",
   "description": "Painless stubbing of AngularJS components",
-  "main": "debaser.js",
+  "main": "module.js",
   "directories": {
     "test": "test"
   },

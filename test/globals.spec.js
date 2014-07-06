@@ -3,16 +3,13 @@
 
   describe('window.debaser()', function () {
 
-    var debaser,
-        sandbox;
+    var debaser;
 
     beforeEach(function () {
-      sandbox = sinon.sandbox.create('debaser');
       debaser = window.debaser;
     });
 
     afterEach(function () {
-      sandbox.restore();
       debaser.$$debasers = {};
     });
 

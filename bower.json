@@ -5,7 +5,7 @@
     "Christopher Hiller <chiller@decipherinc.com>"
   ],
   "description": "Painless stubbing of AngularJS components",
-  "main": "debaser.js",
+  "main": "module.js",
   "keywords": [
     "angular",
     "angularjs",
