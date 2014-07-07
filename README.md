@@ -296,7 +296,7 @@ Let's take a look at Donny's test and stubs after using Sinon:
 
 This test is now a bit more valuable, because now he can assert his stubs were called, at least.  His function is working properly.
 
-Still, that's a lot of code.  Donny *knows* there's a more elgant solution.  He's getting smarter by the minute!
+Still, that's a lot of code.  Donny *knows* there's a more elegant solution.  He's getting smarter by the minute!
 
 ### Enter angular-debaser
 
