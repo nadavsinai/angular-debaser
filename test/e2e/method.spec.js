@@ -3,7 +3,7 @@
 
   describe('e2e', function () {
 
-    describe('singular method', function () {
+    describe('single method', function () {
 
       var d;
 
@@ -43,15 +43,15 @@
         it('should create a fake module upon debase()', function () {
           sandbox.stub(angular, 'module');
           sandbox.stub(angular.mock, 'module');
-          d.module('foo');
+          d.module('hoos-foos');
           expect(d.module).to.be.a('function');
           d.debase();
-          expect(angular.module).to.have.been.calledWith('foo', []);
-          expect(angular.mock.module).to.have.been.calledWith('foo');
+          expect(angular.module).to.have.been.calledWith('hoos-foos', []);
+          expect(angular.mock.module).to.have.been.calledWith('hoos-foos');
         });
 
         it('should set the aspect to "module"', function () {
-          d.module('foo');
+          d.module('snimm');
           expect(d.$$aspect.name).to.equal('module');
           expect(d.module).to.be.a('function');
           expect(d.withDep).to.be.a('function');
@@ -63,27 +63,27 @@
       describe('withDep', function () {
         it('should throw if invalid arguments', function () {
           expect(function () {
-            d.module('foo').withDep();
+            d.module('hot-shot').withDep();
           }).not.to.throw();
           expect(function () {
-            d.module('foo').withDep({});
+            d.module('sunny jim').withDep({});
           }).to.throw('$debaser: withDep() expects one or more strings');
         });
         it('should accept a string', function () {
           expect(function () {
-            d.module('foo').withDep('bar');
+            d.module('shadrack').withDep('blinkey');
           }).not.to.throw();
         });
         it('should create a fake module with a dependency upon debase()',
           function () {
             sandbox.stub(angular, 'module');
             sandbox.stub(angular.mock, 'module');
-            d.module('foo').withDep('bar');
+            d.module('stuffy').withDep('stinkey');
             expect(d.withDep).to.be.a('function');
             d.debase();
-            expect(angular.module).to.have.been.calledWith('foo',
-              ['bar']);
-            expect(angular.mock.module).to.have.been.calledWith('foo');
+            expect(angular.module).to.have.been.calledWith('stuffy',
+              ['stinkey']);
+            expect(angular.mock.module).to.have.been.calledWith('stuffy');
           });
       });
 

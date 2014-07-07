@@ -4,12 +4,11 @@
   "authors": [
     "Christopher Hiller <chiller@decipherinc.com>"
   ],
-  "description": "Painless stubbing of AngularJS components",
-  "main": "module.js",
+  "description": "Just a better way to test AngularJS code",
+  "main": "debaser.js",
   "keywords": [
     "angular",
     "angularjs",
-    "mock",
     "mock",
     "test",
     "unit",
@@ -18,7 +17,10 @@
     "stub",
     "di",
     "dependency",
-    "injection"
+    "injection",
+    "mocha",
+    "chai",
+    "jasmine"
   ],
   "license": "MIT",
   "ignore": [
@@ -32,8 +34,7 @@
   ],
   "dependencies": {
     "angular-mocks": "*",
-    "angular": "*",
-    "sinonjs": "*"
+    "angular": "*"
   },
   "devDependencies": {
     "angular-unstable": "1.1.5",

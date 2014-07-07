@@ -6,7 +6,7 @@
       var $provide,
           pairs = {},
 
-          NUM = 2,
+          NUM = 20,
 
           SKIP = [
             'withDeps'
@@ -20,12 +20,11 @@
           },
 
           chooseMethod = function chooseMethod(obj) {
-            //            var methods = Object.keys(obj).filter(function (key) {
-            //              return SKIP.indexOf(key) === -1 && key.charAt(0) !== '$' &&
-            //                angular.isFunction(obj[key]);
-            //            });
-            //            return choose(methods);
-            return 'func';
+            var methods = Object.keys(obj).filter(function (key) {
+              return SKIP.indexOf(key) === -1 && key.charAt(0) !== '$' &&
+                angular.isFunction(obj[key]);
+            });
+            return choose(methods);
           },
 
           chooseName = function chooseName() {
@@ -58,8 +57,6 @@
 
           tests = {
             module: function testModule(name) {
-              expect(angular.module).to.have.callCount(testModule.expectedCallCount);
-              expect(angular.mock.module).to.have.callCount(testModule.expectedCallCount);
               expect(angular.module).to.have.been.calledWith(name);
               expect(angular.mock.module).to.have.been.calledWith(name);
             },
@@ -67,7 +64,6 @@
               expect(angular.module).to.have.been.calledWith([name]);
             },
             func: function testFunc(name) {
-              expect(angular.mock.module).to.have.callCount(testFunc.expectedCallCount);
               inject([name, function (stub) {
                 expect($provide.value).to.have.been.calledWith(name);
                 expect(stub).to.be.a('function');
@@ -98,7 +94,6 @@
         sandbox.spy(angular, 'module');
         sandbox.spy(angular.mock, 'module');
         angular.forEach(pairs, function (method, name) {
-          tests[method].expectedCallCount++;
           debaser[method](name);
         });
         debaser.debase();

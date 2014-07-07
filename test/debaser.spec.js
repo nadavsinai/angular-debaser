@@ -34,8 +34,8 @@
           Aspect = _Aspect_;
         }]));
 
-        it('should return current Aspect', function () {
-          expect(d.$$aspect).to.equal(d.$aspect());
+        it('should return same type of Aspect', function () {
+          expect(d.$$aspect.name).to.equal(d.$aspect().name);
         });
 
         it('should shift Aspects', function () {

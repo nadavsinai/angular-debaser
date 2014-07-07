@@ -39,7 +39,7 @@
 
         angular.forEach(stub, function (fn, name) {
           var result;
-          config.stub = stub();
+          config.func = stub();
           if (angular.isFunction(fn) && powers.$SINON_EXCLUDE.indexOf(name) === -1) {
             expect(powers[name]).to.be.a('function');
             if (['onCall', 'onFirstCall', 'onSecondCall',

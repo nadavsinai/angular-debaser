@@ -62,7 +62,8 @@ module.exports = function (grunt) {
             './support/angular/angular.js',
             './support/angular-mocks/angular-mocks.js',
             './debaser.min.js',
-            './test/**/*.js'
+            './test/*.js',
+            './test/e2e/*.js'
           ]
         }
       },
@@ -76,7 +77,8 @@ module.exports = function (grunt) {
             './support/angular-mocks/angular-mocks.js',
             './lib/module.js',
             './lib/*.js',
-            './test/**/*.js'
+            './test/*.js',
+            './test/e2e/*.js'
           ]
         }
       },
@@ -90,7 +92,9 @@ module.exports = function (grunt) {
             './support/angular-mocks-unstable/angular-mocks.js',
             './lib/module.js',
             './lib/*.js',
-            './test/**/*.js'
+            './test/*.js',
+            './test/e2e/*.js'
+
           ]
         }
       },
@@ -103,9 +107,24 @@ module.exports = function (grunt) {
             './support/angular-unstable/angular.js',
             './support/angular-mocks-unstable/angular-mocks.js',
             './debaser.min.js',
-            './test/**/*.js'
+            './test/*.js',
+            './test/e2e/*.js'
+
           ]
         }
+      },
+      scratch: {
+        options: {
+          background: true,
+          port: 9800,
+          files: [
+            './support/angular/angular.js',
+            './support/angular-mocks/angular-mocks.js',
+            './debaser.js',
+            './test/scratch/scratch.spec.js'
+          ]
+        }
+
       }
     },
     watch: {
@@ -116,6 +135,10 @@ module.exports = function (grunt) {
       lib_test: {
         files: '<%= jshint.lib_test.src %>',
         tasks: ['jshint:lib_test', 'build', 'karma:dev:run']
+      },
+      scratch: {
+        files: ['test/scratch/scratch.spec.js'],
+        tasks: ['karma:scratch:run']
       }
     },
     'bower-install-simple': {
@@ -147,5 +170,7 @@ module.exports = function (grunt) {
   grunt.registerTask('default',
     ['bower-install-simple', 'karma:dev:start', 'karma:unstable-dev:start',
       'watch']);
+  grunt.registerTask('scratch', ['bower-install-simple', 'karma:scratch:start',
+    'watch:scratch']);
 };
 

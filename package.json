@@ -1,11 +1,6 @@
 {
   "name": "angular-debaser",
   "version": "0.1.0",
-  "description": "Painless stubbing of AngularJS components",
-  "main": "module.js",
-  "directories": {
-    "test": "test"
-  },
   "private": true,
   "devDependencies": {
     "grunt": "^0.4.5",
