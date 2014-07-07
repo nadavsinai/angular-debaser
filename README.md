@@ -12,7 +12,6 @@ Donny Developer wants to unit test a controller which manages the online interfa
 angular.module('donny.pizzajoint.admin').controller('AdminDashboardCtrl',
   function($scope, $log, $window, User, Settings, Pizza, Toppings, Sides,
     Orders, Deliveries) {
-    // let's just say this controller is as big as a pizza-pie.
 
     $scope.getUsers = function getUsers() {
       return User.getAll(Settings.location_id);
@@ -66,14 +65,16 @@ describe('AdminDashboardCtrl', function() {
 Donny expects his test to fail.  But he didn't expect his test to error like this:
 
 ```
-Error: [$injector:nomod] Module 'donny.pizzajoint.common' is not available! You either misspelled the module name or forgot to load it. If registering a module ensure that you specify the dependencies as the second argument.
+Error: [$injector:nomod] Module 'donny.pizzajoint.common' is not available! You
+ either misspelled the module name or forgot to load it. If registering a module
+  ensure that you specify the dependencies as the second argument.
 ```
 
 Donny realizes the `donny.pizzajoint.admin` module requires `donny.pizzajoint.common`.  He examines the `donny.pizzajoint.admin` module a little closer, and:
 
 ```js
-angular.module('donny.pizzajoint.admin', ['donny.pizzajoint.common', 'donny.pizzajoint.food', 'donny.pizzajoint.account',
-  'donny.pizzajoint.delivery'])
+angular.module('donny.pizzajoint.admin', ['donny.pizzajoint.common'
+  'donny.pizzajoint.food', 'donny.pizzajoint.account', 'donny.pizzajoint.delivery'])
   .config(function(UserProvider) {
     UserProvider.assertAdmin();
   });
