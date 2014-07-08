@@ -433,16 +433,17 @@
         };
 
         Debaser.autoScopeProvider = function ($provide) {
-          $provide.decorator('$controller', ['$rootScope', '$delegate', function ($rootScope, $delegate) {
-            return function (name, locals) {
-              locals = locals || {};
-              if (!locals.$scope) {
-                locals.$scope = $rootScope.$new();
-              }
-              $delegate(name, locals);
-              return locals.$scope;
-            };
-          }]);
+          $provide.decorator('$controller',
+            ['$rootScope', '$delegate', function ($rootScope, $delegate) {
+              return function (name, locals) {
+                locals = locals || {};
+                if (!locals.$scope) {
+                  locals.$scope = $rootScope.$new();
+                }
+                $delegate(name, locals);
+                return locals.$scope;
+              };
+            }]);
         };
         Debaser.autoScopeProvider.$inject = ['$provide'];
 

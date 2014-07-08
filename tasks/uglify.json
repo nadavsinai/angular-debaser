@@ -1,0 +1,10 @@
+{
+  "options": {
+    "banner": "<%= banner %>",
+    "sourceMap": true
+  },
+  "dist": {
+    "src": "<%= concat.dist.dest %>",
+    "dest": "debaser.min.js"
+  }
+}

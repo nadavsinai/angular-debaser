@@ -1,0 +1,147 @@
+{
+  "options": {
+    "frameworks": [
+      "mocha",
+      "chai",
+      "chai-as-promised",
+      "sinon-chai"
+    ],
+    "browsers": [
+      "PhantomJS"
+    ],
+    "reporters": [
+      "story"
+    ],
+    "autoWatch": false,
+    "singleRun": false,
+    "logLevel": "info"
+  },
+  "continuous": {
+    "options": {
+      "singleRun": true,
+      "port": 9876,
+      "files": [
+        "./support/angular/angular.js",
+        "./support/angular-mocks/angular-mocks.js",
+        "./debaser.js",
+        "./test/*.js",
+        "./test/e2e/*.js"
+      ],
+      "preprocessors": {
+        "debaser.js": "coverage"
+      },
+      "reporters": [
+        "story",
+        "coverage"
+      ],
+      "coverageReporter": {
+        "reporters": [
+          {
+            "type": "lcov",
+            "dir": "coverage/"
+          },
+          {
+            "type": "text-summary"
+          }
+        ]
+      }
+    }
+  },
+  "continuous-min": {
+    "options": {
+      "singleRun": true,
+      "port": 9881,
+      "files": [
+        "./support/angular/angular.js",
+        "./support/angular-mocks/angular-mocks.js",
+        "./debaser.min.js",
+        "./test/*.js",
+        "./test/e2e/*.js"
+      ]
+    }
+  },
+  "dev": {
+    "options": {
+      "browsers": [
+        "Chrome"
+      ],
+      "background": true,
+      "port": 9877,
+      "files": [
+        "./support/angular/angular.js",
+        "./support/angular-mocks/angular-mocks.js",
+        "./lib/module.js",
+        "./lib/*.js",
+        "./test/*.js",
+        "./test/e2e/*.js"
+      ],
+      "preprocessors": {
+        "./lib/*.js": "coverage"
+      },
+      "reporters": [
+        "story",
+        "coverage"
+      ],
+      "coverageReporter": {
+        "reporters": [
+          {
+            "type": "lcov",
+            "dir": "coverage/"
+          },
+          {
+            "type": "html",
+            "dir": "coverage/"
+          },
+          {
+            "type": "text-summary"
+          }
+        ]
+      }
+    }
+  },
+  "unstable-dev": {
+    "options": {
+      "browsers": [
+        "Chrome"
+      ],
+      "background": true,
+      "port": 9878,
+      "files": [
+        "./support/angular-unstable/angular.js",
+        "./support/angular-mocks-unstable/angular-mocks.js",
+        "./lib/module.js",
+        "./lib/*.js",
+        "./test/*.js",
+        "./test/e2e/*.js"
+      ]
+    }
+  },
+  "unstable-continuous": {
+    "options": {
+      "browsers": [
+        "PhantomJS"
+      ],
+      "singleRun": true,
+      "port": 9879,
+      "files": [
+        "./support/angular-unstable/angular.js",
+        "./support/angular-mocks-unstable/angular-mocks.js",
+        "./debaser.min.js",
+        "./test/*.js",
+        "./test/e2e/*.js"
+      ]
+    }
+  },
+  "scratch": {
+    "options": {
+      "background": true,
+      "port": 9800,
+      "files": [
+        "./support/angular/angular.js",
+        "./support/angular-mocks/angular-mocks.js",
+        "./debaser.js",
+        "./test/scratch/scratch.spec.js"
+      ]
+    }
+  }
+}

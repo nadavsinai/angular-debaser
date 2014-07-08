@@ -1,0 +1,13 @@
+{
+  "options": {
+    "banner": "<%= banner %>",
+    "stripBanners": true
+  },
+  "dist": {
+    "src": [
+      "lib/module.js",
+      "lib/*.js"
+    ],
+    "dest": "debaser.js"
+  }
+}

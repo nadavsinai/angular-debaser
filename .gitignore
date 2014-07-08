@@ -1,4 +1,6 @@
-support
-node_modules
+support/
+node_modules/
 npm-debug.log
-test/scratch
+test/scratch/
+coverage/
+.coveralls.yml

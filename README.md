@@ -1,4 +1,4 @@
-# angular-debaser
+# angular-debaser [![Build Status](https://travis-ci.org/decipherinc/angular-debaser.svg?branch=master)](https://travis-ci.org/decipherinc/angular-debaser) [![Coverage Status](https://img.shields.io/coveralls/decipherinc/angular-debaser.svg)](https://coveralls.io/r/decipherinc/angular-debaser?branch=master)
 
 Just a better way to test AngularJS code.
 
@@ -527,7 +527,7 @@ Also, if you are [testing directives](https://github.com/vojtajina/ng-directive-
 
 - As of this writing there is no good way to stub a proper provider.  You can stub the back or the front but not both.  For now you'll need to do it manually, but in many cases you can simply avoid these altogether by using the `skipConfigs` option (which, by default, is **on**).
 
-- Coverage is only fair.
+- Needs more tests.
 
 - Need some sort of strategy to run tests against both Mocha/Chai and Jasmine.  Mocha/Chai-to-Jasmine Grunt task, anyone?
 
