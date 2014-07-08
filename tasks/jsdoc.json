@@ -1,0 +1,11 @@
+{
+  "all": {
+    "src": ["README.md", "lib/*.js"],
+    "dest": "./docs/",
+    "options": {
+      "template": "./node_modules/grunt-jsdoc/node_modules/ink-docstrap/template/",
+      "configure": "./docs/jsdoc.conf.json"
+    }
+
+  }
+}

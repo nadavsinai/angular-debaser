@@ -1,0 +1,3 @@
+{
+  "docs": ["./docs/*.html", "./docs/styles/", "./docs/scripts/", "./docs/img/"]
+}
