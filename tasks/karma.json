@@ -70,6 +70,7 @@
       "files": [
         "./support/angular/angular.js",
         "./support/angular-mocks/angular-mocks.js",
+        "./lib/globals.js",
         "./lib/module.js",
         "./lib/*.js",
         "./test/*.js",
@@ -109,6 +110,7 @@
       "files": [
         "./support/angular-unstable/angular.js",
         "./support/angular-mocks-unstable/angular-mocks.js",
+        "./lib/globals.js",
         "./lib/module.js",
         "./lib/*.js",
         "./test/*.js",
