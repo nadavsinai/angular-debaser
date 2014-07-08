@@ -5,6 +5,7 @@
   },
   "dist": {
     "src": [
+      "lib/globals.js",
       "lib/module.js",
       "lib/*.js"
     ],
