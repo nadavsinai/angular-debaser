@@ -1,62 +1,25 @@
-/*! angular-debaser - v0.1.0 - 2014-07-07
+/*! angular-debaser - v0.1.0 - 2014-07-08
 * https://github.com/decipherinc/angular-debaser
 * Copyright (c) 2014 Decipher, Inc.; Licensed MIT */
-(function (window, angular) {
+(function (angular, debaser) {
 
   'use strict';
 
-  var DEFAULTS = {
-    debugEnabled: false,
-    autoScope: true,
-    skipConfigs: true
-  };
-
-  var setup = function setup(options) {
-    var _setup = function _setup($provide) {
-      $provide.constant('decipher.debaser.options',
-        angular.extend({}, DEFAULTS, options));
-    };
-    _setup.$inject = ['$provide'];
-    return _setup;
-  };
-
-  var debaser = function debaser(name, opts) {
-    var Debaser,
-        instance,
-        debasers = window.debaser.$$debasers,
-        injector;
-
-    if (angular.isObject(name)) {
-      opts = name;
-      name = null;
-    }
-
-    if (!name && debasers.__default__) {
-      return debasers.__default__;
-    }
-
-    opts = opts || {};
-    injector = angular.injector(['ng', setup(opts), 'decipher.debaser']);
-    Debaser = injector.get('decipher.debaser.debaser');
-
-    if (name) {
-      if (!debasers[name]) {
-        debasers[name] = new Debaser(name);
-      }
-      return debasers[name];
-    }
-    debasers.__default__ = instance = new Debaser();
-    window.debase = instance.debase.bind(instance);
-    angular.mock.module(setup(opts), 'decipher.debaser');
-    return instance;
-  };
-  debaser.$$debasers = {};
-  debaser.$$config = {};
-
-  window.debaser = debaser;
-
+  /**
+   * @name decipher.debaser
+   * @description
+   *
+   * This is the main module for angular-debaser.  You are unlikely to interface
+   * with this module directly.
+   */
   angular.module('decipher.debaser', [])
-    .constant('decipher.debaser.runConfig', window.debaser.$$config)
+
+  /**
+   * @name decipher.debaser.runConfig
+   * @memberof decipher.debaser
+   * @type Object
+   */
+    .constant('decipher.debaser.runConfig', debaser.$$config)
     .config(['decipher.debaser.options', '$logProvider', '$provide',
       function config(options, $logProvider, $provide) {
         // older versions of angular-mocks do not implement this function.
@@ -70,26 +33,26 @@
       }
     ]);
 
-})(window, window.angular);
+})(window.angular, window.debaser);
 
 (function (angular) {
   'use strict';
 
   angular.module('decipher.debaser')
-    .factory('decipher.debaser.action', function $callFactory() {
+    .factory('decipher.debaser.loadAction', function loadActionFactory() {
 
       var Action = function Action(action) {
-        this.action = action;
+        angular.extend(this, action);
       };
 
       Action.prototype.deserialize = function deserialize() {
         return function action() {
           this.callback(this.object[this.func].apply(this.context,
             this.args));
-        }.bind(this.action);
+        }.bind(this);
       };
 
-      return function load(cfg) {
+      return function loadAction(cfg) {
         return cfg.actions.map(function (action) {
           return new Action(action);
         });
@@ -464,6 +427,62 @@
 
 })(window.angular);
 
+(function (window, angular) {
+
+  'use strict';
+
+  var DEFAULTS = {
+    debugEnabled: false,
+    autoScope: true,
+    skipConfigs: true
+  };
+
+  var setup = function setup(options) {
+    var _setup = function _setup($provide) {
+      $provide.constant('decipher.debaser.options',
+        angular.extend({}, DEFAULTS, options));
+    };
+    _setup.$inject = ['$provide'];
+    return _setup;
+  };
+
+  var debaser = function debaser(name, opts) {
+    var Debaser,
+        instance,
+        debasers = window.debaser.$$debasers,
+        injector;
+
+    if (angular.isObject(name)) {
+      opts = name;
+      name = null;
+    }
+
+    if (!name && debasers.__default__) {
+      return debasers.__default__;
+    }
+
+    opts = opts || {};
+    injector = angular.injector(['ng', setup(opts), 'decipher.debaser']);
+    Debaser = injector.get('decipher.debaser.debaser');
+
+    if (name) {
+      if (!debasers[name]) {
+        debasers[name] = new Debaser(name);
+      }
+      return debasers[name];
+    }
+    debasers.__default__ = instance = new Debaser();
+    window.debase = instance.debase.bind(instance);
+    angular.mock.module(setup(opts), 'decipher.debaser');
+    return instance;
+  };
+  debaser.$$debasers = {};
+  debaser.$$config = {};
+
+  window.debaser = debaser;
+
+})(window, window.angular);
+
 (function (angular) {
   'use strict';
 
@@ -471,9 +490,9 @@
    * @todo split me up
    */
   angular.module('decipher.debaser').factory('decipher.debaser.superpowers',
-    ['decipher.debaser.action', '$window', 'decipher.debaser.runConfig', '$log',
+    ['decipher.debaser.loadAction', '$window', 'decipher.debaser.runConfig', '$log',
       'decipher.debaser.options',
-      function superpowersFactory(load, $window, $runConfig, $log, options) {
+      function superpowersFactory(loadAction, $window, $runConfig, $log, options) {
 
         var sinon = $window.sinon,
             SINON_EXCLUDE = [
@@ -544,7 +563,7 @@
             func: 'module',
             args: [this.module]
           });
-          return load(this);
+          return loadAction(this);
         };
         module.$aspect = ['base'];
         module.$id = 0;
@@ -634,7 +653,7 @@
               }
             );
             $runConfig[this._id] = this;
-            return load(this);
+            return loadAction(this);
           }
         };
         object.$aspect = ['base'];
