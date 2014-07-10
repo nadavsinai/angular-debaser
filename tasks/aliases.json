@@ -1,6 +1,27 @@
 {
-  "build": ["concat", "uglify"],
-  "test": ["bower-install-simple", "jshint", "build", "karma:continuous", "karma:unstable-continuous", "coveralls"],
-  "default": ["bower-install-simple", "karma:dev:start", "watch"],
-  "scratch": ["bower-install-simple", "karma:scratch:start", "watch:scratch"]
+  "build": [
+    "concat",
+    "uglify"
+  ],
+  "test": [
+    "deps",
+    "build",
+    "jshint",
+    "karma:continuous",
+    "karma:unstable-continuous",
+    "coveralls"
+  ],
+  "default": [
+    "deps",
+    "karma:dev:start",
+    "watch"
+  ],
+  "scratch": [
+    "deps",
+    "karma:scratch:start",
+    "watch:scratch"
+  ],
+  "deps": [
+    "bower-install-simple"
+  ]
 }

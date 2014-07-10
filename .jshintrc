@@ -11,6 +11,7 @@
   "indent": 2,
   "expr": true,
   "newcap": false,
-  "devel": true,
-  "node": true
+  "node": true,
+  "quotmark": "single",
+  "predef": ["window", "angular"]
 }

@@ -39,5 +39,6 @@
   "bugs": {
     "url": "https://github.com/decipherinc/angular-debaser/issues"
   },
-  "homepage": "https://github.com/decipherinc/angular-debaser"
+  "homepage": "https://github.com/decipherinc/angular-debaser",
+  "main": "./debaser.js"
 }

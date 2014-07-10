@@ -3,12 +3,9 @@
     "jshintrc": true
   },
   "gruntfile": {
-    "src": "Gruntfile.js"
+    "src": "./Gruntfile.js"
   },
-  "lib_test": {
-    "src": [
-      "lib/**/*.js",
-      "test/**/*.js"
-    ]
+  "lib": {
+    "src": ["<%= src_files %>", "<%= test_files %>"]
   }
 }

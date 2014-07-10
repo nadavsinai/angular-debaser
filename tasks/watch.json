@@ -5,10 +5,10 @@
       "jshint:gruntfile"
     ]
   },
-  "lib_test": {
-    "files": "<%= jshint.lib_test.src %>",
+  "main": {
+    "files": "<%= jshint.main.src %>",
     "tasks": [
-      "jshint:lib_test",
+      "jshint:main",
       "build",
       "karma:dev:run"
     ]
