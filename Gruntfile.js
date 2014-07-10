@@ -37,7 +37,8 @@ module.exports = function (grunt) {
         './support/angular-mocks-unstable/angular-mocks.js'
       ],
       main: pkg.main,
-      min: pkg.main.replace(/\.js$/, '.min.js')
+      min: pkg.main.replace(/\.js$/, '.min.js'),
+      map: pkg.main + '.map'
     }
   });
 

@@ -6,7 +6,13 @@
     ],
     "commit": true,
     "commitMessage": "Release v%VERSION%",
-    "commitFiles": ["-a"],
+    "commitFiles": [
+      "package.json",
+      "bower.json",
+      "<%= main %>",
+      "<%= min %>",
+      "<%= map %>"
+    ],
     "createTag": true,
     "tagName": "v%VERSION%",
     "tagMessage": "Version %VERSION%",
