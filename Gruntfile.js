@@ -38,7 +38,7 @@ module.exports = function (grunt) {
       ],
       main: pkg.main,
       min: pkg.main.replace(/\.js$/, '.min.js'),
-      map: pkg.main + '.map'
+      map: pkg.main.replace(/\.js$/, '.min.js') + '.map'
     }
   });
 
