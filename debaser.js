@@ -1,4 +1,4 @@
-/*! angular-debaser - v0.2.2 - 2014-07-10
+/*! angular-debaser - v0.2.3 - 2014-07-11
 * https://github.com/decipherinc/angular-debaser
 * Copyright (c) 2014 Decipher, Inc.; Licensed MIT */
 
@@ -513,13 +513,11 @@ angular.module('decipher.debaser').factory('decipher.debaser.superpowers',
           }
           catch (e) {
           }
-          if (!real_module) {
-            this.addAction({
-              object: angular,
-              func: 'module',
-              args: [this.module, this.module_dependencies]
-            });
-          }
+          this.addAction({
+            object: angular,
+            func: 'module',
+            args: !real_module ? [this.module, this.module_dependencies] : [this.module]
+          });
           this.addAction({
             object: angular.mock,
             func: 'module',
