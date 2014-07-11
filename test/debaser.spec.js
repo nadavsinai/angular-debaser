@@ -3,24 +3,25 @@
   'use strict';
 
   describe('Debaser', function () {
-    var Debaser;
+    var Debaser,
+        $log;
 
-    //    beforeEach(module(function ($provide) {
-    //      $provide.constant('decipher.debaser.options', {});
-    //    }, 'decipher.debaser'));
-
-    beforeEach(inject(['decipher.debaser.debaser', function (_Debaser_) {
+    beforeEach(inject(['decipher.debaser.debaser', '$log', function (_Debaser_, _$log_) {
       Debaser = _Debaser_;
+      $log = _$log_;
     }]));
 
     describe('constructor', function () {
-      it('should set defaults & call $aspect()', function () {
+      it('should set defaults, report & call $aspect()', function () {
+        var d;
         sandbox.stub(Debaser.prototype, '$aspect');
-        var d = new Debaser();
+        sandbox.stub($log, 'debug', $log.log);
+        d = new Debaser();
         expect(d.name).to.be.undefined;
         expect(d.$queue).to.eql([]);
         expect(d.$aspect).to.have.been.calledOnce;
         expect(d.$aspect).to.have.been.calledWith('base');
+        expect($log.debug).to.have.been.calledOnce;
       });
     });
 

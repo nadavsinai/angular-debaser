@@ -53,21 +53,6 @@
       expect(debaser.$$debasers.foo).to.equal(d);
     });
 
-    it('should setup options', function () {
-      sandbox.spy(window.console, 'debug');
-      debaser({
-        debugEnabled: true
-      });
-      expect(window.console.debug).to.have.been.calledWith('$debaser: created singleton Debaser instance');
-    });
-
-    it('should setup options on a per-instance basis', function () {
-      sandbox.spy(window.console, 'debug');
-      debaser('foo', {debugEnabled: true});
-      debaser('bar', {debugEnabled: false});
-      expect(window.console.debug).to.have.been.calledOnce;
-    });
-
     it('should return a named Debaser if it exists', function () {
       var d1 = debaser('foo'),
           d2 = debaser('foo');
