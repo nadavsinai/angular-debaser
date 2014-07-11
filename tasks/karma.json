@@ -40,6 +40,12 @@
       }
     }
   },
+  "continuous-main": {
+    "options": {
+      "singleRun": true,
+      "files": ["<%= test_deps %>", "<%= main %>", "<%= test_files %>"]
+    }
+  },
   "continuous-min": {
     "options": {
       "singleRun": true,

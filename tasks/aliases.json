@@ -8,6 +8,8 @@
     "build",
     "jshint",
     "karma:continuous",
+    "karma:continuous-main",
+    "karma:continuous-min",
     "karma:unstable-continuous",
     "coveralls"
   ],

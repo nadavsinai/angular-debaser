@@ -1,9 +1,18 @@
 'use strict';
 
+var HEADER = '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
+        '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
+        '<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
+        '* Copyright (c) <%= grunt.template.today("yyyy") %> Decipher, Inc.;' +
+        ' Licensed <%= pkg.license %> */';
+
 module.exports = function (grunt) {
 
   var path = require('path'),
-      pkg = grunt.file.readJSON(path.join(__dirname, 'package.json'));
+      pkg = grunt.file.readJSON(path.join(__dirname, 'package.json')),
+      main = pkg.main,
+      min = main.replace(/\.js$/, '.min.js'),
+      map = min + '.map';
 
   require('time-grunt')(grunt);
 
@@ -11,13 +20,10 @@ module.exports = function (grunt) {
     configPath: path.join(__dirname, 'tasks'),
     data: {
       pkg: pkg,
-      banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
-        '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-        '<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
-        '* Copyright (c) <%= grunt.template.today("yyyy") %> Decipher, Inc.;' +
-        ' Licensed <%= pkg.license %> */\n\n' +
-        '(function (window, angular) {\n' +
+      banner: HEADER +
+        '\n\n(function (window, angular) {\n' +
         '  \'use strict\';\n\n',
+      banner_min: HEADER,
       footer: '})(window, window.angular);',
       src_files: [
         './lib/globals.js',
@@ -36,9 +42,9 @@ module.exports = function (grunt) {
         './support/angular-unstable/angular.js',
         './support/angular-mocks-unstable/angular-mocks.js'
       ],
-      main: pkg.main,
-      min: pkg.main.replace(/\.js$/, '.min.js'),
-      map: pkg.main.replace(/\.js$/, '.min.js') + '.map'
+      main: main,
+      min: min,
+      map: map
     }
   });
 

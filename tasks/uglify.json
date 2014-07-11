@@ -1,6 +1,6 @@
 {
   "options": {
-    "banner": "<%= banner %>",
+    "banner": "<%= banner_min %>",
     "report": "min",
     "sourceMap": true
   },
