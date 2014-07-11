@@ -21,7 +21,7 @@
       "singleRun": true,
       "files": ["<%= test_deps %>", "<%= src_files %>", "<%= test_files %>"],
       "preprocessors": {
-        "debaser.js": "coverage"
+        "./lib/**/*.js": "coverage"
       },
       "reporters": [
         "story",
