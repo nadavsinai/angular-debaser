@@ -1,4 +1,4 @@
-/*! angular-debaser - v0.2.1 - 2014-07-10
+/*! angular-debaser - v0.2.2 - 2014-07-10
 * https://github.com/decipherinc/angular-debaser
 * Copyright (c) 2014 Decipher, Inc.; Licensed MIT */
 
