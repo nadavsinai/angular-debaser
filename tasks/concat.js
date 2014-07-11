@@ -18,7 +18,7 @@ module.exports = function () {
         }
       },
       src: '<%= src_files %>',
-      dest: '<%= main %>'
+      dest: '<%= pkg.main %>'
     }
   };
 };

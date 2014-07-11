@@ -9,10 +9,7 @@ var HEADER = '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
 module.exports = function (grunt) {
 
   var path = require('path'),
-      pkg = grunt.file.readJSON(path.join(__dirname, 'package.json')),
-      main = pkg.main,
-      min = main.replace(/\.js$/, '.min.js'),
-      map = min + '.map';
+      pkg = grunt.file.readJSON(path.join(__dirname, 'package.json'));
 
   require('time-grunt')(grunt);
 
@@ -41,10 +38,7 @@ module.exports = function (grunt) {
       test_deps_unstable: [
         './support/angular-unstable/angular.js',
         './support/angular-mocks-unstable/angular-mocks.js'
-      ],
-      main: main,
-      min: min,
-      map: map
+      ]
     }
   });
 

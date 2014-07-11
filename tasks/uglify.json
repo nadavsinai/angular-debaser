@@ -5,7 +5,7 @@
     "sourceMap": true
   },
   "dist": {
-    "src": "<%= main %>",
-    "dest": "<%= min %>"
+    "src": "<%= pkg.main %>",
+    "dest": "<%= pkg.min %>"
   }
 }

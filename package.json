@@ -40,5 +40,7 @@
     "url": "https://github.com/decipherinc/angular-debaser/issues"
   },
   "homepage": "https://github.com/decipherinc/angular-debaser",
-  "main": "./debaser.js"
+  "main": "./debaser.js",
+  "min": "./debaser.min.js",
+  "map": "./debaser.min.js.map"
 }
