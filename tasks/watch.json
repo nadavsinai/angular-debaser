@@ -1,12 +1,12 @@
 {
   "gruntfile": {
-    "files": "<%= jshint.gruntfile.src %>",
+    "files": "./Gruntfile.js",
     "tasks": [
       "jshint:gruntfile"
     ]
   },
   "main": {
-    "files": "<%= jshint.main.src %>",
+    "files": ["<%= src_files %>", "<%= test_files %>"],
     "tasks": [
       "jshint:main",
       "build",
