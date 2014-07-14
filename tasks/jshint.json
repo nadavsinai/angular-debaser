@@ -5,7 +5,7 @@
   "gruntfile": {
     "src": "./Gruntfile.js"
   },
-  "lib": {
+  "main": {
     "src": ["<%= src_files %>", "<%= test_files %>"]
   }
 }
