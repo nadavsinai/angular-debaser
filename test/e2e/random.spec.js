@@ -1,6 +1,9 @@
 (function () {
   'use strict';
 
+  /**
+   * @todo improve this test to execute stuff not in "base" aspect
+   */
   describe('e2e', function () {
     describe('random chain', function () {
       var $provide,
@@ -79,7 +82,7 @@
             }
           },
 
-          debaser = window.debaser();
+          debaser = window.debaser('random');
 
       angular.forEach(tests, function (fn) {
         fn.expectedCallCount = 0;

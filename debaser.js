@@ -1,31 +1,75 @@
-/*! angular-debaser - v0.2.3 - 2014-07-11
+/*! angular-debaser - v0.2.3 - 2014-07-15
 * https://github.com/decipherinc/angular-debaser
 * Copyright (c) 2014 Decipher, Inc.; Licensed MIT */
 
 (function (window, angular) {
   'use strict';
 
-  var DEFAULTS = {
+  var DEFAULT_OPTS = {
     debugEnabled: false,
     autoScope: true,
-    skipConfigs: true
+    skipConfigs: true,
+    _default_name: '__default__'
   };
 
   var setup = function setup(options) {
     var _setup = function _setup($provide) {
       $provide.constant('decipher.debaser.options',
-        angular.extend({}, DEFAULTS, options));
+        angular.extend({}, DEFAULT_OPTS, options));
       $provide.constant('decipher.debaser.runConfig', window.debaser.$$config);
     };
     _setup.$inject = ['$provide'];
     return _setup;
   };
 
+  var hasCurrentSpec = function hasCurrentSpec() {
+    return !!debaser.$$currentSpec;
+  };
+
+  /**
+   * @description Provides a {@link Debaser} object with which you can stub dependencies easily.
+   * @param {String|Object} [name=__default__] Optional name of Debaser.  Only useful if using
+   * multiple instances.  If omitted, this is considered the `opts` parameter.
+   * @param {Object} [opts] Options to modify angular-debaser's behavior.
+   * @param {Boolean} [opts.debugEnabled=false] Whether or not to show debug output.
+   * @param {Boolean} [opts.autoScope=true] Whether or not to provide Scope objects automatically to
+   * the $controller service.
+   * @param {Boolean} [opts.skipConfigs=true] Whether or not to skip `config()` blocks when loading
+   * existing modules.
+   * @param {Object} [opts.spec] Current spec object.  Pass this if using angular-debaser in a context
+   * other than `beforeEach()` (typically `before()`)
+   * @example
+   *
+   * // Defaults
+   * var d = debaser({
+   *  debugEnabled: false,
+   *  autoScope: true
+   *  skipConfigs: true
+   * });
+   *
+   * // Named
+   * var d = debaser('foo', {
+   *  debugEnabled: false,
+   *  autoScope: true
+   *  skipConfigs: true
+   * });
+   *
+   * // "spec" usage
+   * before(function() {
+   *   var d = debaser({
+   *     spec: this
+   *   });
+   * });
+   *
+   * @returns {Debaser}
+   */
   var debaser = function debaser(name, opts) {
     var Debaser,
+        default_name = DEFAULT_OPTS._default_name,
         instance,
-        debasers = window.debaser.$$debasers,
         injector,
+        getInstance = debaser.getInstance,
+        hasInstance = debaser.hasInstance,
         setupFn;
 
     if (angular.isObject(name)) {
@@ -37,27 +81,76 @@
     setupFn = setup(opts);
     angular.mock.module(setupFn, 'decipher.debaser');
 
-    if (!name && debasers.__default__) {
-      return debasers.__default__;
+    if (!name && hasInstance(default_name)) {
+      delete debaser.$$globalInstance;
+      return getInstance(default_name);
     }
 
     injector = angular.injector(['ng', setupFn, 'decipher.debaser']);
+    //noinspection JSUnusedAssignment
     Debaser = injector.get('decipher.debaser.debaser');
 
     if (name) {
-      if (!debasers[name]) {
-        debasers[name] = new Debaser(name);
+      if (!hasInstance(name)) {
+        debaser.$$debasers[name] = new Debaser(name);
       }
-      return debasers[name];
+      delete debaser.$$globalInstance;
+      return getInstance(name);
     }
-    debasers.__default__ = instance = new Debaser();
-    window.debase = instance.debase.bind(instance);
+    instance = new Debaser();
+    if (!hasCurrentSpec()) {
+      debaser.$$globalInstance = instance;
+    } else {
+      delete debaser.$$globalInstance;
+    }
     return instance;
   };
+
+  debaser.getInstance = function getInstance(name) {
+    return debaser.$$debasers[name];
+  };
+  debaser.hasInstance = function hasInstance(name) {
+    return !!debaser.getInstance(name);
+  };
+
   debaser.$$debasers = {};
   debaser.$$config = {};
 
+  // shamelessly lifted from angular-mocks
+  (window.beforeEach || window.setup)(function () {
+    debaser.$$currentSpec = this;
+  });
+
+  (window.afterEach || window.teardown)(function () {
+    delete debaser.$$currentSpec;
+  });
+
+  var debase = function debase() {
+    var default_name = DEFAULT_OPTS._default_name,
+        name = arguments[0],
+        callDebase = function callDebase() {
+          if (!name || !angular.isString(name)) {
+            if (!debaser.hasInstance(default_name)) {
+              if (debaser.$$globalInstance) {
+                return debaser.$$globalInstance.debase({persist: true});
+              }
+              throw new Error('debaser: no Debaser initialized!');
+            }
+            name = default_name;
+          }
+          else if (!debaser.hasInstance(name)) {
+            throw new Error('debaser: cannot find Debaser instance with name "' + name + '"');
+          }
+          // @todo not sure if persist value is correct.
+          debaser.getInstance(name).debase({persist: name !== default_name});
+        };
+
+    return hasCurrentSpec() ? callDebase() : callDebase;
+  };
+  debaser.debase = debase;
+
   window.debaser = debaser;
+  window.debase = debase;
 
 
 angular.module('decipher.debaser', [])
@@ -366,8 +459,11 @@ angular.module('decipher.debaser', [])
     });
 
   angular.module('decipher.debaser').factory('decipher.debaser.debaser',
-    ['$log', 'decipher.debaser.aspect', 'decipher.debaser.options',
-      function $debaserFactory($log, Aspect, options) {
+    ['$log', 'decipher.debaser.aspect', 'decipher.debaser.options', '$window',
+      function $debaserFactory($log, Aspect, options, $window) {
+
+        var beforeEach = $window.beforeEach,
+            default_name = options.default_name;
 
         /**
          * @name Debaser
@@ -376,22 +472,16 @@ angular.module('decipher.debaser', [])
          */
         var Debaser = function Debaser(name) {
           if (!angular.isString(name)) {
-            name = Debaser.DEFAULT_NAME;
+            name = options._default_name;
           }
           this.$name = name;
           this.$queue = [];
           this.$aspect('base');
-          if (name !== Debaser.DEFAULT_NAME) {
+          if (name !== default_name) {
             $log.debug('$debaser: created Debaser instance with name "' + name + '"');
           } else {
             $log.debug('$debaser: created singleton Debaser instance');
           }
-        };
-
-        Debaser.DEFAULT_NAME = '__default__';
-
-        Debaser.prototype.$config = function $config() {
-          return this.$$aspect.config;
         };
 
         Debaser.prototype.$aspect = function $aspect(name) {
@@ -435,12 +525,15 @@ angular.module('decipher.debaser', [])
         };
         Debaser.autoScopeProvider.$inject = ['$provide'];
 
-        Debaser.prototype.debase = function debase() {
+        Debaser.prototype.debase = function debase(opts) {
+          opts = opts || {};
           this.$enqueue();
           this.$queue.forEach(function (fn) {
             fn();
           });
-          this.$queue = [];
+          if (!opts.persist) {
+            this.$queue = [];
+          }
           this.$aspect('base');
           if (options.autoScope) {
             angular.mock.module(Debaser.autoScopeProvider);

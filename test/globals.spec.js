@@ -21,11 +21,10 @@
       expect(debaser.$$debasers).to.be.an('object');
     });
 
-    it('should register a singleton Debaser object', function () {
+    it('should not recycle Debaser instances within a spec', function () {
       var d = debaser();
-      expect(d).to.equal(debaser.$$debasers.__default__);
       expect(d).to.be.an('object');
-      expect(debaser()).to.equal(d);
+      expect(debaser()).to.not.equal(d);
     });
 
     it('should expose a global debase() function', function () {

@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  describe('modules', function () {
+  describe('multiple modules', function () {
 
     var marvin = 'marvin o\'gravel balloon face';
 
