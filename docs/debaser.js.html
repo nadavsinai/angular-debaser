@@ -39,6 +39,20 @@
 					</ul>
 				</li>
 				
+				<li class="dropdown">
+					<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="global.html#debaser">debaser</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
 			</ul>
 		</div>
 	</div>
@@ -57,95 +71,93 @@
 <section>
 	<article>
 		<pre
-			class="sunlight-highlight-javascript linenums">(function (angular) {
-  "use strict";
+			class="sunlight-highlight-javascript linenums">'use strict';
 
-  angular.module('decipher.debaser').factory('decipher.debaser.debaser',
-    ['$log', 'decipher.debaser.aspect', 'decipher.debaser.options',
-      function $debaserFactory($log, Aspect, options) {
+angular.module('decipher.debaser').factory('decipher.debaser.debaser',
+  ['$log', 'decipher.debaser.aspect', 'decipher.debaser.options', '$window',
+    function $debaserFactory($log, Aspect, options, $window) {
 
-        /**
-         * @name Debaser
-         * @param name
-         * @constructor
-         */
-        var Debaser = function Debaser(name) {
-          if (!angular.isString(name)) {
-            name = Debaser.DEFAULT_NAME;
-          }
-          this.$name = name;
+      var beforeEach = $window.beforeEach,
+          default_name = options.default_name;
+
+      /**
+       * @name Debaser
+       * @param name
+       * @constructor
+       */
+      var Debaser = function Debaser(name) {
+        if (!angular.isString(name)) {
+          name = options._default_name;
+        }
+        this.$name = name;
+        this.$queue = [];
+        this.$aspect('base');
+        if (name !== default_name) {
+          $log.debug('$debaser: created Debaser instance with name "' + name + '"');
+        } else {
+          $log.debug('$debaser: created singleton Debaser instance');
+        }
+      };
+
+      Debaser.prototype.$aspect = function $aspect(name) {
+        var current_aspect = this.$$aspect,
+            aspect,
+            proto;
+        if (angular.isUndefined(name)) {
+          name = current_aspect.name;
+        }
+        if (current_aspect) {
+          proto = current_aspect.proto;
+          Object.keys(proto).forEach(function (name) {
+            delete this[name];
+          }, this);
+        }
+        aspect = new Aspect(name, current_aspect);
+        angular.extend(this, aspect.proto);
+        this.$$aspect = aspect;
+        return aspect;
+      };
+
+      Debaser.prototype.$enqueue = function $enqueue() {
+        var current_aspect = this.$$aspect;
+        if (current_aspect) {
+          this.$queue.push.apply(this.$queue, current_aspect.flush());
+        }
+      };
+
+      Debaser.autoScopeProvider = function ($provide) {
+        $provide.decorator('$controller',
+          ['$rootScope', '$delegate', function ($rootScope, $delegate) {
+            return function (name, locals) {
+              locals = locals || {};
+              if (!locals.$scope) {
+                locals.$scope = $rootScope.$new();
+              }
+              $delegate(name, locals);
+              return locals.$scope;
+            };
+          }]);
+      };
+      Debaser.autoScopeProvider.$inject = ['$provide'];
+
+      Debaser.prototype.debase = function debase(opts) {
+        opts = opts || {};
+        this.$enqueue();
+        this.$queue.forEach(function (fn) {
+          fn();
+        });
+        if (!opts.persist) {
           this.$queue = [];
-          this.$aspect('base');
-          if (name !== Debaser.DEFAULT_NAME) {
-            $log('$debaser: created Debaser instance with name "' + name + '"');
-          } else {
-            $log('$debaser: created singleton Debaser instance');
-          }
-        };
+        }
+        this.$aspect('base');
+        if (options.autoScope) {
+          angular.mock.module(Debaser.autoScopeProvider);
+        }
+      };
 
-        Debaser.DEFAULT_NAME = '__default__';
+      return Debaser;
+    }]);
 
-        Debaser.prototype.$config = function $config() {
-          return this.$$aspect.config;
-        };
-
-        Debaser.prototype.$aspect = function $aspect(name) {
-          var current_aspect = this.$$aspect,
-              aspect,
-              proto;
-          if (angular.isUndefined(name)) {
-            name = current_aspect.name;
-          }
-          if (current_aspect) {
-            proto = current_aspect.proto;
-            Object.keys(proto).forEach(function (name) {
-              delete this[name];
-            }, this);
-          }
-          aspect = new Aspect(name, current_aspect);
-          angular.extend(this, aspect.proto);
-          this.$$aspect = aspect;
-          return aspect;
-        };
-
-        Debaser.prototype.$enqueue = function $enqueue() {
-          var current_aspect = this.$$aspect;
-          if (current_aspect) {
-            this.$queue.push.apply(this.$queue, current_aspect.flush());
-          }
-        };
-
-        Debaser.autoScopeProvider = function ($provide) {
-          $provide.decorator('$controller',
-            ['$rootScope', '$delegate', function ($rootScope, $delegate) {
-              return function (name, locals) {
-                locals = locals || {};
-                if (!locals.$scope) {
-                  locals.$scope = $rootScope.$new();
-                }
-                $delegate(name, locals);
-                return locals.$scope;
-              };
-            }]);
-        };
-        Debaser.autoScopeProvider.$inject = ['$provide'];
-
-        Debaser.prototype.debase = function debase() {
-          this.$enqueue();
-          this.$queue.forEach(function (fn) {
-            fn();
-          });
-          this.$queue = [];
-          this.$aspect('base');
-          if (options.autoScope) {
-            angular.mock.module(Debaser.autoScopeProvider);
-          }
-        };
-
-        return Debaser;
-      }]);
-
-})(window.angular);
 </pre>
 	</article>
 </section>
@@ -167,7 +179,7 @@
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
-		on Tue Jul 8th 2014 using the <a
+		on Tue Jul 15th 2014 using the <a
 			href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>

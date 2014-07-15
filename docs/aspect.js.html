@@ -39,6 +39,20 @@
 					</ul>
 				</li>
 				
+				<li class="dropdown">
+					<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="global.html#debaser">debaser</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
 			</ul>
 		</div>
 	</div>
@@ -57,155 +71,152 @@
 <section>
 	<article>
 		<pre
-			class="sunlight-highlight-javascript linenums">(function (angular) {
-  'use strict';
+			class="sunlight-highlight-javascript linenums">'use strict';
 
-  angular.module('decipher.debaser').factory('decipher.debaser.aspect',
-    ['decipher.debaser.superpowers', 'decipher.debaser.behavior',
-      function aspectFactory(superpowers, Behavior) {
+angular.module('decipher.debaser').factory('decipher.debaser.aspect',
+  ['decipher.debaser.superpowers', 'decipher.debaser.behavior',
+    function aspectFactory(superpowers, Behavior) {
 
-        var Aspect = function Aspect(name, parent) {
-          this.name = name;
-          this.parent = parent;
-          this._id = Aspect._id++;
-        };
+      var Aspect = function Aspect(name, parent) {
+        this.name = name;
+        this.parent = parent;
+        this._id = Aspect._id++;
+      };
 
-        Aspect._id = 0;
+      Aspect._id = 0;
 
-        Aspect._DEFAULT_NAME = 'base';
+      Aspect._DEFAULT_NAME = 'base';
 
-        Object.defineProperties(Aspect.prototype, {
-          name: {
-            get: function getName() {
-              return this._name;
-            },
-            set: function setName(name) {
-              this._dirty = this._isDirty(name, '_name');
-              this._name = name || Aspect._DEFAULT_NAME;
-            }
+      Object.defineProperties(Aspect.prototype, {
+        name: {
+          get: function getName() {
+            return this._name;
           },
-          parent: {
-            get: function getParent() {
-              return this._parent;
-            },
-            set: function setParent(parent) {
-              this._dirty = this._isDirty(parent, '_parent');
-              this._parent = parent;
-            }
+          set: function setName(name) {
+            this._dirty = this._isDirty(name, '_name');
+            this._name = name || Aspect._DEFAULT_NAME;
+          }
+        },
+        parent: {
+          get: function getParent() {
+            return this._parent;
           },
-          proto: {
-            get: function getProto() {
-              var dirty = this._dirty;
-              if (!this._proto || dirty) {
-                this._initProto();
-              }
-              this._dirty = false;
-              return this._proto;
-            },
-            set: function setProto(proto) {
-              this._proto = proto;
+          set: function setParent(parent) {
+            this._dirty = this._isDirty(parent, '_parent');
+            this._parent = parent;
+          }
+        },
+        proto: {
+          get: function getProto() {
+            var dirty = this._dirty;
+            if (!this._proto || dirty) {
+              this._initProto();
             }
+            this._dirty = false;
+            return this._proto;
           },
-          behavior: {
-            get: function getBehavior() {
-              var dirty = this._dirty;
-              if (!this._behavior || dirty) {
-                this._initBehavior();
-              }
-              this._dirty = false;
-              return this._behavior;
-            },
-            set: function setBehavior(behavior) {
-              this._behavior = behavior;
+          set: function setProto(proto) {
+            this._proto = proto;
+          }
+        },
+        behavior: {
+          get: function getBehavior() {
+            var dirty = this._dirty;
+            if (!this._behavior || dirty) {
+              this._initBehavior();
             }
+            this._dirty = false;
+            return this._behavior;
           },
-          config: {
-            get: function getConfig() {
-              return this.behavior.config;
-            },
-            set: function setConfig(config) {
-              this.behavior.config = config;
-            }
+          set: function setBehavior(behavior) {
+            this._behavior = behavior;
           }
-        });
-
-        Aspect.prototype._initProto = function _initProto() {
-          var o;
-          if (this._proto && !this._dirty) {
-            return;
+        },
+        config: {
+          get: function getConfig() {
+            return this.behavior.config;
+          },
+          set: function setConfig(config) {
+            this.behavior.config = config;
           }
-          o = {};
-          if (this.parent) {
-            angular.extend(o, this.parent.proto);
+        }
+      });
+
+      Aspect.prototype._initProto = function _initProto() {
+        var o;
+        if (this._proto && !this._dirty) {
+          return;
+        }
+        o = {};
+        if (this.parent) {
+          angular.extend(o, this.parent.proto);
+        }
+        angular.forEach(superpowers, function (fn, name) {
+          if (name.charAt(0) !== '$' &&
+            fn.$aspect.indexOf(this._name) !== -1) {
+            o[name] = this.createProxy(fn, name);
           }
-          angular.forEach(superpowers, function (fn, name) {
-            if (name.charAt(0) !== '$' &&
-              fn.$aspect.indexOf(this._name) !== -1) {
-              o[name] = this.createProxy(fn, name);
-            }
-          }, this);
-          this._proto = o;
-        };
+        }, this);
+        this._proto = o;
+      };
 
-        Aspect.prototype._initBehavior = function _initBehavior() {
-          if (this._behavior && !this._dirty) {
-            return;
+      Aspect.prototype._initBehavior = function _initBehavior() {
+        if (this._behavior && !this._dirty) {
+          return;
+        }
+        this._behavior = new Behavior(angular.extend(this._behavior || {},
+            this.parent && this.parent.isAspectOf(this.name) &&
+            this.parent.behavior), this.name);
+      };
+
+      Aspect.prototype.flush = function flush() {
+        return this.behavior.flush();
+      };
+
+      Aspect.prototype._isDirty = function _isDirty(value, prop) {
+        return (value && value !== this[prop]) || (!value && this[prop]);
+      };
+
+      Aspect.prototype.createProxy = function createProxy(fn, name) {
+        var proxy;
+        /**
+         * @this Debaser
+         * @returns {Debaser|*}
+         * @todo trim fat
+         */
+        proxy = function proxy() {
+          var current_aspect = this.$$aspect,
+              inherits = current_aspect.isAspectOf(name),
+              retval = this,
+              aspect,
+              result;
+
+          if (!inherits && current_aspect.name !== 'base') {
+            this.$enqueue();
           }
-          this._behavior = new Behavior(angular.extend(this._behavior || {},
-              this.parent && this.parent.isAspectOf(this.name) &&
-                this.parent.behavior), this.name);
+          aspect = this.$aspect(fn.$name || name);
+          result = fn.apply(aspect.config, arguments);
+
+          if (angular.isArray(result)) {
+            aspect.behavior.enqueue(result);
+          }
+          else if (result) {
+            retval = result;
+          }
+          return retval;
         };
+        return proxy;
+      };
+      Aspect.prototype.createProxy.cache = {};
 
-        Aspect.prototype.flush = function flush() {
-          return this.behavior.flush();
-        };
+      Aspect.prototype.isAspectOf = function isAspectOf(name) {
+        return name !== 'base' && superpowers[name] &&
+          superpowers[name].$aspect.indexOf(this.name) !== -1;
+      };
 
-        Aspect.prototype._isDirty = function _isDirty(value, prop) {
-          return (value && value !== this[prop]) || (!value && this[prop]);
-        };
-
-        Aspect.prototype.createProxy = function createProxy(fn, name) {
-          var proxy;
-          /**
-           * @this Debaser
-           * @returns {Debaser|*}
-           * @todo trim fat
-           */
-          proxy = function proxy() {
-            var current_aspect = this.$$aspect,
-                inherits = current_aspect.isAspectOf(name),
-                retval = this,
-                aspect,
-                result;
-
-            if (!inherits && current_aspect.name !== 'base') {
-              this.$enqueue();
-            }
-            aspect = this.$aspect(fn.$name || name);
-            result = fn.apply(aspect.config, arguments);
-
-            if (angular.isArray(result)) {
-              aspect.behavior.enqueue(result);
-            }
-            else if (result) {
-              retval = result;
-            }
-            return retval;
-          };
-          return proxy;
-        };
-        Aspect.prototype.createProxy.cache = {};
-
-        Aspect.prototype.isAspectOf = function isAspectOf(name) {
-          return name !== 'base' && superpowers[name] &&
-            superpowers[name].$aspect.indexOf(this.name) !== -1;
-        };
-
-        return Aspect;
-      }
-    ]);
-
-})(window.angular);
+      return Aspect;
+    }
+  ]);
 </pre>
 	</article>
 </section>
@@ -227,7 +238,7 @@
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
-		on Tue Jul 8th 2014 using the <a
+		on Tue Jul 15th 2014 using the <a
 			href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
