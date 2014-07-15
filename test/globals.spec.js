@@ -21,11 +21,10 @@
       expect(debaser.$$debasers).to.be.an('object');
     });
 
-    it('should register a singleton Debaser object', function () {
+    it('should not recycle Debaser instances within a spec', function () {
       var d = debaser();
-      expect(d).to.equal(debaser.$$debasers.__default__);
       expect(d).to.be.an('object');
-      expect(debaser()).to.equal(d);
+      expect(debaser()).to.not.equal(d);
     });
 
     it('should expose a global debase() function', function () {
@@ -51,21 +50,6 @@
       //noinspection JSUnusedAssignment
       expect(d.$name).to.equal('foo') &&
       expect(debaser.$$debasers.foo).to.equal(d);
-    });
-
-    it('should setup options', function () {
-      sandbox.spy(window.console, 'debug');
-      debaser({
-        debugEnabled: true
-      });
-      expect(window.console.debug).to.have.been.calledWith('$debaser: created singleton Debaser instance');
-    });
-
-    it('should setup options on a per-instance basis', function () {
-      sandbox.spy(window.console, 'debug');
-      debaser('foo', {debugEnabled: true});
-      debaser('bar', {debugEnabled: false});
-      expect(window.console.debug).to.have.been.calledOnce;
     });
 
     it('should return a named Debaser if it exists', function () {
