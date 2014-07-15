@@ -19,6 +19,7 @@
   "continuous": {
     "options": {
       "singleRun": true,
+      "port": 9876,
       "files": ["<%= test_deps %>", "<%= src_files %>", "<%= test_files %>"],
       "preprocessors": {
         "./lib/**/*.js": "coverage"
@@ -66,6 +67,7 @@
         "story",
         "coverage"
       ],
+      "port": 9877,
       "coverageReporter": {
         "reporters": [
           {
