@@ -10,15 +10,15 @@
     });
 
     afterEach(function () {
-      debaser.$$debasers = {};
+      debaser._debasers = {};
     });
 
     it('should exist', function () {
       expect(debaser).to.be.a('function');
     });
 
-    it('should expose a $$debasers object', function () {
-      expect(debaser.$$debasers).to.be.an('object');
+    it('should expose a _debasers object', function () {
+      expect(debaser._debasers).to.be.an('object');
     });
 
     it('should not recycle Debaser instances within a spec', function () {
@@ -49,7 +49,7 @@
       }).not.to.throw();
       //noinspection JSUnusedAssignment
       expect(d.$name).to.equal('foo') &&
-      expect(debaser.$$debasers.foo).to.equal(d);
+      expect(debaser._debasers.foo).to.equal(d);
     });
 
     it('should return a named Debaser if it exists', function () {
