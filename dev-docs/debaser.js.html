@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>angular-debaser Class: Debaser</title>
+	<title>angular-debaser Source: debaser.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -20,6 +20,20 @@
 		<div class="navbar-inner">
 			<a class="brand" href="index.html">angular-debaser</a>
 			<ul class="nav">
+				
+				<li class="dropdown">
+					<a href="namespaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Namespaces<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="globalHelpers.html">globalHelpers</a>
+						</li>
+						
+
+					</ul>
+				</li>
 				
 				<li class="dropdown">
 					<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b
@@ -54,6 +68,22 @@
 						</li>
 						
 						<li>
+							<a href="global.html#debaser._configure">debaser._configure</a>
+						</li>
+						
+						<li>
+							<a href="global.html#debaser._debasers">debaser._debasers</a>
+						</li>
+						
+						<li>
+							<a href="global.html#debaser._globalInstance">debaser._globalInstance</a>
+						</li>
+						
+						<li>
+							<a href="global.html#debaser._runConfig">debaser._runConfig</a>
+						</li>
+						
+						<li>
 							<a href="global.html#debaser.getInstance">debaser.getInstance</a>
 						</li>
 						
@@ -62,7 +92,7 @@
 						</li>
 						
 						<li>
-							<a href="global.html#debaser.runConfig">debaser.runConfig</a>
+							<a href="global.html#debaser~debaserSetup">debaser~debaserSetup</a>
 						</li>
 						
 
@@ -90,165 +120,108 @@
 	<div class="row-fluid">
 
 		
-		<div class="span8">
-			
+			<div class="span12">
+				
 				<div id="main">
 					
 
 
-	<h1 class="page-title">Class: Debaser</h1>
+		<h1 class="page-title">Source: debaser.js</h1>
+    
 <section>
+	<article>
+		<pre
+			class="sunlight-highlight-javascript linenums">'use strict';
 
-<header>
-    <h2>
-    Debaser
-    </h2>
-    
-</header>
+angular.module('decipher.debaser').factory('decipher.debaser.debaser',
+  ['$log', 'decipher.debaser.aspect', 'decipher.debaser.options', '$window',
+    function debaserFactory($log, Aspect, options, $window) {
 
-<article>
-    <div class="container-overview">
-    
+      var beforeEach = $window.beforeEach,
+          defaultName = options.defaultName;
 
-    
-        
-<dt>
-    <h4 class="name" id="Debaser"><span class="type-signature"></span>new Debaser<span class="signature">(name)</span><span class="type-signature"></span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
+      /**
+       * @name Debaser
+       * @param name
+       * @constructor
+       */
+      var Debaser = function Debaser(name) {
+        if (!angular.isString(name)) {
+          name = options.defaultName;
+        }
+        this.$name = name;
+        this.$queue = [];
+        this.$aspect('base');
+        if (name !== defaultName) {
+          $log.debug('$debaser: created Debaser instance with name "' + name + '"');
+        } else {
+          $log.debug('$debaser: created singleton Debaser instance');
+        }
+      };
 
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
+      Debaser.prototype.$aspect = function $aspect(name) {
+        var current_aspect = this.$$aspect,
+            aspect,
+            proto;
+        if (angular.isUndefined(name)) {
+          name = current_aspect.name;
+        }
+        if (current_aspect) {
+          proto = current_aspect.proto;
+          Object.keys(proto).forEach(function (name) {
+            delete this[name];
+          }, this);
+        }
+        aspect = new Aspect(name, current_aspect);
+        angular.extend(this, aspect.proto);
+        this.$$aspect = aspect;
+        return aspect;
+      };
 
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+      Debaser.prototype.$enqueue = function $enqueue() {
+        var current_aspect = this.$$aspect;
+        if (current_aspect) {
+          this.$queue.push.apply(this.$queue, current_aspect.flush());
+        }
+      };
 
-		<th>Type</th>
+      Debaser.autoScopeProvider = function ($provide) {
+        $provide.decorator('$controller',
+          ['$rootScope', '$delegate', function ($rootScope, $delegate) {
+            return function (name, locals) {
+              locals = locals || {};
+              if (!locals.$scope) {
+                locals.$scope = $rootScope.$new();
+              }
+              $delegate(name, locals);
+              return locals.$scope;
+            };
+          }]);
+      };
+      Debaser.autoScopeProvider.$inject = ['$provide'];
 
-		
+      Debaser.prototype.debase = function debase(opts) {
+        opts = opts || {};
+        this.$enqueue();
+        this.$queue.forEach(function (fn) {
+          fn();
+        });
+        if (!opts.persist) {
+          this.$queue = [];
+        }
+        this.$aspect('base');
+        if (options.autoScope) {
+          angular.mock.module(Debaser.autoScopeProvider);
+        }
+      };
 
-		
+      return Debaser;
+    }]);
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-
-            <td class="type">
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="debaser.js.html">debaser.js</a>,
-				 <a href="debaser.js.html#sunlight-1-line-10">line 10</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-</dd>
-
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
+</pre>
+	</article>
 </section>
+
 
 
 
@@ -272,10 +245,6 @@
 				</footer>
 			</div>
 
-			
-			<div class="span3">
-				<div id="toc"></div>
-			</div>
 			
 			<br clear="both">
 		</div>

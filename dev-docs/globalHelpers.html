@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>angular-debaser Class: Debaser</title>
+	<title>angular-debaser Namespace: globalHelpers</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -20,6 +20,20 @@
 		<div class="navbar-inner">
 			<a class="brand" href="index.html">angular-debaser</a>
 			<ul class="nav">
+				
+				<li class="dropdown">
+					<a href="namespaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Namespaces<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="globalHelpers.html">globalHelpers</a>
+						</li>
+						
+
+					</ul>
+				</li>
 				
 				<li class="dropdown">
 					<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b
@@ -54,6 +68,22 @@
 						</li>
 						
 						<li>
+							<a href="global.html#debaser._configure">debaser._configure</a>
+						</li>
+						
+						<li>
+							<a href="global.html#debaser._debasers">debaser._debasers</a>
+						</li>
+						
+						<li>
+							<a href="global.html#debaser._globalInstance">debaser._globalInstance</a>
+						</li>
+						
+						<li>
+							<a href="global.html#debaser._runConfig">debaser._runConfig</a>
+						</li>
+						
+						<li>
 							<a href="global.html#debaser.getInstance">debaser.getInstance</a>
 						</li>
 						
@@ -62,7 +92,7 @@
 						</li>
 						
 						<li>
-							<a href="global.html#debaser.runConfig">debaser.runConfig</a>
+							<a href="global.html#debaser~debaserSetup">debaser~debaserSetup</a>
 						</li>
 						
 
@@ -96,12 +126,12 @@
 					
 
 
-	<h1 class="page-title">Class: Debaser</h1>
+	<h1 class="page-title">Namespace: globalHelpers</h1>
 <section>
 
 <header>
     <h2>
-    Debaser
+    globalHelpers
     </h2>
     
 </header>
@@ -112,63 +142,89 @@
 
     
         
+            <div class="description"><p>Private functions to assist in setting up angular-debaser in a global context.</p></div>
+        
+
+        
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="globals.js.html">globals.js</a>,
+				 <a href="globals.js.html#sunlight-1-line-21">line 21</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        <dl>
+            
 <dt>
-    <h4 class="name" id="Debaser"><span class="type-signature"></span>new Debaser<span class="signature">(name)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="hasCurrentSpec"><span class="type-signature">&lt;static> </span>hasCurrentSpec<span class="signature">()</span><span class="type-signature"> &rarr; {boolean}</span></h4>
     
     
 </dt>
 <dd>
     
     
+    <div class="description">
+        <p>Whether or not we are currently running in a spec.</p>
+    </div>
+    
 
     
     
     
     
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-
-            <td class="type">
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
     
     
     
@@ -198,8 +254,104 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="debaser.js.html">debaser.js</a>,
-				 <a href="debaser.js.html#sunlight-1-line-10">line 10</a>
+				<a href="globals.js.html">globals.js</a>,
+				 <a href="globals.js.html#sunlight-1-line-54">line 54</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">boolean</span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="install"><span class="type-signature">&lt;static> </span>install<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Attaches <a href="global.html#debaser">debaser</a> and <a href="global.html#debase">debase</a> to the <code>window</code> object.
+Registers <code>setup()</code>/<code>teardown()</code> or <code>beforeEach()</code>/<code>afterEach()</code> functions to retrieve the current spec.</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="globals.js.html">globals.js</a>,
+				 <a href="globals.js.html#sunlight-1-line-34">line 34</a>
 			</li>
 		</ul>
 	</dd>
@@ -226,21 +378,124 @@
     
 </dd>
 
+        
+            
+<dt>
+    <h4 class="name" id="callDebase"><span class="type-signature">&lt;inner> </span>callDebase<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Debaser.html">Debaser</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Calls Debaser#debase with proper persistance options.  Unlike Debaser#debase, will return a <a href="Debaser.html">Debaser</a> instance.</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="globals.js.html">globals.js</a>,
+				 <a href="globals.js.html#sunlight-1-line-275">line 275</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    <h5>Throws:</h5>
+    <ul>
+            <li>
+
+    <div class="param-desc">
+    
+        Invalid <a href="Debaser.html">Debaser</a> name
     
     </div>
 
-    
+</li>
+        
+            <li>
 
+    <div class="param-desc">
     
-
+        If <a href="global.html#debaser">debaser</a> was never called
     
+    </div>
 
+</li>
+        </ul>
     
-
     
-
+    <h5>Returns:</h5>
     
+            
 
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="Debaser.html">Debaser</a></span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+</dd>
+
+        </dl>
     
 
     

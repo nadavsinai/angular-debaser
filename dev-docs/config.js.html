@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>angular-debaser Class: Debaser</title>
+	<title>angular-debaser Source: config.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -20,6 +20,20 @@
 		<div class="navbar-inner">
 			<a class="brand" href="index.html">angular-debaser</a>
 			<ul class="nav">
+				
+				<li class="dropdown">
+					<a href="namespaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Namespaces<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="globalHelpers.html">globalHelpers</a>
+						</li>
+						
+
+					</ul>
+				</li>
 				
 				<li class="dropdown">
 					<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b
@@ -54,6 +68,22 @@
 						</li>
 						
 						<li>
+							<a href="global.html#debaser._configure">debaser._configure</a>
+						</li>
+						
+						<li>
+							<a href="global.html#debaser._debasers">debaser._debasers</a>
+						</li>
+						
+						<li>
+							<a href="global.html#debaser._globalInstance">debaser._globalInstance</a>
+						</li>
+						
+						<li>
+							<a href="global.html#debaser._runConfig">debaser._runConfig</a>
+						</li>
+						
+						<li>
 							<a href="global.html#debaser.getInstance">debaser.getInstance</a>
 						</li>
 						
@@ -62,7 +92,7 @@
 						</li>
 						
 						<li>
-							<a href="global.html#debaser.runConfig">debaser.runConfig</a>
+							<a href="global.html#debaser~debaserSetup">debaser~debaserSetup</a>
 						</li>
 						
 
@@ -90,165 +120,89 @@
 	<div class="row-fluid">
 
 		
-		<div class="span8">
-			
+			<div class="span12">
+				
 				<div id="main">
 					
 
 
-	<h1 class="page-title">Class: Debaser</h1>
+		<h1 class="page-title">Source: config.js</h1>
+    
 <section>
+	<article>
+		<pre
+			class="sunlight-highlight-javascript linenums">'use strict';
 
-<header>
-    <h2>
-    Debaser
-    </h2>
-    
-</header>
+angular.module('decipher.debaser').factory('decipher.debaser.config',
+  function configFactory() {
 
-<article>
-    <div class="container-overview">
-    
+    /**
+     * @name Config
+     * @param o
+     * @constructor
+     * @param aspect_name
+     */
+    var Config = function Config(o, aspect_name) {
+      if (angular.isString(o)) {
+        aspect_name = o;
+      }
+      else {
+        angular.extend(this, o);
+      }
+      this._aspect_name = aspect_name;
+      this._callbacks = [];
+      this._cb_idx = 0;
+      this._id = Config._id++;
+      this.actions = this.actions || [];
+    };
 
-    
-        
-<dt>
-    <h4 class="name" id="Debaser"><span class="type-signature"></span>new Debaser<span class="signature">(name)</span><span class="type-signature"></span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
+    Config._id = 0;
 
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
+    Config.prototype.addAction = function addAction(opts) {
+      if (!opts) {
+        throw new Error('$debaser: addCall() expects call options');
+      }
+      opts.callback = opts.callback || this.runner();
+      opts.context =
+        angular.isDefined(opts.context) ? opts.context : opts.object || null;
+      this.actions.push(opts);
+    };
 
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    Config.prototype.next = function next() {
+      if (this._callbacks[this._cb_idx]) {
+        this._callbacks[this._cb_idx++].apply(this, arguments);
+      } else {
+        this.done();
+      }
+    };
 
-		<th>Type</th>
+    Config.prototype.done = function done() {
+      this._cb_idx = 0;
+    };
 
-		
+    Config.prototype.chain = function chain(fn) {
+      this._callbacks.push(function debaserCallbackProxy() {
+        this.next(fn.apply(this, arguments));
+      }.bind(this));
+    };
 
-		
+    Config.prototype.runner = function runner() {
+      return function run() {
+        this.next.apply(this, arguments);
+      }.bind(this);
+    };
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+    Config.prototype.isChained = function isChained() {
+      return !!this._callbacks.length;
+    };
 
-	<tbody>
-	
+    return Config;
 
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-
-            <td class="type">
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="debaser.js.html">debaser.js</a>,
-				 <a href="debaser.js.html#sunlight-1-line-10">line 10</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-</dd>
-
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
+  });
+</pre>
+	</article>
 </section>
+
 
 
 
@@ -272,10 +226,6 @@
 				</footer>
 			</div>
 
-			
-			<div class="span3">
-				<div id="toc"></div>
-			</div>
 			
 			<br clear="both">
 		</div>

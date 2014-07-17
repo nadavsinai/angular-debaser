@@ -22,6 +22,20 @@
 			<ul class="nav">
 				
 				<li class="dropdown">
+					<a href="namespaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Namespaces<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="globalHelpers.html">globalHelpers</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
 					<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b
 						class="caret"></b></a>
 
@@ -54,6 +68,22 @@
 						</li>
 						
 						<li>
+							<a href="global.html#debaser._configure">debaser._configure</a>
+						</li>
+						
+						<li>
+							<a href="global.html#debaser._debasers">debaser._debasers</a>
+						</li>
+						
+						<li>
+							<a href="global.html#debaser._globalInstance">debaser._globalInstance</a>
+						</li>
+						
+						<li>
+							<a href="global.html#debaser._runConfig">debaser._runConfig</a>
+						</li>
+						
+						<li>
 							<a href="global.html#debaser.getInstance">debaser.getInstance</a>
 						</li>
 						
@@ -62,7 +92,7 @@
 						</li>
 						
 						<li>
-							<a href="global.html#debaser.runConfig">debaser.runConfig</a>
+							<a href="global.html#debaser~debaserSetup">debaser~debaserSetup</a>
 						</li>
 						
 
@@ -164,8 +194,150 @@
 
         <dl>
             
-<dt class="name" id="debaser.runConfig">
-    <h4><span class="type-signature">&lt;protected> </span>debaser.runConfig<span class="type-signature"> :Object.&lt;String, <a href="Config.html">Config</a>></span></h4>
+<dt class="name" id="debaser._debasers">
+    <h4><span class="type-signature">&lt;private> </span>debaser._debasers<span class="type-signature"> :Object.&lt;String, <a href="Debaser.html">Debaser</a>></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Mapping of Debaser#names to <a href="Debaser.html">Debaser</a> instances, for potential retrieval later.</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">Object.&lt;String, <a href="Debaser.html">Debaser</a>></span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="globals.js.html">globals.js</a>,
+				 <a href="globals.js.html#sunlight-1-line-223">line 223</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<dt class="name" id="debaser._globalInstance">
+    <h4><span class="type-signature">&lt;private, nullable> </span>debaser._globalInstance<span class="type-signature"> :<a href="Debaser.html">Debaser</a></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Default instance if we are not running in a spec; presumably created in a <code>before()</code> block.</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type"><a href="Debaser.html">Debaser</a></span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="globals.js.html">globals.js</a>,
+				 <a href="globals.js.html#sunlight-1-line-241">line 241</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<dt class="name" id="debaser._runConfig">
+    <h4><span class="type-signature">&lt;private> </span>debaser._runConfig<span class="type-signature"> :Object.&lt;String, <a href="Config.html">Config</a>></span></h4>
 
     
 </dt>
@@ -216,7 +388,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="globals.js.html">globals.js</a>,
-				 <a href="globals.js.html#sunlight-1-line-226">line 226</a>
+				 <a href="globals.js.html#sunlight-1-line-232">line 232</a>
 			</li>
 		</ul>
 	</dd>
@@ -349,7 +521,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="globals.js.html">globals.js</a>,
-				 <a href="globals.js.html#sunlight-1-line-266">line 266</a>
+				 <a href="globals.js.html#sunlight-1-line-272">line 272</a>
 			</li>
 		</ul>
 	</dd>
@@ -584,7 +756,7 @@ multiple instances.  If omitted, this is considered the <code>opts</code> parame
 		<ul class="dummy">
 			<li>
 				<a href="globals.js.html">globals.js</a>,
-				 <a href="globals.js.html#sunlight-1-line-131">line 131</a>
+				 <a href="globals.js.html#sunlight-1-line-105">line 105</a>
 			</li>
 		</ul>
 	</dd>
@@ -645,6 +817,162 @@ var d = debaser(&#x27;foo&#x27;, {
 });</pre>
 
 
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="debaser._configure"><span class="type-signature">&lt;private> </span>debaser._configure<span class="signature">(<span class="optional">options</span>)</span><span class="type-signature"> &rarr; {<a href="global.html#debaser~debaserSetup">debaser~debaserSetup</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Provides an anonymous AngularJS module to set up some initial values before module:decipher.debaser is bootstrapped.</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+		<th>Argument</th>
+		
+
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#DebaserOptions">DebaserOptions</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Override <a href="global.html#DebaserOptions">DebaserOptions</a> with this object.</p></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="globals.js.html">globals.js</a>,
+				 <a href="globals.js.html#sunlight-1-line-168">line 168</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="global.html#debaser~debaserSetup">debaser~debaserSetup</a></span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
     
 </dd>
 
@@ -746,7 +1074,7 @@ var d = debaser(&#x27;foo&#x27;, {
 		<ul class="dummy">
 			<li>
 				<a href="globals.js.html">globals.js</a>,
-				 <a href="globals.js.html#sunlight-1-line-194">line 194</a>
+				 <a href="globals.js.html#sunlight-1-line-200">line 200</a>
 			</li>
 		</ul>
 	</dd>
@@ -885,7 +1213,7 @@ var d = debaser(&#x27;foo&#x27;, {
 		<ul class="dummy">
 			<li>
 				<a href="globals.js.html">globals.js</a>,
-				 <a href="globals.js.html#sunlight-1-line-206">line 206</a>
+				 <a href="globals.js.html#sunlight-1-line-212">line 212</a>
 			</li>
 		</ul>
 	</dd>
@@ -931,6 +1259,185 @@ var d = debaser(&#x27;foo&#x27;, {
     
 </dd>
 
+        
+            
+<dt>
+    <h4 class="name" id="debaser~debaserSetup"><span class="type-signature">&lt;private> </span>debaser~debaserSetup<span class="signature">($provide)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Provides two constants, <code>decipher.debaser.options</code>, which is set to a <a href="global.html#DebaserOptions">DebaserOptions</a>
+object when calling <a href="global.html#debaser">debaser</a>; and <code>decipher.debaser._runConfig</code> which is internal data
+to be used when calling <a href="global.html#debase">debase</a> or Debaser#debase.</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>$provide</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">auto.$provide</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p><a href="https://code.angularjs.org/1.2.20/docs/api/auto/service/$provide.html">auto.$provide docs</a></p></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+	
+
+	<h5 class="subsection-title">Properties:</h5>
+
+	<dl>
+
+<table class="props table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>$inject</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Annotation">Annotation</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+</dl>
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="globals.js.html">globals.js</a>,
+				 <a href="globals.js.html#sunlight-1-line-171">line 171</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
         </dl>
     
 
@@ -938,6 +1445,77 @@ var d = debaser(&#x27;foo&#x27;, {
         <h3 class="subsection-title">Type Definitions</h3>
 
         <dl>
+                
+<dt class="name" id="Annotation">
+    <h4>Annotation</h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Annotation for AngularJS factories.</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">Array.&lt;String></span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="globals.js.html">globals.js</a>,
+				 <a href="globals.js.html#sunlight-1-line-10">line 10</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+            
                 
 <dt class="name" id="DebaserOptions">
     <h4>DebaserOptions</h4>

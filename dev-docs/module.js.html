@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>angular-debaser Class: Debaser</title>
+	<title>angular-debaser Source: module.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -20,6 +20,20 @@
 		<div class="navbar-inner">
 			<a class="brand" href="index.html">angular-debaser</a>
 			<ul class="nav">
+				
+				<li class="dropdown">
+					<a href="namespaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Namespaces<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="globalHelpers.html">globalHelpers</a>
+						</li>
+						
+
+					</ul>
+				</li>
 				
 				<li class="dropdown">
 					<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b
@@ -54,6 +68,22 @@
 						</li>
 						
 						<li>
+							<a href="global.html#debaser._configure">debaser._configure</a>
+						</li>
+						
+						<li>
+							<a href="global.html#debaser._debasers">debaser._debasers</a>
+						</li>
+						
+						<li>
+							<a href="global.html#debaser._globalInstance">debaser._globalInstance</a>
+						</li>
+						
+						<li>
+							<a href="global.html#debaser._runConfig">debaser._runConfig</a>
+						</li>
+						
+						<li>
 							<a href="global.html#debaser.getInstance">debaser.getInstance</a>
 						</li>
 						
@@ -62,7 +92,7 @@
 						</li>
 						
 						<li>
-							<a href="global.html#debaser.runConfig">debaser.runConfig</a>
+							<a href="global.html#debaser~debaserSetup">debaser~debaserSetup</a>
 						</li>
 						
 
@@ -90,165 +120,52 @@
 	<div class="row-fluid">
 
 		
-		<div class="span8">
-			
+			<div class="span12">
+				
 				<div id="main">
 					
 
 
-	<h1 class="page-title">Class: Debaser</h1>
+		<h1 class="page-title">Source: module.js</h1>
+    
 <section>
+	<article>
+		<pre
+			class="sunlight-highlight-javascript linenums">'use strict';
 
-<header>
-    <h2>
-    Debaser
-    </h2>
-    
-</header>
+/**
+ * @name decipher.debaser
+ * @description
+ *
+ * This is the main module for angular-debaser.  You are unlikely to interface
+ * with this module directly.
+ */
+angular.module('decipher.debaser', [])
 
-<article>
-    <div class="container-overview">
-    
+/**
+ * @name decipher.debaser._runConfig
+ * @memberof decipher.debaser
+ * @type Object
+ */
+  .constant('decipher.debaser.runConfig', window.debaser._runConfig)
+  .config(['decipher.debaser.options', '$logProvider', '$provide',
+    function config(options, $logProvider, $provide) {
+      // older versions of angular-mocks do not implement this function.
+      if (angular.isFunction($logProvider.debugEnabled)) {
+        $logProvider.debugEnabled(options.debugEnabled);
+      }
+      // likewise, maybe no debug() either
+      $provide.decorator('$log', ['$delegate', function ($delegate) {
+        $delegate.debug = $delegate.debug || options.debugEnabled ? $delegate.log : angular.noop;
+        return $delegate;
+      }]);
+    }
+  ]);
 
-    
-        
-<dt>
-    <h4 class="name" id="Debaser"><span class="type-signature"></span>new Debaser<span class="signature">(name)</span><span class="type-signature"></span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-
-            <td class="type">
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="debaser.js.html">debaser.js</a>,
-				 <a href="debaser.js.html#sunlight-1-line-10">line 10</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-</dd>
-
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
+</pre>
+	</article>
 </section>
+
 
 
 
@@ -272,10 +189,6 @@
 				</footer>
 			</div>
 
-			
-			<div class="span3">
-				<div id="toc"></div>
-			</div>
 			
 			<br clear="both">
 		</div>

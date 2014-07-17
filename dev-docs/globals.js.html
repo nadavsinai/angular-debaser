@@ -22,6 +22,20 @@
 			<ul class="nav">
 				
 				<li class="dropdown">
+					<a href="namespaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Namespaces<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="globalHelpers.html">globalHelpers</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
 					<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b
 						class="caret"></b></a>
 
@@ -54,6 +68,22 @@
 						</li>
 						
 						<li>
+							<a href="global.html#debaser._configure">debaser._configure</a>
+						</li>
+						
+						<li>
+							<a href="global.html#debaser._debasers">debaser._debasers</a>
+						</li>
+						
+						<li>
+							<a href="global.html#debaser._globalInstance">debaser._globalInstance</a>
+						</li>
+						
+						<li>
+							<a href="global.html#debaser._runConfig">debaser._runConfig</a>
+						</li>
+						
+						<li>
 							<a href="global.html#debaser.getInstance">debaser.getInstance</a>
 						</li>
 						
@@ -62,7 +92,7 @@
 						</li>
 						
 						<li>
-							<a href="global.html#debaser.runConfig">debaser.runConfig</a>
+							<a href="global.html#debaser~debaserSetup">debaser~debaserSetup</a>
 						</li>
 						
 
@@ -125,7 +155,7 @@
  * @description Private functions to assist in setting up angular-debaser in a global context.
  * @namespace globalHelpers
  * @private
- * @type {{install: install, hasCurrentSpec: hasCurrentSpec, DEFAULT_OPTS: {debugEnabled: boolean, autoScope: boolean, skipConfigs: boolean, defaultName: string}, configure: configure}}
+ * @type {{install: install, hasCurrentSpec: hasCurrentSpec, DEFAULT_OPTS: {debugEnabled: boolean, autoScope: boolean, skipConfigs: boolean, defaultName: string}}}
  */
 var globalHelpers = {
 
@@ -172,32 +202,6 @@ var globalHelpers = {
     autoScope: true,
     skipConfigs: true,
     defaultName: '__default__'
-  },
-
-  /**
-   * @description Provides an anonymous AngularJS module to set up some initial values before {@link module:decipher.debaser} is bootstrapped.
-   * @param {DebaserOptions} [options] Override {@link DebaserOptions} with this object.
-   * @returns {globalHelpers~debaserSetup}
-   */
-  configure: function configure(options) {
-    /**
-     * @name globalHelpers~debaserSetup
-     * @description
-     * Provides two constants, `decipher.debaser.options`, which is set to a {@link DebaserOptions}
-     * object when calling {@link debaser}; and `decipher.debaser.runConfig` which is internal data
-     * to be used when calling {@link debase} or {@link Debaser#debase}.
-     * @param {auto.$provide} $provide {@link https://code.angularjs.org/1.2.20/docs/api/auto/service/$provide.html|auto.$provide docs}
-     * @property {Annotation} $inject
-     * @memberof globalHelpers
-     * @function
-     */
-    var debaserSetup = function debaserSetup($provide) {
-      $provide.constant('decipher.debaser.options',
-        angular.extend({}, globalHelpers.DEFAULT_OPTS, options));
-      $provide.constant('decipher.debaser.runConfig', debaser.runConfig);
-    };
-    debaserSetup.$inject = ['$provide'];
-    return debaserSetup;
   }
 
 },
@@ -250,7 +254,7 @@ debaser = function debaser(name, options) {
   }
 
   opts = opts || {};
-  debaserSetup = globalHelpers.configure(opts);
+  debaserSetup = debaser._configure(opts);
 
   // bootstrap the debaserSetup and decipher.debaser module, so we can get to the debaserFactory.
   angular.mock.module(debaserSetup, 'decipher.debaser');
@@ -284,6 +288,38 @@ debaser = function debaser(name, options) {
   debaser._globalInstance = !globalHelpers.hasCurrentSpec() ? instance : null;
 
   return instance;
+};
+
+/**
+ * @description Provides an anonymous AngularJS module to set up some initial values before {@link module:decipher.debaser} is bootstrapped.
+ * @param {DebaserOptions} [options] Override {@link DebaserOptions} with this object.
+ * @global
+ * @private
+ * @memberof! debaser
+ * @returns {debaser~debaserSetup}
+ */
+debaser._configure = function _configure(options) {
+  var runConfig = debaser._runConfig;
+
+  /**
+   * @description
+   * Provides two constants, `decipher.debaser.options`, which is set to a {@link DebaserOptions}
+   * object when calling {@link debaser}; and `decipher.debaser._runConfig` which is internal data
+   * to be used when calling {@link debase} or {@link Debaser#debase}.
+   * @param {auto.$provide} $provide {@link https://code.angularjs.org/1.2.20/docs/api/auto/service/$provide.html|auto.$provide docs}
+   * @property {Annotation} $inject
+   * @memberof! debaser~
+   * @private
+   * @function debaser~debaserSetup
+   * @global
+   */
+  var debaserSetup = function debaserSetup($provide) {
+    $provide.constant('decipher.debaser.options',
+      angular.extend({}, globalHelpers.DEFAULT_OPTS, options));
+    $provide.constant('decipher.debaser.runConfig', debaser._runConfig);
+  };
+  debaserSetup.$inject = ['$provide'];
+  return debaserSetup;
 };
 
 /**
@@ -322,11 +358,11 @@ debaser._debasers = {};
 /**
  * @description Run configurations.  Mapping of {@link Config#_id} to {@link Config} objects.
  * @global
- * @protected
+ * @private
  * @memberof! debaser
  * @type {Object.&lt;String,Config>}
  */
-debaser.runConfig = {};
+debaser._runConfig = {};
 
 /**
  * @description Default instance if we are not running in a spec; presumably created in a `before()` block.
@@ -404,7 +440,6 @@ debase = function debase(name) {
 
   return globalHelpers.hasCurrentSpec() ? callDebase() : callDebase;
 };
-debaser.debase = debase;
 
 globalHelpers.install();
 </pre>
