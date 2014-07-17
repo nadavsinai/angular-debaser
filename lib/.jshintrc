@@ -14,6 +14,5 @@
   "expr": true,
   "newcap": false,
   "predef": ["angular", "sinon"],
-  "maxlen": 100,
   "globalstrict": true
 }

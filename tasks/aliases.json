@@ -28,6 +28,10 @@
   ],
   "docs": [
     "clean:docs", 
-    "jsdoc"
+    "jsdoc:main"
+  ],
+  "dev-docs": [
+    "clean:dev-docs",
+    "jsdoc:dev"
   ]
 }

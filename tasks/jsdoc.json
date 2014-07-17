@@ -1,11 +1,19 @@
 {
-  "all": {
+  "options": {
+    "template": "./node_modules/grunt-jsdoc/node_modules/ink-docstrap/template/",
+    "configure": "./jsdoc.conf.json"
+  },
+  "main": {
     "src": ["README.md", "lib/*.js"],
     "dest": "./docs/",
+    "jsdoc": "./node_modules/.bin/jsdoc",
     "options": {
-      "template": "./node_modules/grunt-jsdoc/node_modules/ink-docstrap/template/",
-      "configure": "./docs/jsdoc.conf.json"
+      "private": false
     }
-
+  },
+  "dev": {
+    "src": ["README.md", "lib/*.js"],
+    "jsdoc": "./node_modules/.bin/jsdoc",
+    "dest": "./dev-docs/"
   }
 }

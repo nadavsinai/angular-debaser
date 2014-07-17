@@ -1,3 +1,14 @@
 {
-  "docs": ["./docs/*.html", "./docs/styles/", "./docs/scripts/", "./docs/img/"]
+  "docs": [
+    "./docs/*.html",
+    "./docs/styles/",
+    "./docs/scripts/",
+    "./docs/img/"
+  ],
+  "dev-docs": [
+    "./dev-docs/*.html",
+    "./dev-docs/styles/",
+    "./dev-docs/scripts/",
+    "./dev-docs/img/"
+  ]
 }

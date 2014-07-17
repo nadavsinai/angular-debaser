@@ -20,5 +20,13 @@
     "tasks": [
       "karma:scratch:run"
     ]
+  },
+  "dev-docs": {
+    "files": [
+      "<%= src_files %>"
+    ],
+    "tasks": [
+      "dev-docs"
+    ]
   }
 }
