@@ -1,14 +1,25 @@
 'use strict';
 
-var HEADER = '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
-        '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-        '<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
-        '* Copyright (c) <%= grunt.template.today("yyyy") %> Decipher, Inc.;' +
-        ' Licensed <%= pkg.license %> */';
-
 module.exports = function (grunt) {
 
   var path = require('path'),
+
+      MIN_HEADER = '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
+        '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
+        '<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
+        '* Copyright (c) <%= grunt.template.today("yyyy") %> Decipher, Inc.;' +
+        ' Licensed <%= pkg.license %> */',
+
+      MAIN_HEADER = '/**\n' +
+        ' * @file **{@link <%= pkg.homepage %>|<%= pkg.name %>}** - *<%= pkg.description %>*\n' +
+        ' * @version <%= pkg.version %> (<%= grunt.template.today(\'yyyy-mm-dd\') %>)\n' +
+        ' * @copyright <%= grunt.template.today(\'yyyy\') %> Decipher, Inc.\n' +
+        ' * @license <%= pkg.license %>\n' +
+        ' */\n' +
+        '/**\n' +
+        ' * @module decipher.debaser\n' +
+        ' */\n',
+
       pkg = grunt.file.readJSON(path.join(__dirname, 'package.json'));
 
   require('time-grunt')(grunt);
@@ -17,10 +28,11 @@ module.exports = function (grunt) {
     configPath: path.join(__dirname, 'tasks'),
     data: {
       pkg: pkg,
-      banner: HEADER +
-        '\n\n(function (window, angular) {\n' +
+      banner: MAIN_HEADER +
+        '\n(function (window, angular) {\n' +
         '  \'use strict\';\n\n',
-      banner_min: HEADER,
+      banner_min: MIN_HEADER,
+      banner_docs: MAIN_HEADER,
       footer: '})(window, window.angular);',
       src_files: [
         './lib/globals.js',
@@ -38,6 +50,11 @@ module.exports = function (grunt) {
       test_deps_unstable: [
         './support/angular-unstable/angular.js',
         './support/angular-mocks-unstable/angular-mocks.js'
+      ],
+      task_files: [
+        './Gruntfile.js',
+        'tasks/*.js',
+        'package.json'
       ]
     }
   });

@@ -6,7 +6,7 @@
     var Debaser,
         $log;
 
-    beforeEach(inject(['decipher.debaser.debaser', '$log', function (_Debaser_, _$log_) {
+    beforeEach(inject(['debaserDebaser', '$log', function (_Debaser_, _$log_) {
       Debaser = _Debaser_;
       $log = _$log_;
     }]));
@@ -30,7 +30,7 @@
 
         var d, Aspect;
 
-        beforeEach(inject(['decipher.debaser.aspect', function (_Aspect_) {
+        beforeEach(inject(['debaserAspect', function (_Aspect_) {
           d = new Debaser('$aspect');
           Aspect = _Aspect_;
         }]));

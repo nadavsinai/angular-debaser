@@ -2,16 +2,18 @@
 
 module.exports = function () {
   return {
+    options: {
+      stripBanners: false
+    },
     dist: {
       options: {
         banner: '<%= banner %>',
         footer: '<%= footer %>',
-        stripBanners: true,
         process: function (src) {
           return src
-            .replace(/(^|\n)[ \t]*'use strict';?\s*/g, '$1')
+            .replace(/(^|\n)[ \t]*'use strict';\s*/g, '$1')
             .split('\n')
-            .map(function(line) {
+            .map(function (line) {
               return line ? '  ' + line : line;
             })
             .join('\n');
@@ -19,6 +21,20 @@ module.exports = function () {
       },
       src: '<%= src_files %>',
       dest: '<%= pkg.main %>'
+    },
+    docs: {
+      options: {
+        banner: '<%= banner_docs %>'
+      },
+      src: '<%= src_files %>',
+      dest: './build/docs/<%= pkg.main %>'
+    },
+    'dev-docs': {
+      options: {
+        banner: '<%= banner_docs %>'
+      },
+      src: '<%= src_files %>',
+      dest: './build/dev-docs/<%= pkg.main %>'
     }
   };
 };

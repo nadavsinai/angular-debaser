@@ -22,17 +22,49 @@
 			<ul class="nav">
 				
 				<li class="dropdown">
+					<a href="namespaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Namespaces<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="window.debaser.html">window.debaser</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
+					<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="debaser.html">decipher.debaser</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
 					<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b
 						class="caret"></b></a>
 
 					<ul class="dropdown-menu ">
 						
 						<li>
-							<a href="Config.html">Config</a>
+							<a href="decipher.debaser.loadAction.html">decipher.debaser.loadAction</a>
 						</li>
 						
 						<li>
-							<a href="Debaser.html">Debaser</a>
+							<a href="debaser.Config.html">decipher.debaser.Config</a>
+						</li>
+						
+						<li>
+							<a href="loadAction.Action.html">loadAction.Action</a>
 						</li>
 						
 
@@ -46,23 +78,7 @@
 					<ul class="dropdown-menu ">
 						
 						<li>
-							<a href="global.html#debase">debase</a>
-						</li>
-						
-						<li>
 							<a href="global.html#debaser">debaser</a>
-						</li>
-						
-						<li>
-							<a href="global.html#debaser.getInstance">debaser.getInstance</a>
-						</li>
-						
-						<li>
-							<a href="global.html#debaser.hasInstance">debaser.hasInstance</a>
-						</li>
-						
-						<li>
-							<a href="global.html#debaser.runConfig">debaser.runConfig</a>
 						</li>
 						
 
@@ -160,81 +176,6 @@
     
 
     
-        <h3 class="subsection-title">Members</h3>
-
-        <dl>
-            
-<dt class="name" id="debaser.runConfig">
-    <h4><span class="type-signature">&lt;protected> </span>debaser.runConfig<span class="type-signature"> :Object.&lt;String, <a href="Config.html">Config</a>></span></h4>
-
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        <p>Run configurations.  Mapping of Config#_id to {@link Config} objects.</p>
-    </div>
-    
-
-    
-        <h5>Type:</h5>
-        <ul>
-            <li>
-                
-<span class="param-type">Object.&lt;String, <a href="Config.html">Config</a>></span>
-
-
-            </li>
-        </ul>
-    
-
-    
-<dl class="details">
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="globals.js.html">globals.js</a>,
-				 <a href="globals.js.html#sunlight-1-line-226">line 226</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-</dd>
-
-        </dl>
-    
 
     
         <h3 class="subsection-title">Methods</h3>
@@ -242,7 +183,7 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="debase"><span class="type-signature"></span>debase<span class="signature">(<span class="optional">name</span>)</span><span class="type-signature"> &rarr; {<a href="globalHelpers.html#callDebase">globalHelpers~callDebase</a>|<a href="Debaser.html">Debaser</a>}</span></h4>
+    <h4 class="name" id="debaser"><span class="type-signature"></span>debaser<span class="signature">(<span class="optional">name</span>, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {Debaser}</span></h4>
     
     
 </dt>
@@ -250,191 +191,7 @@
     
     
     <div class="description">
-        <p>Convenience method.  Retrieves the default instance (whatever that may be) and runs <code>debase()</code> on it.</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-		<th>Argument</th>
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>Name of <a href="Debaser.html">Debaser</a> instance to call Debaser#debase upon.</p></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="globals.js.html">globals.js</a>,
-				 <a href="globals.js.html#sunlight-1-line-266">line 266</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type"><a href="globalHelpers.html#callDebase">globalHelpers~callDebase</a></span>
-|
-
-<span class="param-type"><a href="Debaser.html">Debaser</a></span>
-
-
-	</dd>
-</dl>
-
-
-        
-    
-    
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">before(function() {
-  debaser()
-    .func(&#x27;foo&#x27;)
-    .object(&#x27;bar&#x27;)
-});
-
-beforeEach(debase);
-
-// above equivalent to:
-
-var d;
-before(function() {
-  d = debaser()
-    .func(&#x27;foo&#x27;)
-    .object(&#x27;bar&#x27;)
-});
-
-beforeEach(function() {
-  d.debase();
-});</pre>
-
-
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="debaser"><span class="type-signature"></span>debaser<span class="signature">(<span class="optional">name</span>, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {<a href="Debaser.html">Debaser</a>}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        <p>Provides a <a href="Debaser.html">Debaser</a> object with which you can stub dependencies easily.</p>
+        <p>Provides a Debaser object with which you can stub dependencies easily.</p>
     </div>
     
 
@@ -583,8 +340,8 @@ multiple instances.  If omitted, this is considered the <code>opts</code> parame
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="globals.js.html">globals.js</a>,
-				 <a href="globals.js.html#sunlight-1-line-131">line 131</a>
+				<a href="debaser.js.html">/Volumes/samara/projects/boneskull/angular-debaser/build/docs/debaser.js</a>,
+				 <a href="debaser.js.html#sunlight-1-line-98">line 98</a>
 			</li>
 		</ul>
 	</dd>
@@ -618,7 +375,7 @@ multiple instances.  If omitted, this is considered the <code>opts</code> parame
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="Debaser.html">Debaser</a></span>
+<span class="param-type">Debaser</span>
 
 
 	</dd>
@@ -648,289 +405,6 @@ var d = debaser(&#x27;foo&#x27;, {
     
 </dd>
 
-        
-            
-<dt>
-    <h4 class="name" id="debaser.getInstance"><span class="type-signature">&lt;protected> </span>debaser.getInstance<span class="signature">(name)</span><span class="type-signature"> &rarr; {<a href="Debaser.html">Debaser</a>}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        <p>Retrieve an existing Debaser instance by name.</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Name of instance</p></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="globals.js.html">globals.js</a>,
-				 <a href="globals.js.html#sunlight-1-line-194">line 194</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type"><a href="Debaser.html">Debaser</a></span>
-
-
-	</dd>
-</dl>
-
-
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="debaser.hasInstance"><span class="type-signature">&lt;protected> </span>debaser.hasInstance<span class="signature">(name)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        <p>Whether or not an instance with name exists.</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-
-            <td class="type">
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="globals.js.html">globals.js</a>,
-				 <a href="globals.js.html#sunlight-1-line-206">line 206</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">boolean</span>
-
-
-	</dd>
-</dl>
-
-
-        
-    
-    
-</dd>
-
         </dl>
     
 
@@ -956,7 +430,7 @@ var d = debaser(&#x27;foo&#x27;, {
         <ul>
             <li>
                 
-<span class="param-type">Object</span>
+<span class="param-type">object</span>
 
 
             </li>
@@ -1114,7 +588,7 @@ var d = debaser(&#x27;foo&#x27;, {
             <td class="type">
             
                 
-<span class="param-type">String</span>
+<span class="param-type">string</span>
 
 
             
@@ -1171,8 +645,8 @@ var d = debaser(&#x27;foo&#x27;, {
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="globals.js.html">globals.js</a>,
-				 <a href="globals.js.html#sunlight-1-line-58">line 58</a>
+				<a href="debaser.js.html">/Volumes/samara/projects/boneskull/angular-debaser/build/docs/debaser.js</a>,
+				 <a href="debaser.js.html#sunlight-1-line-28">line 28</a>
 			</li>
 		</ul>
 	</dd>
@@ -1213,7 +687,7 @@ var d = debaser(&#x27;foo&#x27;, {
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha9</a>
-		on Thu Jul 17th 2014 using the <a
+		on Sat Jul 19th 2014 using the <a
 			href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>

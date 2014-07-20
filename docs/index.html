@@ -22,17 +22,49 @@
 			<ul class="nav">
 				
 				<li class="dropdown">
+					<a href="namespaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Namespaces<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="window.debaser.html">window.debaser</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
+					<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="debaser.html">decipher.debaser</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
 					<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b
 						class="caret"></b></a>
 
 					<ul class="dropdown-menu ">
 						
 						<li>
-							<a href="Config.html">Config</a>
+							<a href="decipher.debaser.loadAction.html">decipher.debaser.loadAction</a>
 						</li>
 						
 						<li>
-							<a href="Debaser.html">Debaser</a>
+							<a href="debaser.Config.html">decipher.debaser.Config</a>
+						</li>
+						
+						<li>
+							<a href="loadAction.Action.html">loadAction.Action</a>
 						</li>
 						
 
@@ -46,23 +78,7 @@
 					<ul class="dropdown-menu ">
 						
 						<li>
-							<a href="global.html#debase">debase</a>
-						</li>
-						
-						<li>
 							<a href="global.html#debaser">debaser</a>
-						</li>
-						
-						<li>
-							<a href="global.html#debaser.getInstance">debaser.getInstance</a>
-						</li>
-						
-						<li>
-							<a href="global.html#debaser.hasInstance">debaser.hasInstance</a>
-						</li>
-						
-						<li>
-							<a href="global.html#debaser.runConfig">debaser.runConfig</a>
 						</li>
 						
 
@@ -424,7 +440,7 @@
 </blockquote>
 <pre class="prettyprint source lang-js"><code>  .debase();</code></pre><p>Think of everything before this as simply items going into a bucket.  When you execute <code>debase()</code>, you tip the bucket and <em>magic</em> pours out.</p>
 <p>Simply, once you are done configuring your stubs, execute <code>debase()</code>.</p>
-<pre class="prettyprint source lang-js"><code>var scope = $controller('AdminDashboardCtrl');</code></pre><p>It's common to simply call <code>$rootScope.$new()</code> in a <code>beforeEach()</code> block and hand that Scope to the <code>$controller</code> function.  There's an option (<strong>on</strong> by default) <code>auto_scope</code> which decorates the <code>$controller</code> function and does this work for you, then returns you the Scope it made.  Rarely are you messing with the guts of a controller instance; mostly you want to test Scope members (if anything).  This is just a handy shortcut.</p>
+<pre class="prettyprint source lang-js"><code>var scope = $controller('AdminDashboardCtrl');</code></pre><p>It's common to simply call <code>$rootScope.$new()</code> in a <code>beforeEach()</code> block and hand that Scope to the <code>$controller</code> function.  There's an option (<strong>on</strong> by default) <code>autoScope</code> which decorates the <code>$controller</code> function and does this work for you, then returns you the Scope it made.  Rarely are you messing with the guts of a controller instance; mostly you want to test Scope members (if anything).  This is just a handy shortcut.</p>
 <h2>Usage</h2><p><em>If Sinon.JS is present, see <a href="http://sinonjs.org/docs/#stubs">this API</a> for working with functions.</em></p>
 <h3>Methods</h3><p>I'll write/compile some proper API docs soon, but the hierarchy is basically:</p>
 <ul>
@@ -468,13 +484,13 @@
 <h3>Options</h3><p>Options are passed to the <code>debaser()</code> function.  If <code>debaser()</code> is given a name as the first parameter, the second parameter can be an <code>Object</code> of options.  If the name is omitted, the <code>Object</code> is the first parameter.</p>
 <ul>
 <li><code>{Boolean}</code> <code>[debugEnabled=false]</code> Print debugging messages.  <strong>angular-debaser</strong> is completely silent in older versions of AngularJS (1.1.5 for certain) due to lack of support in <code>angular-mocks</code>.</li>
-<li><code>{Boolean}</code> <code>[auto_scope=true]</code> <a href="https://docs.angularjs.org/api/ng/service/$controller"><code>$controller</code></a> provides an empty Scope for you, and returns it.</li>
+<li><code>{Boolean}</code> <code>[autoScope=true]</code> <a href="https://docs.angularjs.org/api/ng/service/$controller"><code>$controller</code></a> provides an empty Scope for you, and returns it.</li>
 <li><code>{Boolean}</code> <code>[skipConfigs=true]</code> Do not execute <code>config()</code> blocks defined in existing modules.</li>
 </ul>
 <p>Example, using the defaults:</p>
 <pre class="prettyprint source lang-js"><code>debaser({
   debugEnabled: false,
-  auto_scope: true,
+  autoScope: true,
   skipConfigs: true
 })</code></pre><h2>Installation</h2><pre class="prettyprint source"><code>bower install angular-debaser</code></pre><p>Optionally, save it to your <code>bower.json</code>: you probably don't want to use <code>--save</code>; use <code>--save-dev</code>.</p>
 <h3>Dependencies &amp; Recommended Packages</h3><p>Current dependencies:</p>
@@ -534,7 +550,7 @@
 
 <header>
     <h2>
-    globals.js
+    debaser.js
     </h2>
     
 </header>
@@ -545,7 +561,7 @@
 
     
         
-            <div class="description"><p>Defines functions/variables available on the <code>window</code> object.</p></div>
+            <div class="description"><p><strong><a href="https://github.com/decipherinc/angular-debaser">angular-debaser</a></strong> - <em>Just a better way to test AngularJS apps</em></p></div>
         
 
         
@@ -553,27 +569,27 @@
 	
 
 	
-
-	
-
-	
-
-	
-
-	
-	<dt class="tag-author">Author:</dt>
-	<dd class="tag-author">
-		<ul>
-			<li><a href="mailto:chiller@decipherinc.com">Christopher Hiller</a></li>
-			</ul>
+	<dt class="tag-version">Version:</dt>
+	<dd class="tag-version">
+		<ul class="dummy">
+			<li>0.2.3 (2014-07-19)</li>
+		</ul>
 	</dd>
+	
+
+	
+
+	
+
+	
+
 	
 
 	
 	<dt class="tag-copyright">Copyright:</dt>
 	<dd class="tag-copyright">
 		<ul class="dummy">
-			<li>Copyright &copy; 2014 Decipher, Inc.</li>
+			<li>2014 Decipher, Inc.</li>
 		</ul>
 	</dd>
 	
@@ -596,8 +612,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="globals.js.html">globals.js</a>,
-				 <a href="globals.js.html#sunlight-1-line-1">line 1</a>
+				<a href="debaser.js.html">/Volumes/samara/projects/boneskull/angular-debaser/build/docs/debaser.js</a>,
+				 <a href="debaser.js.html#sunlight-1-line-1">line 1</a>
 			</li>
 		</ul>
 	</dd>
@@ -652,7 +668,7 @@
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha9</a>
-		on Thu Jul 17th 2014 using the <a
+		on Sat Jul 19th 2014 using the <a
 			href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>

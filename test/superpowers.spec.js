@@ -10,10 +10,10 @@
         config;
 
     beforeEach(module(function ($provide) {
-      $provide.constant('decipher.debaser.options', {});
-    }, 'decipher.debaser'));
+      $provide.constant('debaserOptions', {});
+    }, 'decipherDebaser'));
 
-    beforeEach(inject(['decipher.debaser.superpowers', function ($superpowers) {
+    beforeEach(inject(['debaserSuperpowers', function ($superpowers) {
       powers = $superpowers;
       config = {};
     }]));

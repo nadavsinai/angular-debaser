@@ -2,7 +2,10 @@
   "tags": {
     "allowUnknownTags": false
   },
-  "plugins": ["plugins/markdown"],
+  "plugins": [
+    "plugins/markdown"
+  ],
+
   "templates": {
     "cleverLinks": false,
     "monospaceLinks": false,

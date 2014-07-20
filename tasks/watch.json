@@ -1,12 +1,18 @@
 {
   "gruntfile": {
-    "files": "./Gruntfile.js",
+    "files": [
+      "<%= task_files %>"
+    ],
     "tasks": [
       "jshint:gruntfile"
     ]
   },
   "main": {
-    "files": ["<%= src_files %>", "<%= test_files %>"],
+    "files": [
+      "<%= src_files %>",
+      "<%= test_files %>",
+      "<%= task_files %>"
+    ],
     "tasks": [
       "jshint:main",
       "build",
@@ -15,18 +21,24 @@
   },
   "scratch": {
     "files": [
-      "test/scratch/scratch.spec.js"
+      "test/scratch/scratch.spec.js",
+      "<%= task_files %>"
     ],
     "tasks": [
       "karma:scratch:run"
     ]
   },
-  "dev-docs": {
+  "all-docs": {
     "files": [
-      "<%= src_files %>"
+      "<%= src_files %>",
+      "<%= task_files %>",
+      "./jsdoc.conf.json"
     ],
     "tasks": [
-      "dev-docs"
+      "clean",
+      "concat:docs",
+      "concat:dev-docs",
+      "jsdoc"
     ]
   }
 }

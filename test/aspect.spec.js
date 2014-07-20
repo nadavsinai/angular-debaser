@@ -9,7 +9,7 @@
 
     describe('constructor', function () {
 
-      beforeEach(inject(['decipher.debaser.aspect', function (_Aspect_) {
+      beforeEach(inject(['debaserAspect', function (_Aspect_) {
         Aspect = _Aspect_;
       }]));
 
@@ -42,7 +42,7 @@
     describe('property', function () {
       var aspect;
 
-      beforeEach(inject(['decipher.debaser.aspect', function (_Aspect_) {
+      beforeEach(inject(['debaserAspect', function (_Aspect_) {
         Aspect = _Aspect_;
         aspect = new Aspect('properties');
       }]));
@@ -93,20 +93,20 @@
 
       describe('flush()', function () {
 
-        beforeEach(inject(['decipher.debaser.aspect', function (_Aspect_) {
+        beforeEach(inject(['debaserAspect', function (_Aspect_) {
           Aspect = _Aspect_;
           aspect = new Aspect('flush');
         }]));
 
-        it('should call deserialize() against all queued items in the behavior',
+        it('should call serialize() against all queued items in the behavior',
           function () {
             aspect.behavior.queue = [
               {
-                deserialize: sinon.stub().returns('flushed')
+                assemble: sinon.stub().returns('flushed')
               }
             ];
             expect(aspect.flush()).to.eql(['flushed']);
-            expect(aspect.behavior.queue[0].deserialize).to.have.been.calledOnce;
+            expect(aspect.behavior.queue[0].assemble).to.have.been.calledOnce;
           });
 
       });
@@ -116,7 +116,7 @@
             Aspect;
 
         beforeEach(module(function ($provide) {
-          $provide.decorator('decipher.debaser.superpowers', function () {
+          $provide.decorator('debaserSuperpowers', function () {
             var fly = sinon.stub(),
                 swoop = sinon.stub(),
                 invisible = sinon.stub(),
@@ -134,7 +134,7 @@
           });
         }));
 
-        beforeEach(inject(['decipher.debaser.aspect', function (_Aspect_) {
+        beforeEach(inject(['debaserAspect', function (_Aspect_) {
           Aspect = _Aspect_;
           aspect = new Aspect();
           sandbox.spy(aspect, '_initProto');
