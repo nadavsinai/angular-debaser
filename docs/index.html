@@ -146,7 +146,89 @@
 
 
     <section class="readme-section">
-        <article><h1>angular-debaser <a href="https://travis-ci.org/decipherinc/angular-debaser"><img src="https://travis-ci.org/decipherinc/angular-debaser.svg?branch=master" alt="Build Status"></a> <a href="https://coveralls.io/r/decipherinc/angular-debaser?branch=master"><img src="https://img.shields.io/coveralls/decipherinc/angular-debaser.svg" alt="Coverage Status"></a></h1><p>Just a better way to test AngularJS code.</p>
+        <article><h1>angular-debaser <a href="https://travis-ci.org/decipherinc/angular-debaser"><img src="https://travis-ci.org/decipherinc/angular-debaser.svg?branch=master" alt="Build Status"></a> <a href="https://coveralls.io/r/decipherinc/angular-debaser?branch=master"><img src="https://img.shields.io/coveralls/decipherinc/angular-debaser.svg" alt="Coverage Status"></a></h1><p>Just a better way to test AngularJS apps.</p>
+<h2>The Idea</h2><p>AngularJS and its dependency injection make it very easy to isolate your code under test.<br>Unfortunately, coding up stubs for those services can get tedious (many services injected, 
+many modules depending upon modules), and you could end up with a fixture that dwarfs your 
+assertions.</p>
+<p><strong>angular-debaser</strong> attempts to reduce the size of your fixtures and make them natural to write.</p>
+<h2>Example</h2><p>Given the following beastly fixture and test:</p>
+<pre class="prettyprint source lang-js"><code>describe('AdminDashboardCtrl', function () {
+  var sandbox;
+
+  beforeEach(function () {
+    sandbox = sinon.sandbox.create('AdminDashboardCtrl');
+  });
+
+  afterEach(function() {
+    sandbox.restore();
+  });
+
+  beforeEach(module(function ($provide) {
+    $provide.provider('User', function () {
+      this.assertAdmin = sandbox.stub();
+      this.$get = function() {
+        return {
+          getAll: sandbox.stub().returns([])
+        };
+      };
+    });
+    $provide.service('Settings', function() {
+      this.location_id = 1;
+    });
+    $provide.service('Pizza', function() {
+      this.getAll = sandbox.stub().returns([]);
+    });
+    $provide.service('Toppings', function() {
+      this.getAll = sandbox.stub().returns({});
+    });
+    $provide.service('Sides', function() {
+      this.getAll = sandbox.stub().returns([]);
+    });
+    $provide.service('Orders', function() {
+      this.getPreviousWeek = sandbox.stub().returns([]);
+    });
+    $provide.service('Deliveries', function() {
+      this.getPreviousWeek = sandbox.stub().returns([]);
+    });
+  }));
+
+  beforeEach(module('donny.pizzajoint.admin'));
+
+  it('should gather a list of users', inject(function ($controller, $rootScope, User) {
+    var scope = $rootScope.$new();
+    $controller('AdminDashboardCtrl', {
+      $scope: scope
+    });
+    expect(scope.getUsers()).to.eql([]);
+    expect(User.getAll).to.have.been.calledOnce;
+  }));
+});</code></pre><p>We'll use <strong>angular-debaser</strong> instead.  It becomes this:</p>
+<pre class="prettyprint source lang-js"><code>describe('AdminDashboardCtrl', function () {
+  beforeEach(function () {
+    debaser()
+      .module('donny.pizzajoint.admin')
+      .object('Settings', {
+        location_id: 1
+      })
+      .object('User').withFunc('getAll').returns([])
+      .object('Pizza').withFunc('getAll').returns([])
+      .object('Toppings').withFunc('getAll').returns({})
+      .object('Sides').withFunc('getAll').returns([])
+      .object('Orders').withFunc('getPreviousWeek').returns([])
+      .object('Deliveries').withFunc('getPreviousWeek').returns([])
+      .debase();
+  });
+
+  it('should gather a list of users',
+    inject(function ($controller, User) {
+      var scope = $controller('AdminDashboardCtrl');
+      expect(scope.getUsers()).to.eql([]);
+      expect(User.getAll).to.have.been.calledOnce;
+    }));
+});</code></pre><p>(If you're counting, that's about half as many lines.)</p>
+<p>Interested?  Trying to test something that injects 46 services??  You may want to read <a href="http://decipherinc.github.io/angular-debaser/tutorial-donny-developer.html">the 
+tutorial</a> &amp; go down 
+the rabbit hole.</p>
 <h2>API</h2><p><em>If Sinon.JS is present, see <a href="http://sinonjs.org/docs/#stubs">this API</a> for working with functions.</em></p>
 <p>See <a href="http://decipherinc.github.io/angular-debaser/">the API documentation</a>.</p>
 <h2>Installation</h2><pre class="prettyprint source"><code>bower install angular-debaser</code></pre><p>Optionally, save it to your <code>bower.json</code>: you probably don't want to use <code>--save</code>; use <code>--save-dev</code>.</p>
