@@ -21,13 +21,6 @@ module.exports = function () {
       },
       src: '<%= src_files %>',
       dest: '<%= pkg.main %>'
-    },
-    docs: {
-      options: {
-        banner: '<%= banner_docs %>'
-      },
-      src: '<%= src_files %>',
-      dest: './build/docs/<%= pkg.main %>'
     }
   };
 };

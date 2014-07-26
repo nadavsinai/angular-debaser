@@ -10,16 +10,10 @@ module.exports = function (grunt) {
         '* Copyright (c) <%= grunt.template.today("yyyy") %> Decipher, Inc.;' +
         ' Licensed <%= pkg.license %> */',
 
-      MAIN_HEADER = '/**\n' +
-        ' * @kind package\n' + 
-        ' * @summary **{@link <%= pkg.homepage %>|<%= pkg.name %>}** - *<%= pkg.description %>*\n' +
-        ' * @version <%= pkg.version %> (<%= grunt.template.today(\'yyyy-mm-dd\') %>)\n' +
-        ' * @copyright <%= grunt.template.today(\'yyyy\') %> Decipher, Inc.\n' +
-        ' * @license <%= pkg.license %>\n' +
-        ' */\n' + 
-        '(function (window, angular) {\n' +
+      MAIN_HEADER = MIN_HEADER +
+        '\n\n(function (window, angular) {\n' +
         '  \'use strict\';\n\n',
-      
+
       pkg = grunt.file.readJSON(path.join(__dirname, 'package.json'));
 
   require('time-grunt')(grunt);

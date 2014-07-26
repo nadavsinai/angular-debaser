@@ -1,10 +1,7 @@
-/**
- * @kind package
- * @summary **{@link https://github.com/decipherinc/angular-debaser|angular-debaser}** - *Just a better way to test AngularJS apps*
- * @version 0.2.3 (2014-07-26)
- * @copyright 2014 Decipher, Inc.
- * @license MIT
- */
+/*! angular-debaser - v0.2.3 - 2014-07-26
+* https://github.com/decipherinc/angular-debaser
+* Copyright (c) 2014 Decipher, Inc.; Licensed MIT */
+
 (function (window, angular) {
   'use strict';
 
