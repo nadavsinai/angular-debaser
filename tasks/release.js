@@ -6,6 +6,7 @@ module.exports = function(grunt) {
     grunt.task.run('bump-only:' + target);
     grunt.task.run('build');
     grunt.task.run('docs');
+    grunt.task.run('gh-pages');
     grunt.task.run('bump-commit');
   });
 };
