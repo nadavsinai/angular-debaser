@@ -1,0 +1,11 @@
+{
+  "options": {
+    "banner": "<%= banner_min %>",
+    "report": "min",
+    "sourceMap": true
+  },
+  "dist": {
+    "src": "<%= pkg.main %>",
+    "dest": "<%= pkg.min %>"
+  }
+}

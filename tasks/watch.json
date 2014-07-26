@@ -1,0 +1,43 @@
+{
+  "gruntfile": {
+    "files": [
+      "<%= task_files %>"
+    ],
+    "tasks": [
+      "jshint:gruntfile"
+    ]
+  },
+  "main": {
+    "files": [
+      "<%= src_files %>",
+      "<%= test_files %>",
+      "<%= task_files %>"
+    ],
+    "tasks": [
+      "jshint:main",
+      "build",
+      "karma:dev:run"
+    ]
+  },
+  "scratch": {
+    "files": [
+      "test/scratch/scratch.spec.js",
+      "<%= task_files %>"
+    ],
+    "tasks": [
+      "karma:scratch:run"
+    ]
+  },
+  "docs": {
+    "files": [
+      "<%= src_files %>",
+      "<%= task_files %>",
+      "./jsdoc.conf.json",
+      "./tutorials/*",
+      "./README.md"
+    ],
+    "tasks": [
+      "docs"
+    ]
+  }
+}

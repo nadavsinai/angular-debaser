@@ -1,0 +1,8 @@
+support/
+node_modules/
+npm-debug.log
+test/scratch/
+coverage/
+.coveralls.yml
+dev-docs/
+build/
