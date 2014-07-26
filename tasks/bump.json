@@ -14,7 +14,8 @@
       "bower.json",
       "<%= pkg.main %>",
       "<%= pkg.min %>",
-      "<%= pkg.map %>"
+      "<%= pkg.map %>",
+      ".docs/**"
     ],
     "createTag": true,
     "tagName": "v%VERSION%",
