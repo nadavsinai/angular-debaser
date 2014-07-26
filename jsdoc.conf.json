@@ -14,7 +14,7 @@
     "outputSourcePath": true,
     "systemName": "angular-debaser",
     "footer": "",
-    "copyright": "angular-debaser Copyright &copy; 2014 Decipher, Inc.",
+    "copyright": "angular-debaser | Copyright &copy; 2014 Decipher, Inc. | Licensed MIT",
     "navType": "vertical",
     "theme": "spacelab",
     "linenums": true,

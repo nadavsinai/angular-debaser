@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>angular-debaser Classes</title>
+	<title>angular-debaser Mixin: module</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -122,12 +122,14 @@
 					
 
 
-	<h1 class="page-title">Classes</h1>
+	<h1 class="page-title">Mixin: module</h1>
 <section>
 
 <header>
     <h2>
+        <span class="ancestors"><a href="base.html">base</a>.</span>
     
+    module
     </h2>
     
 </header>
@@ -162,6 +164,16 @@
 
 
 	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="debaser.js.html">/Volumes/samara/projects/boneskull/angular-debaser/debaser.js</a>,
+				 <a href="debaser.js.html#sunlight-1-line-741">line 741</a>
+			</li>
+		</ul>
+	</dd>
+	
 
 	
 
@@ -178,22 +190,339 @@
     
 
     
+        <h3 class="subsection-title">Mixes In</h3>
+
+        <ul>
+            <li><a href="base.object.html">base.object</a></li>
+        </ul>
+    
+
+    
 
     
 
     
-        <h3 class="subsection-title">Classes</h3>
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
 
         <dl>
-            <dt><a href="Debaser.html">Debaser</a></dt>
-            <dd></dd>
+            
+<dt>
+    <h4 class="name" id="withDep"><span class="type-signature"></span>withDep<span class="signature">(dep)</span><span class="type-signature"> &rarr; {<a href="base.module.html">base.module</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Adds dependencies to the current module.  Potentially useful if you have a dependency chain <code>A -&gt; B -&gt; C</code> and you wish to stub <code>B</code> but not <code>A</code> or <code>C</code>.</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+		<th>Argument</th>
+		
+
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>dep</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                    &lt;repeatable><br>
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Module dependency</p></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="debaser.js.html">/Volumes/samara/projects/boneskull/angular-debaser/debaser.js</a>,
+				 <a href="debaser.js.html#sunlight-1-line-880">line 880</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+	<dt class="tag-see">See:</dt>
+	<dd class="tag-see">
+		<ul>
+			<li><a href="global.html#Action">Action</a></li>
+			</ul>
+	</dd>
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="base.module.html">base.module</a></span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="withDeps"><span class="type-signature"></span>withDeps<span class="signature">(arr)</span><span class="type-signature"> &rarr; {<a href="base.module.html">base.module</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Like withDep, but accepts an array instead.</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;String></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Array of module dependencies</p></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="debaser.js.html">/Volumes/samara/projects/boneskull/angular-debaser/debaser.js</a>,
+				 <a href="debaser.js.html#sunlight-1-line-902">line 902</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+	<dt class="tag-see">See:</dt>
+	<dd class="tag-see">
+		<ul>
+			<li><a href="global.html#Action">Action</a></li>
+			</ul>
+	</dd>
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="base.module.html">base.module</a></span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+</dd>
+
         </dl>
-    
-
-    
-
-    
-
     
 
     

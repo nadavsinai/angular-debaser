@@ -28,17 +28,16 @@
       "karma:scratch:run"
     ]
   },
-  "all-docs": {
+  "docs": {
     "files": [
       "<%= src_files %>",
       "<%= task_files %>",
-      "./jsdoc.conf.json"
+      "./jsdoc.conf.json",
+      "./tutorials/*",
+      "./README.md"
     ],
     "tasks": [
-      "clean",
-      "concat:docs",
-      "concat:dev-docs",
-      "jsdoc"
+      "docs"
     ]
   }
 }

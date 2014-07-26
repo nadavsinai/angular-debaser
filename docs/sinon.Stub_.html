@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>angular-debaser Externals</title>
+	<title>angular-debaser Mixin: Stub</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -22,49 +22,69 @@
 			<ul class="nav">
 				
 				<li class="dropdown">
-					<a href="namespaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Namespaces<b
-						class="caret"></b></a>
-
-					<ul class="dropdown-menu ">
-						
-						<li>
-							<a href="window.debaser.html">window.debaser</a>
-						</li>
-						
-
-					</ul>
-				</li>
-				
-				<li class="dropdown">
-					<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b
-						class="caret"></b></a>
-
-					<ul class="dropdown-menu ">
-						
-						<li>
-							<a href="debaser.html">decipher.debaser</a>
-						</li>
-						
-
-					</ul>
-				</li>
-				
-				<li class="dropdown">
 					<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b
 						class="caret"></b></a>
 
 					<ul class="dropdown-menu ">
 						
 						<li>
-							<a href="decipher.debaser.loadAction.html">decipher.debaser.loadAction</a>
+							<a href="Debaser.html">Debaser</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
+					<a href="mixins.list.html" class="dropdown-toggle" data-toggle="dropdown">Mixins<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="base.html">base</a>
 						</li>
 						
 						<li>
-							<a href="debaser.Config.html">decipher.debaser.Config</a>
+							<a href="base.func.html">base.func</a>
 						</li>
 						
 						<li>
-							<a href="loadAction.Action.html">loadAction.Action</a>
+							<a href="base.module.html">base.module</a>
+						</li>
+						
+						<li>
+							<a href="base.module.withFunc.html">base.module.withFunc</a>
+						</li>
+						
+						<li>
+							<a href="base.module.withObject.html">base.module.withObject</a>
+						</li>
+						
+						<li>
+							<a href="base.object.html">base.object</a>
+						</li>
+						
+						<li>
+							<a href="sinon.stub.html">sinon.stub</a>
+						</li>
+						
+						<li>
+							<a href="sinon.Stub_.html">sinon.Stub</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
+					<a href="tutorials.list.html" class="dropdown-toggle" data-toggle="dropdown">Tutorials<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="tutorial-donny-developer.html">angular-debaser Tutorial</a>
 						</li>
 						
 
@@ -78,21 +98,11 @@
 					<ul class="dropdown-menu ">
 						
 						<li>
-							<a href="global.html#debaser">debaser</a>
+							<a href="global.html#debase">debase</a>
 						</li>
 						
-
-					</ul>
-				</li>
-				
-				<li class="dropdown">
-					<a href="externals.list.html" class="dropdown-toggle" data-toggle="dropdown">Externals<b
-						class="caret"></b></a>
-
-					<ul class="dropdown-menu ">
-						
 						<li>
-							<a href="external-angular.html">angular</a>
+							<a href="global.html#debaser">debaser</a>
 						</li>
 						
 
@@ -112,12 +122,12 @@
 					
 
 
-	<h1 class="page-title">Externals</h1>
+	<h1 class="page-title">Mixin: Stub</h1>
 <section>
 
 <header>
     <h2>
-    
+    Stub
     </h2>
     
 </header>
@@ -127,6 +137,11 @@
     
 
     
+        
+            <div class="description"><p>A Stub object.  Returned when using an <code>*onCall*</code> method, instead of a <a href="sinon.stub.html">stub</a>.  In this context, use end() to return to a <a href="Debaser.html">Debaser</a> instance. </p>
+<blockquote>
+<p>The <code>create()</code>, <code>resetBehavior()</code> and <code>isPresent()</code> functions of the Sinon.JS &quot;stub&quot; API are not used.  If someone needs these, please <a href="https://github.com/decipherinc/angular-debaser/issues/">create an issue</a> and provide a use case.</p>
+</blockquote></div>
         
 
         
@@ -152,6 +167,16 @@
 
 
 	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="debaser.js.html">/Volumes/samara/projects/boneskull/angular-debaser/debaser.js</a>,
+				 <a href="debaser.js.html#sunlight-1-line-728">line 728</a>
+			</li>
+		</ul>
+	</dd>
+	
 
 	
 
@@ -172,31 +197,113 @@
     
 
     
-        <h3 class="subsection-title">Classes</h3>
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
 
         <dl>
-            <dt><a href="decipher.debaser.loadAction.html">loadAction</a></dt>
-            <dd></dd>
+            
+<dt>
+    <h4 class="name" id="end"><span class="type-signature"></span>end<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="base.func.html">base.func</a>|<a href="base.module.withFunc.html">base.module.withFunc</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Gives you a <a href="Debaser.html">Debaser</a> instance back if you have been setting things up via <code>*onCall*</code> methods.</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="debaser.js.html">/Volumes/samara/projects/boneskull/angular-debaser/debaser.js</a>,
+				 <a href="debaser.js.html#sunlight-1-line-1056">line 1056</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="base.func.html">base.func</a></span>
+|
+
+<span class="param-type"><a href="base.module.withFunc.html">base.module.withFunc</a></span>
+
+
+	</dd>
+</dl>
+
+
         
-            <dt><a href="debaser.Config.html">Config</a></dt>
-            <dd></dd>
-        
-            <dt><a href="loadAction.Action.html">Action</a></dt>
-            <dd></dd>
+    
+    
+</dd>
+
         </dl>
-    
-
-    
-        <h3 class="subsection-title">Namespaces</h3>
-
-        <dl>
-            <dt><a href="namespaces.html#window.debaser"><a href="window.debaser.html">debaser</a></a></dt>
-            <dd></dd>
-        </dl>
-    
-
-    
-
     
 
     
@@ -216,13 +323,13 @@
 					
 					
 		<span class="copyright">
-		angular-debaser Copyright &copy; 2014 Decipher, Inc.
+		angular-debaser | Copyright &copy; 2014 Decipher, Inc. | Licensed MIT
 		</span>
 					<br />
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha9</a>
-		on Sat Jul 19th 2014 using the <a
+		on Sat Jul 26th 2014 using the <a
 			href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>

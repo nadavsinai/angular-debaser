@@ -31,7 +31,10 @@
     "node_modules",
     "support",
     "test",
-    "tasks"
+    "tasks",
+    "docs",
+    "coverage",
+    "tutorials"
   ],
   "dependencies": {
     "angular-mocks": "*",

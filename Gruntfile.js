@@ -11,15 +11,15 @@ module.exports = function (grunt) {
         ' Licensed <%= pkg.license %> */',
 
       MAIN_HEADER = '/**\n' +
-        ' * @file **{@link <%= pkg.homepage %>|<%= pkg.name %>}** - *<%= pkg.description %>*\n' +
+        ' * @kind package\n' + 
+        ' * @summary **{@link <%= pkg.homepage %>|<%= pkg.name %>}** - *<%= pkg.description %>*\n' +
         ' * @version <%= pkg.version %> (<%= grunt.template.today(\'yyyy-mm-dd\') %>)\n' +
         ' * @copyright <%= grunt.template.today(\'yyyy\') %> Decipher, Inc.\n' +
         ' * @license <%= pkg.license %>\n' +
-        ' */\n' +
-        '/**\n' +
-        ' * @module decipher.debaser\n' +
-        ' */\n',
-
+        ' */\n' + 
+        '(function (window, angular) {\n' +
+        '  \'use strict\';\n\n',
+      
       pkg = grunt.file.readJSON(path.join(__dirname, 'package.json'));
 
   require('time-grunt')(grunt);
@@ -28,11 +28,8 @@ module.exports = function (grunt) {
     configPath: path.join(__dirname, 'tasks'),
     data: {
       pkg: pkg,
-      banner: MAIN_HEADER +
-        '\n(function (window, angular) {\n' +
-        '  \'use strict\';\n\n',
+      banner: MAIN_HEADER,
       banner_min: MIN_HEADER,
-      banner_docs: MAIN_HEADER,
       footer: '})(window, window.angular);',
       src_files: [
         './lib/globals.js',

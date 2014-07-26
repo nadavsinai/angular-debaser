@@ -28,13 +28,6 @@ module.exports = function () {
       },
       src: '<%= src_files %>',
       dest: './build/docs/<%= pkg.main %>'
-    },
-    'dev-docs': {
-      options: {
-        banner: '<%= banner_docs %>'
-      },
-      src: '<%= src_files %>',
-      dest: './build/dev-docs/<%= pkg.main %>'
     }
   };
 };

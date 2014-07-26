@@ -4,16 +4,12 @@
     "configure": "./jsdoc.conf.json"
   },
   "main": {
-    "src": ["README.md", "./build/docs/<%= pkg.main %>"],
+    "src": ["./README.*", "<%= pkg.main %>"],
     "dest": "./docs/",
     "jsdoc": "./node_modules/.bin/jsdoc",
     "options": {
-      "private": false
+      "private": true,
+      "tutorials": "./tutorials/"
     }
-  },
-  "dev": {
-    "src": ["README.md", "./build/dev-docs/<%= pkg.main %>"],
-    "jsdoc": "./node_modules/.bin/jsdoc",
-    "dest": "./dev-docs/"
   }
 }

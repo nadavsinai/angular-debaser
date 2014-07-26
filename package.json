@@ -17,6 +17,7 @@
     "grunt-karma": "^0.8.3",
     "grunt-karma-coveralls": "^2.5.1",
     "jsdoc": "^3.3.0-alpha9",
+    "jshint-stylish": "^0.4.0",
     "karma": "^0.12.16",
     "karma-chai-plugins": "^0.2.1",
     "karma-chrome-launcher": "^0.1.4",

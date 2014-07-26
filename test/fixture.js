@@ -13,6 +13,6 @@
 
   beforeEach(module(function ($provide) {
     $provide.constant('debaserOptions', {});
-  }, 'decipherDebaser'));
+  }, 'decipher.debaser'));
 
 })();
