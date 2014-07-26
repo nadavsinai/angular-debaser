@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>angular-debaser Class: Debaser</title>
+	<title>angular-debaser Mixin: base</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -122,12 +122,12 @@
 					
 
 
-	<h1 class="page-title">Class: Debaser</h1>
+	<h1 class="page-title">Mixin: base</h1>
 <section>
 
 <header>
     <h2>
-    Debaser
+    base
     </h2>
     
 </header>
@@ -138,8 +138,72 @@
 
     
         
+
+        
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="debaser.js.html">/Volumes/samara/projects/boneskull/angular-debaser/debaser.js</a>,
+				 <a href="debaser.js.html#sunlight-1-line-736">line 736</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        <dl>
+            
 <dt>
-    <h4 class="name" id="Debaser"><span class="type-signature"></span>new Debaser<span class="signature">(<span class="optional">name</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="func"><span class="type-signature"></span>func<span class="signature">(name)</span><span class="type-signature"> &rarr; {<a href="base.func.html">base.func</a>}</span></h4>
     
     
 </dt>
@@ -147,7 +211,7 @@
     
     
     <div class="description">
-        <p>Provides an object with which you can stub AngularJS dependencies.  Do not attempt to instantiate this class directly; use the <a href="global.html#debaser">debaser</a> function instead.</p>
+        <p>Creates an injectable function.</p>
     </div>
     
 
@@ -169,11 +233,7 @@
 		<th>Type</th>
 
 		
-		<th>Argument</th>
-		
 
-		
-		<th>Default</th>
 		
 
 		<th class="last">Description</th>
@@ -198,26 +258,10 @@
             </td>
 
             
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
 
             
-                <td class="default">
-                
-                    __default__
-                
-                </td>
-            
 
-            <td class="description last"><p>Name of Debaser instance</p></td>
+            <td class="description last"><p>Name of injectable</p></td>
         </tr>
 
 	
@@ -254,7 +298,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="debaser.js.html">/Volumes/samara/projects/boneskull/angular-debaser/debaser.js</a>,
-				 <a href="debaser.js.html#sunlight-1-line-633">line 633</a>
+				 <a href="debaser.js.html#sunlight-1-line-921">line 921</a>
 			</li>
 		</ul>
 	</dd>
@@ -262,6 +306,13 @@
 
 	
 
+	
+	<dt class="tag-see">See:</dt>
+	<dd class="tag-see">
+		<ul>
+			<li><a href="global.html#Action">Action</a></li>
+			</ul>
+	</dd>
 	
 
 	
@@ -277,31 +328,418 @@
     
     
     
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="base.func.html">base.func</a></span>
+
+
+	</dd>
+</dl>
+
+
+        
     
     
 </dd>
 
+        
+            
+<dt>
+    <h4 class="name" id="module"><span class="type-signature"></span>module<span class="signature">(name, <span class="optional">deps</span>)</span><span class="type-signature"> &rarr; {<a href="base.module.html">base.module</a>}</span></h4>
     
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Stubs a module, or bootstraps an existing module.</p>
     </div>
-
     
 
     
-        <h3 class="subsection-title">Mixes In</h3>
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
 
-        <ul>
-            <li><a href="base.html">base</a></li>
-        </ul>
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+		<th>Argument</th>
+		
+
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Module name to bootstrap/stub.</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>deps</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;String></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Any dependencies of this module.</p></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="debaser.js.html">/Volumes/samara/projects/boneskull/angular-debaser/debaser.js</a>,
+				 <a href="debaser.js.html#sunlight-1-line-827">line 827</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+	<dt class="tag-see">See:</dt>
+	<dd class="tag-see">
+		<ul>
+			<li><a href="global.html#Action">Action</a></li>
+			</ul>
+	</dd>
+	
+
+	
+</dl>
+
+    
     
 
     
 
     
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
 
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="base.module.html">base.module</a></span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="object"><span class="type-signature"></span>object<span class="signature">(name, <span class="optional">base</span>)</span><span class="type-signature"> &rarr; {<a href="base.object.html">base.object</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Creates an injectable object.</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+		<th>Argument</th>
+		
+
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Name of injectable</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>base</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>If supplied, will inject this object instead.  If {@link http://sinonjs.org Sinon.JS) is present, the object's functions will be spied upon.</p></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="debaser.js.html">/Volumes/samara/projects/boneskull/angular-debaser/debaser.js</a>,
+				 <a href="debaser.js.html#sunlight-1-line-945">line 945</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+	<dt class="tag-see">See:</dt>
+	<dd class="tag-see">
+		<ul>
+			<li><a href="global.html#Action">Action</a></li>
+			</ul>
+	</dd>
+	
+
+	
+</dl>
+
+    
     
 
     
 
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="base.object.html">base.object</a></span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+</dd>
+
+        </dl>
     
 
     

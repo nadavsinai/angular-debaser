@@ -12,7 +12,7 @@
   });
 
   beforeEach(module(function ($provide) {
-    $provide.constant('decipher.debaser.options', {});
+    $provide.constant('debaserOptions', {});
   }, 'decipher.debaser'));
 
 })();

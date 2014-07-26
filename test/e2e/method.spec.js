@@ -7,7 +7,7 @@
 
       var d;
 
-      beforeEach(inject(['decipher.debaser.debaser', function (_Debaser_) {
+      beforeEach(inject(['debaserDebaser', function (_Debaser_) {
         d = new _Debaser_();
       }]));
 

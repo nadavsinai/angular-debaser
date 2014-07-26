@@ -13,9 +13,6 @@
   "indent": 2,
   "expr": true,
   "newcap": false,
-  "predef": {
-    "angular": true,
-    "sinon": true
-  },
-  "evil": true
+  "predef": ["angular", "sinon"],
+  "globalstrict": true
 }

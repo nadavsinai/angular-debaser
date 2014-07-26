@@ -20,15 +20,9 @@
     "options": {
       "singleRun": true,
       "port": 9876,
-      "files": [
-        "./support/angular/angular.js",
-        "./support/angular-mocks/angular-mocks.js",
-        "./debaser.js",
-        "./test/*.js",
-        "./test/e2e/*.js"
-      ],
+      "files": ["<%= test_deps %>", "<%= src_files %>", "<%= test_files %>"],
       "preprocessors": {
-        "debaser.js": "coverage"
+        "./lib/**/*.js": "coverage"
       },
       "reporters": [
         "story",
@@ -47,17 +41,16 @@
       }
     }
   },
+  "continuous-main": {
+    "options": {
+      "singleRun": true,
+      "files": ["<%= test_deps %>", "<%= pkg.main %>", "<%= test_files %>"]
+    }
+  },
   "continuous-min": {
     "options": {
       "singleRun": true,
-      "port": 9881,
-      "files": [
-        "./support/angular/angular.js",
-        "./support/angular-mocks/angular-mocks.js",
-        "./debaser.min.js",
-        "./test/*.js",
-        "./test/e2e/*.js"
-      ]
+      "files": ["<%= test_deps %>", "<%= pkg.min %>", "<%= test_files %>"]
     }
   },
   "dev": {
@@ -66,16 +59,7 @@
         "Chrome"
       ],
       "background": true,
-      "port": 9877,
-      "files": [
-        "./support/angular/angular.js",
-        "./support/angular-mocks/angular-mocks.js",
-        "./lib/globals.js",
-        "./lib/module.js",
-        "./lib/*.js",
-        "./test/*.js",
-        "./test/e2e/*.js"
-      ],
+      "files": ["<%= test_deps %>", "<%= src_files %>", "<%= test_files %>"],
       "preprocessors": {
         "./lib/*.js": "coverage"
       },
@@ -83,6 +67,7 @@
         "story",
         "coverage"
       ],
+      "port": 9877,
       "coverageReporter": {
         "reporters": [
           {
@@ -106,16 +91,7 @@
         "Chrome"
       ],
       "background": true,
-      "port": 9878,
-      "files": [
-        "./support/angular-unstable/angular.js",
-        "./support/angular-mocks-unstable/angular-mocks.js",
-        "./lib/globals.js",
-        "./lib/module.js",
-        "./lib/*.js",
-        "./test/*.js",
-        "./test/e2e/*.js"
-      ]
+      "files": ["<%= test_deps_unstable %>", "<%= src_files %>", "<%= test_files %>"]
     }
   },
   "unstable-continuous": {
@@ -124,26 +100,13 @@
         "PhantomJS"
       ],
       "singleRun": true,
-      "port": 9879,
-      "files": [
-        "./support/angular-unstable/angular.js",
-        "./support/angular-mocks-unstable/angular-mocks.js",
-        "./debaser.min.js",
-        "./test/*.js",
-        "./test/e2e/*.js"
-      ]
+      "files": ["<%= test_deps_unstable %>", "<%= src_files %>", "<%= test_files %>"]
     }
   },
   "scratch": {
     "options": {
       "background": true,
-      "port": 9800,
-      "files": [
-        "./support/angular/angular.js",
-        "./support/angular-mocks/angular-mocks.js",
-        "./debaser.js",
-        "./test/scratch/scratch.spec.js"
-      ]
+      "files": ["<%= test_deps %>", "<%= pkg.main %>", "./test/scratch/scratch.spec.js'"]
     }
   }
 }

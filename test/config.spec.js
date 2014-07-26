@@ -6,7 +6,7 @@
 
     var Config;
 
-    beforeEach(inject(['decipher.debaser.config', function (_Config_) {
+    beforeEach(inject(['debaserConfig', function (_Config_) {
       Config = _Config_;
     }]));
 

@@ -1,127 +1,363 @@
-/*! angular-debaser - v0.1.0 - 2014-07-08
-* https://github.com/decipherinc/angular-debaser
-* Copyright (c) 2014 Decipher, Inc.; Licensed MIT */
+/**
+ * @kind package
+ * @summary **{@link https://github.com/decipherinc/angular-debaser|angular-debaser}** - *Just a better way to test AngularJS apps*
+ * @version 0.2.3 (2014-07-26)
+ * @copyright 2014 Decipher, Inc.
+ * @license MIT
+ */
 (function (window, angular) {
-
-  'use strict';
-
-  var DEFAULTS = {
-    debugEnabled: false,
-    autoScope: true,
-    skipConfigs: true
-  };
-
-  var setup = function setup(options) {
-    var _setup = function _setup($provide) {
-      $provide.constant('decipher.debaser.options',
-        angular.extend({}, DEFAULTS, options));
-    };
-    _setup.$inject = ['$provide'];
-    return _setup;
-  };
-
-  var debaser = function debaser(name, opts) {
-    var Debaser,
-        instance,
-        debasers = window.debaser.$$debasers,
-        injector;
-
-    if (angular.isObject(name)) {
-      opts = name;
-      name = null;
-    }
-
-    if (!name && debasers.__default__) {
-      return debasers.__default__;
-    }
-
-    opts = opts || {};
-    injector = angular.injector(['ng', setup(opts), 'decipher.debaser']);
-    Debaser = injector.get('decipher.debaser.debaser');
-
-    if (name) {
-      if (!debasers[name]) {
-        debasers[name] = new Debaser(name);
-      }
-      return debasers[name];
-    }
-    debasers.__default__ = instance = new Debaser();
-    window.debase = instance.debase.bind(instance);
-    angular.mock.module(setup(opts), 'decipher.debaser');
-    return instance;
-  };
-  debaser.$$debasers = {};
-  debaser.$$config = {};
-
-  window.debaser = debaser;
-
-})(window, window.angular);
-
-(function (angular, debaser) {
-
   'use strict';
 
   /**
-   * @name decipher.debaser
-   * @description
+   * @typedef {Array.<String>} Annotation
+   * @ignore
+   * @description Annotation for AngularJS factories.
+   */
+
+  /**
+   * @external angular
+   * @ignore
+   * @see {@link http://angularjs.org}
+   */
+
+  /**
+   * @summary Options, and their defaults, which you can pass into {@link debaser window.debaser()}.
+   * @description Default options
+   * @typedef {Object} DebaserOptions
+   * @property {boolean} [debugEnabled=false] Enable debug log messages?
+   * @property {boolean} [autoScope=true] Enable auto-scope functionality when using {@link ng.$controller}?
+   * @property {boolean} [skipConfigs=true] Enable stubbing of `config()` blocks?
+   * @property {string} [defaultName=__default__] Default name of default Debaser instance; useless
+   * @global
+   */
+  var DEFAULT_OPTS = {
+    debugEnabled: false,
+    autoScope: true,
+    skipConfigs: true,
+    defaultName: '__default__'
+  };
+
+  /**
+   * Attaches {@link debaser} and {@link debase} to the `window` object.
+   * Registers `setup()`/`teardown()` or `beforeEach()`/`afterEach()` functions to retrieve the current spec.
+   */
+  var install = function install() {
+
+    window.debaser = debaser;
+    window.debase = debase;
+
+    // TODO document these
+    (window.beforeEach || window.setup)(function () {
+      debaser.$$currentSpec = this;
+    });
+
+    (window.afterEach || window.teardown)(function () {
+      delete debaser.$$currentSpec;
+    });
+
+  };
+
+  /**
+   * @description Whether or not we are currently running in a spec.
+   * @returns {boolean}
+   */
+  var hasCurrentSpec = function hasCurrentSpec() {
+    return !!debaser.$$currentSpec;
+  };
+
+  /**
+   * @alias window.debaser
+   * @summary Provides a {@link Debaser} object with which you can stub dependencies easily.
+   * @description The object by this method exposes {@link Action actions}, which are chainable.  Each action "queues up" something to be stubbed, be that a module, function, object, or whatever.  When you have queued all your actions, execute {@link Debaser#debase debase()} and the stubs will be provided.
+   * @param {(String|Object)} [name=DebaserOptions.name] Optional name of Debaser.  Only useful if using
+   * multiple instances.  If omitted, this is considered the `opts` parameter.
+   * @param {DebaserOptions} [options={}] Options to modify angular-debaser's behavior; see {@link DebaserOptions}.
+   * @example
    *
-   * This is the main module for angular-debaser.  You are unlikely to interface
-   * with this module directly.
+   * // Defaults
+   * var d = debaser({
+   *  debugEnabled: false,
+   *  autoScope: true
+   *  skipConfigs: true
+   * });
+   *
+   * // Named
+   * var d = debaser('foo', {
+   *  debugEnabled: false,
+   *  autoScope: true
+   *  skipConfigs: true
+   * });
+   *
+   * @returns {Debaser}
+   * @global
+   * @public
+   * @tutorial donny-developer
+   */
+  var debaser = function debaser(name, options) {
+    var debaserSetup,
+      defaultName = DEFAULT_OPTS.defaultName,
+      injector,
+      instance,
+      opts,
+      Debaser;
+
+    // setup args
+    if (angular.isObject(name)) {
+      opts = name;
+      name = null;
+    } else {
+      opts = options;
+    }
+
+    opts = opts || {};
+    debaserSetup = configure(opts);
+
+    // bootstrap the debaserSetup and decipher.debaser module, so we can get to the debaserFactory.
+    angular.mock.module(debaserSetup, 'decipher.debaser');
+
+    // if we are not given a name and the default instance exists, return it so we don't re-instantiate.
+    // eliminate debaser.__globalInstance TODO why?
+    if (!name && hasInstance(defaultName)) {
+      debaser.__globalInstance = null;
+      return getInstance(defaultName);
+    }
+
+    // injector to retrieve Debaser class.
+    injector = angular.injector(['ng', debaserSetup, 'decipher.debaser']);
+    //noinspection JSUnusedAssignment
+    Debaser = injector.get('debaserDebaser');
+
+    // init new Debaser instance or get existing if given name.  eliminate debaser.__globalInstance
+    // since it's no longer applicable.
+    if (name) {
+      if (!hasInstance(name)) {
+        debaser.__debasers[name] = new Debaser(name);
+      }
+      debaser.__globalInstance = null;
+      return getInstance(name);
+    }
+
+    // (this is a new Debaser with the default name)
+    instance = new Debaser();
+
+    // if we're not in a beforeEach() then we're not in a spec.  call this the global, default instance.
+    debaser.__globalInstance = !hasCurrentSpec() ? instance : null;
+
+    return instance;
+  };
+
+  /**
+   * @description Provides an anonymous AngularJS module to set up some initial values before {@link module:decipher.debaser} is bootstrapped.
+   * @param {DebaserOptions} [options] Override {@link DebaserOptions} with this object.
+   * @returns {function}
+   */
+  var configure = function configure(options) {
+    /**
+     * @description
+     * Provides two constants, `debaserOptions`, which is set to a {@link DebaserOptions}
+     * object when calling {@link debaser}; and `decipher.debaser.__runConfig` which is internal data
+     * to be used when calling {@link debase} or {@link Debaser#debase}.
+     * @param {auto.$provide} $provide {@link https://code.angularjs.org/1.2.20/docs/api/auto/service/$provide.html|auto.$provide docs}
+     * @property {Annotation} $inject
+     */
+    var debaserSetup = function debaserSetup($provide) {
+      $provide.constant('debaserOptions',
+        angular.extend({}, DEFAULT_OPTS, options));
+      $provide.constant('debaserRunConfig', runConfig);
+    };
+    debaserSetup.$inject = ['$provide'];
+    return debaserSetup;
+  };
+
+  /**
+   * @description Retrieve an existing Debaser instance by name.
+   * @param {string} name Name of instance
+   * @returns {Debaser}
+   */
+  var getInstance = function getInstance(name) {
+    return debaser.__debasers[name];
+  };
+
+  /**
+   * @description Whether or not an instance with name exists.
+   * @param {string} name Name of instance
+   * @returns {boolean}
+   */
+  var hasInstance = function hasInstance(name) {
+    return !!getInstance(name);
+  };
+
+  /**
+   * @description Mapping of {@link Debaser#name}s to {@link Debaser} instances, for potential retrieval later.  **Exposed for unit testing.**
+   * @type {Object.<String,Debaser>}
+   * @private
+   */
+  debaser.__debasers = {};
+
+  /**
+   * @description Run configurations.  Mapping of {@link Config#_id} to {@link Config} objects. **Exposed for unit testing**
+   * @todo test
+   * @type {Object.<String,Config>}
+   * @private
+  */
+  var runConfig = debaser.__runConfig = {};
+
+  /**
+   * @description Default instance if we are not running in a spec; presumably created in a `before()` block.  **Exposed for unit testing**
+   * @type {?Debaser}
+   * @todo test
+   * @private
+   */
+  debaser.__globalInstance = null;
+
+  /**
+   * @alias window.debase
+   * @summary Shortcut to the {@link Debaser#debase debase} method of the default {@link Debaser} instance.
+   * @description Convenience method.  Retrieves the default {@link Debaser} instance (whatever that may be) and runs its {@link Debaser#debase debase()} method. 
+   * @example
+   *
+   * before(function() {
+   *   debaser()
+   *     .func('foo')
+   *     .object('bar')
+   * });
+   *
+   * beforeEach(debase);
+   *
+   * // above equivalent to:
+   *
+   * var d;
+   * before(function() {
+   *   d = debaser()
+   *     .func('foo')
+   *     .object('bar')
+   * });
+   *
+   * beforeEach(function() {
+   *   d.debase();
+   * });
+   * @returns {(function|Debaser)}
+   * @param {string} [name] Name of {@link Debaser} instance to call {@link Debaser#debase} upon.
+   * @global
+   * @public
+   */
+  var debase = function debase(name) {
+    var defaultName = DEFAULT_OPTS.defaultName,
+
+      /**
+       * @description Calls {@link Debaser#debase} with proper persistance options.  Unlike {@link Debaser#debase}, will return a {@link Debaser} instance.
+       * @memberof globalHelpers
+       * @function callDebase
+       * @returns {Debaser}
+       * @throws Invalid {@link Debaser} name
+       * @throws If {@link debaser} was never called
+       */
+      callDebase = function callDebase() {
+        var d;
+
+        if (!name || !angular.isString(name)) {
+          if (!hasInstance(defaultName)) {
+            if (debaser.__globalInstance) {
+              return debaser.__globalInstance.debase({persist: true});
+            }
+            throw new Error('debaser: no Debaser initialized!');
+          }
+          name = defaultName;
+        }
+        else if (!hasInstance(name)) {
+          throw new Error('debaser: cannot find Debaser instance with name "' + name + '"');
+        }
+        d = getInstance(name);
+        // TODO not sure if persist value is correct.
+        d.debase({
+          persist: name !== defaultName
+        });
+        return d;
+      };
+
+    return hasCurrentSpec() ? callDebase() : callDebase;
+  };
+
+  install();
+
+  /* global runConfig */
+
+  /**
+   * @description Main module for angular-debaser.  You are unlikely to interface with this module directly.  See {@link debaser} to get started.
    */
   angular.module('decipher.debaser', [])
 
   /**
-   * @name decipher.debaser.runConfig
-   * @memberof decipher.debaser
-   * @type Object
+   * @name debaserRunConfig
+   * @memberof module:decipher.debaser
+   * @borrows debaser.__runConfig
    */
-    .constant('decipher.debaser.runConfig', debaser.$$config)
-    .config(['decipher.debaser.options', '$logProvider', '$provide',
+    .constant('debaserRunConfig', runConfig)
+    .config(['debaserOptions', '$logProvider', '$provide',
       function config(options, $logProvider, $provide) {
         // older versions of angular-mocks do not implement this function.
         if (angular.isFunction($logProvider.debugEnabled)) {
           $logProvider.debugEnabled(options.debugEnabled);
         }
+        // likewise, maybe no debug() either
         $provide.decorator('$log', ['$delegate', function ($delegate) {
-          // likewise, maybe no debug() either
-          return $delegate.debug || angular.noop;
+          $delegate.debug = $delegate.debug || options.debugEnabled ? $delegate.log : angular.noop;
+          return $delegate;
         }]);
       }
     ]);
 
-})(window.angular, window.debaser);
-
-(function (angular) {
-  'use strict';
-
   angular.module('decipher.debaser')
-    .factory('decipher.debaser.loadAction', function loadActionFactory() {
+    .factory('debaserLoadAction', function loadActionFactory() {
 
-      var Action = function Action(action) {
-        angular.extend(this, action);
-      };
+    /**
+     * @description Creates a new Action object.
+     * @param {object} action Raw action object
+     * @param {function} [action.callback=angular.noop] Function to call with the return value of the main Function to call
+     * @param {object} [action.object] Object containing main Function to call
+     * @param {function} action.func Main Function to call
+     * @param {object} [action.context=null] Context to call main Function with
+     * @param {array} [action.args=[]] Context to
+     * @constructor
+     * @ignore
+     * @memberof loadAction
+     */
+    var Action = function Action(action) {
+      angular.extend(this, action);
+      this.callback = this.callback || angular.noop;
+      this.context = this.context || null;
+    };
 
-      Action.prototype.deserialize = function deserialize() {
-        return function action() {
-          this.callback(this.object[this.func].apply(this.context,
-            this.args));
-        }.bind(this);
-      };
+    /**
+     *
+     * @returns {Action#assemble~action}
+     */
+    Action.prototype.assemble = function assemble() {
+      /**
+       * @description Executes an assembled function
+       * @memberof! Action#assemble
+       * @inner
+       */
+      return function action() {
+        this.callback(!this.object ? this.func.apply(this.context, this.args) :
+          this.object[this.func].apply(this.context, this.args));
+      }.bind(this);
+    };
 
-      return function loadAction(cfg) {
-        return cfg.actions.map(function (action) {
-          return new Action(action);
-        });
-      };
-    });
+    /**
+     * @description Accepts a {@link Config} object, constructs and returns {@link Action} instances from its `actions` property
+     * @constructs Action
+     * @private
+     */
+    return function loadAction(cfg) {
+      return cfg.actions.map(function (action) {
+        return new Action(action);
+      });
+    };
+  });
 
-})(window.angular);
-
-(function (angular) {
-  'use strict';
-
-  angular.module('decipher.debaser').factory('decipher.debaser.aspect',
-    ['decipher.debaser.superpowers', 'decipher.debaser.behavior',
+  angular.module('decipher.debaser').factory('debaserAspect',
+    ['debaserSuperpowers', 'debaserBehavior',
       function aspectFactory(superpowers, Behavior) {
 
         var Aspect = function Aspect(name, parent) {
@@ -213,7 +449,7 @@
           }
           this._behavior = new Behavior(angular.extend(this._behavior || {},
               this.parent && this.parent.isAspectOf(this.name) &&
-                this.parent.behavior), this.name);
+              this.parent.behavior), this.name);
         };
 
         Aspect.prototype.flush = function flush() {
@@ -265,13 +501,8 @@
       }
     ]);
 
-})(window.angular);
-
-(function (angular) {
-  'use strict';
-
-  angular.module('decipher.debaser').factory('decipher.debaser.behavior',
-    ['decipher.debaser.config', function $behaviorFactory(Config) {
+  angular.module('decipher.debaser').factory('debaserBehavior',
+    ['debaserConfig', function $behaviorFactory(Config) {
       var Behavior = function Behavior(o, aspect_name) {
         angular.extend(this, o);
         this._aspect_name = aspect_name;
@@ -286,7 +517,7 @@
 
       Behavior.prototype.flush = function flush() {
         return this.queue.map(function (action) {
-          return action.deserialize();
+          return action.assemble();
         });
       };
 
@@ -318,20 +549,13 @@
       return Behavior;
     }]);
 
-})(window.angular);
-
-(function (angular) {
-
-  'use strict';
-
-  angular.module('decipher.debaser').factory('decipher.debaser.config',
+  angular.module('decipher.debaser').factory('debaserConfig',
     function configFactory() {
 
       /**
-       * @name Config
-       * @param o
-       * @constructor
-       * @param aspect_name
+       * @param {(object|string)} o Raw {@link Behavior} configuration object, or {@link Aspect} name
+       * @class
+       * @param {string} [aspect_name] Name of {@link Aspect} this configuration belongs to
        */
       var Config = function Config(o, aspect_name) {
         if (angular.isString(o)) {
@@ -391,44 +615,39 @@
 
     });
 
-})(window.angular);
+  angular.module('decipher.debaser').factory('debaserDebaser',
+    ['$log', 'debaserAspect', 'debaserOptions',
+      function debaserFactory($log, Aspect, options) {
 
-(function (angular) {
-  "use strict";
+        var defaultName = options.defaultName;
 
-  angular.module('decipher.debaser').factory('decipher.debaser.debaser',
-    ['$log', 'decipher.debaser.aspect', 'decipher.debaser.options',
-      function $debaserFactory($log, Aspect, options) {
 
         /**
-         * @name Debaser
-         * @param name
-         * @constructor
+         * @description Provides an object with which you can stub AngularJS dependencies.  Do not attempt to instantiate this class directly; use the {@link debaser} function instead.
+         * @public
+         * @mixes base
+         * @global
+         * @param {string} [name=__default__] Name of Debaser instance
+         * @class
          */
         var Debaser = function Debaser(name) {
           if (!angular.isString(name)) {
-            name = Debaser.DEFAULT_NAME;
+            name = options.defaultName;
           }
           this.$name = name;
           this.$queue = [];
           this.$aspect('base');
-          if (name !== Debaser.DEFAULT_NAME) {
-            $log('$debaser: created Debaser instance with name "' + name + '"');
+          if (name !== defaultName) {
+            $log.debug('$debaser: created Debaser instance with name "' + name + '"');
           } else {
-            $log('$debaser: created singleton Debaser instance');
+            $log.debug('$debaser: created singleton Debaser instance');
           }
-        };
-
-        Debaser.DEFAULT_NAME = '__default__';
-
-        Debaser.prototype.$config = function $config() {
-          return this.$$aspect.config;
         };
 
         Debaser.prototype.$aspect = function $aspect(name) {
           var current_aspect = this.$$aspect,
-              aspect,
-              proto;
+            aspect,
+            proto;
           if (angular.isUndefined(name)) {
             name = current_aspect.name;
           }
@@ -466,12 +685,21 @@
         };
         Debaser.autoScopeProvider.$inject = ['$provide'];
 
-        Debaser.prototype.debase = function debase() {
+        /**
+         * @description All previously queued stubs will be installed upon execution of this method.
+         * @param {Object} [opts] Options
+         * @param {boolean} [opts.persist=false] If true, retain the queue.  Only used in a non-spec context; {@link debase window.debase} can call it with this option.  You probably don't want to specify this yourself.
+         * @returns undefined
+         */
+        Debaser.prototype.debase = function debase(opts) {
+          opts = opts || {};
           this.$enqueue();
           this.$queue.forEach(function (fn) {
             fn();
           });
-          this.$queue = [];
+          if (!opts.persist) {
+            this.$queue = [];
+          }
           this.$aspect('base');
           if (options.autoScope) {
             angular.mock.module(Debaser.autoScopeProvider);
@@ -481,19 +709,85 @@
         return Debaser;
       }]);
 
-})(window.angular);
-
-(function (angular) {
-  'use strict';
 
   /**
    * @todo split me up
    */
-  angular.module('decipher.debaser').factory('decipher.debaser.superpowers',
-    ['decipher.debaser.loadAction', '$window', 'decipher.debaser.runConfig', '$log',
-      'decipher.debaser.options',
+  angular.module('decipher.debaser').factory('debaserSuperpowers',
+    ['debaserLoadAction', '$window', 'debaserRunConfig', '$log',
+      'debaserOptions',
       function superpowersFactory(loadAction, $window, $runConfig, $log, options) {
 
+        /**
+         * @external sinon.stub
+         * @description A stub function.  (Almost) all functions available to Sinon.JS stubs.
+         * @see http://sinonjs.org/docs/#stubs
+         * @mixin sinon.stub
+         */
+
+        /**
+         * @external sinon.Stub
+         * @description 
+         * A Stub object.  Returned when using an `*onCall*` method, instead of a {@link sinon.stub stub}.  In this context, use {@link sinon.Stub.end end()} to return to a {@link Debaser} instance. 
+         * > The `create()`, `resetBehavior()` and `isPresent()` functions of the Sinon.JS "stub" API are not used.  If someone needs these, please {@link https://github.com/decipherinc/angular-debaser/issues/ create an issue} and provide a use case.
+         * @mixin sinon.Stub
+         */
+        
+        /**
+         * @namespace base
+         * @mixin
+         */
+
+        /**
+         * @namespace module
+         * @memberof base
+         * @mixin
+         * @mixes base.object
+         */
+
+        /**
+         * @namespace func
+         * @memberof base
+         * @mixin
+         * @mixes sinon.stub
+         */
+        
+        /**
+         * @namespace object
+         * @memberof base
+         * @mixin       
+         */
+
+        /**
+         * @namespace withObject
+         * @memberof base.module
+         * @mixes base.object
+         * @mixin
+         */
+        
+        /**
+         * @namespace withFunc
+         * @memberof base.module
+         * @mixes base.func
+         * @mixin
+         */
+
+        /**
+         * @typedef {function} Action
+         * @summary A method (on a {@link Debaser} instance) which tells angular-debaser to provide some object, method, function, etc.
+         * @description These functions will always return {@link Debaser} instances, however, the mixins used will change.  The "root" mixin is the {@link base} mixin.  All other mixins "inherit" from this one, meaning the {@link base} methods *will always be available*.
+         * @example
+         * debaser
+         *   .object('Foo') // we are now in the `base.object` mixin.
+         *   .withFunc('bar') // we are now in the `base.withFunc` mixin.
+         *   // however, since these mixins are inherited, we always have access to 
+         *   // method `object`, which is on the `base` mixin.
+         *   .object('Baz')
+         *   .debase(); // go!
+         *   // `Foo` and `Baz` are now injectable; `Foo` has a static function `bar`
+         *   
+         */
+          
         var sinon = $window.sinon,
             SINON_EXCLUDE = [
               'create',
@@ -521,6 +815,15 @@
             withFunc,
             withObject;
 
+        /**
+         * @memberof base
+         * @instance
+         * @description Stubs a module, or bootstraps an existing module.    
+         * @param {string} name Module name to bootstrap/stub.
+         * @param {Array<String>} [deps] Any dependencies of this module.
+         * @returns {base.module}
+         * @see Action
+         */
         module = function module(name, deps) {
           var real_module, i;
           if (!name) {
@@ -551,13 +854,11 @@
           }
           catch (e) {
           }
-          if (!real_module) {
-            this.addAction({
-              object: angular,
-              func: 'module',
-              args: [this.module, this.module_dependencies]
-            });
-          }
+          this.addAction({
+            object: angular,
+            func: 'module',
+            args: !real_module ? [this.module, this.module_dependencies] : [this.module]
+          });
           this.addAction({
             object: angular.mock,
             func: 'module',
@@ -568,9 +869,17 @@
         module.$aspect = ['base'];
         module.$id = 0;
 
-        withDep = function withDep() {
+        /**
+         * @description Adds dependencies to the current module.  Potentially useful if you have a dependency chain `A -> B -> C` and you wish to stub `B` but not `A` or `C`.
+         * @param {...string} dep Module dependency
+         * @memberof base.module
+         * @instance
+         * @returns {base.module}
+         * @see Action
+         */
+        withDep = function withDep(dep) {
           if (!arguments.length) {
-            return $log('$debaser: ignoring empty call to withDep()');
+            return $log.debug('$debaser: ignoring empty call to withDep()');
           }
           Array.prototype.slice.call(arguments).forEach(function (arg) {
             if (!angular.isString(arg)) {
@@ -582,9 +891,17 @@
         };
         withDep.$aspect = ['module'];
 
+        /**
+         * @description Like {@link base.module.withDep withDep}, but accepts an array instead.
+         * @param {Array<String>} arr Array of module dependencies
+         * @memberof base.module
+         * @instance
+         * @returns {base.module}
+         * @see Action
+         */
         withDeps = function withDeps(arr) {
           if (!arr) {
-            return $log('$debaser: ignoring empty call to withDeps()');
+            return $log.debug('$debaser: ignoring empty call to withDeps()');
           }
           if (!angular.isArray(arr)) {
             throw new Error('$debaser: withDeps() expects an array');
@@ -593,24 +910,41 @@
         };
         withDeps.$aspect = ['module'];
 
+        /**
+         * @description Creates an injectable function.
+         * @param {string} name Name of injectable
+         * @memberof base
+         * @instance
+         * @returns {base.func}
+         * @see Action
+         */
         func = function func(name) {
           var args = Array.prototype.slice.call(arguments, 1);
           if (!name) {
-            return $log('$debaser: ignoring empty call to func()');
+            return $log.debug('$debaser: ignoring empty call to func()');
           }
           if (!angular.isString(name)) {
             throw new Error('$debaser: func() expects a name');
           }
           this.func = sinon && sinon.stub ? sinon.stub.apply(sinon, args) :
-                      function debaserStub() {
-                      };
+            function debaserStub() {
+            };
           return object.call(this, name, this.func);
         };
         func.$aspect = ['base'];
 
+        /**
+         * @description Creates an injectable object.
+         * @param {string} name Name of injectable
+         * @param {Object} [base] If supplied, will inject this object instead.  If {@link http://sinonjs.org Sinon.JS) is present, the object's functions will be spied upon.
+         * @memberof base
+         * @instance
+         * @returns {base.object}
+         * @see Action
+         */      
         object = function object(name, base) {
           if (!name) {
-            return $log('$debaser: ignoring empty call to object()');
+            return $log.debug('$debaser: ignoring empty call to object()');
           }
           if (!angular.isString(name)) {
             throw new Error('$debaser: object() expects a name');
@@ -626,7 +960,7 @@
             if (angular.isObject(base)) {
               this.stub =
                   sinon && sinon.stub && !isSinon(base) ? sinon.stub(base) :
-                  base;
+                base;
             } else {
               this.stub = base;
             }
@@ -641,10 +975,10 @@
             // angularjs hates to inject identical functions.
             // this makes them no longer identical.
             this.provider.toString = function toString() {
-              return this._id.toString();
+              return 'debaserProvider-' + this._id.toString();
             }.bind(this);
             this.provider._id = this._id;
-            this.provider.$inject = ['$provide', 'decipher.debaser.runConfig'];
+            this.provider.$inject = ['$provide', 'debaserRunConfig'];
             this.addAction(
               {
                 object: angular.mock,
@@ -658,13 +992,21 @@
         };
         object.$aspect = ['base'];
 
-        // todo: add warnings here
+        /**
+         * @description Provides a function on the object, or injectable function on the module.  If used in a module context, then provides a constant.  If {@link http://sinonjs.org Sinon.JS} is present, 
+         * @memberof base.object
+         * @instance
+         * @param {string} name Name of member function or injectable function
+         * @returns {(base.object|base.module|base.module.withObject)}
+         * @see Action
+         */
         withFunc = function withFunc(name) {
+          // todo: add warnings here
           var args = Array.prototype.slice.call(arguments, 1);
           if (angular.isObject(this.stub)) {
             this.func = sinon && sinon.stub ? sinon.stub.apply(sinon, args) :
-                        function debaserStub() {
-                        };
+              function debaserStub() {
+              };
             this.stub[name] = this.func;
           } else {
             this.name = name;
@@ -674,6 +1016,11 @@
         };
         withFunc.$aspect = ['module', 'object', 'withObject'];
 
+        /**
+         * @description Provides a *constant* injectable object on the module.
+         * @param {string} name Name of injectable object
+         * @see Action
+         */
         withObject = function withObject(name) {
           this.name = name;
           this.chain(debaserConstantCallback.bind(this));
@@ -706,6 +1053,11 @@
               var sinonProxy = function sinonProxy() {
                 var retval = fn.apply(this.func, arguments);
                 if (retval && retval.stub && retval.stub.func) {
+                  /**
+                   * @description Gives you a {@link Debaser} instance back if you have been setting things up via `*onCall*` methods.
+                   * @function sinon.Stub#end
+                   * @returns {(base.func|base.module.withFunc)}
+                   */
                   retval.end = function debaserEnd() {
                     return this;
                   }.bind(this);
@@ -720,5 +1072,4 @@
 
         return superpowers;
       }]);
-
-})(window.angular);
+})(window, window.angular);

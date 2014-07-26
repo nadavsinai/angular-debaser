@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>angular-debaser Source: config.js</title>
+	<title>angular-debaser Tutorials</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -28,11 +28,81 @@
 					<ul class="dropdown-menu ">
 						
 						<li>
-							<a href="Config.html">Config</a>
+							<a href="Debaser.html">Debaser</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
+					<a href="mixins.list.html" class="dropdown-toggle" data-toggle="dropdown">Mixins<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="base.html">base</a>
 						</li>
 						
 						<li>
-							<a href="Debaser.html">Debaser</a>
+							<a href="base.func.html">base.func</a>
+						</li>
+						
+						<li>
+							<a href="base.module.html">base.module</a>
+						</li>
+						
+						<li>
+							<a href="base.module.withFunc.html">base.module.withFunc</a>
+						</li>
+						
+						<li>
+							<a href="base.module.withObject.html">base.module.withObject</a>
+						</li>
+						
+						<li>
+							<a href="base.object.html">base.object</a>
+						</li>
+						
+						<li>
+							<a href="sinon.stub.html">sinon.stub</a>
+						</li>
+						
+						<li>
+							<a href="sinon.Stub_.html">sinon.Stub</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
+					<a href="tutorials.list.html" class="dropdown-toggle" data-toggle="dropdown">Tutorials<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="tutorial-donny-developer.html">angular-debaser Tutorial</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
+					<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="global.html#debase">debase</a>
+						</li>
+						
+						<li>
+							<a href="global.html#debaser">debaser</a>
 						</li>
 						
 
@@ -46,93 +116,92 @@
 	<div class="row-fluid">
 
 		
-			<div class="span12">
-				
+		<div class="span8">
+			
 				<div id="main">
 					
 
 
-		<h1 class="page-title">Source: config.js</h1>
-    
+	<h1 class="page-title">Tutorials</h1>
 <section>
-	<article>
-		<pre
-			class="sunlight-highlight-javascript linenums">(function (angular) {
 
-  'use strict';
+<header>
+    <h2>
+    
+    </h2>
+    
+</header>
 
-  angular.module('decipher.debaser').factory('decipher.debaser.config',
-    function configFactory() {
+<article>
+    <div class="container-overview">
+    
 
-      /**
-       * @name Config
-       * @param o
-       * @constructor
-       * @param aspect_name
-       */
-      var Config = function Config(o, aspect_name) {
-        if (angular.isString(o)) {
-          aspect_name = o;
-        }
-        else {
-          angular.extend(this, o);
-        }
-        this._aspect_name = aspect_name;
-        this._callbacks = [];
-        this._cb_idx = 0;
-        this._id = Config._id++;
-        this.actions = this.actions || [];
-      };
+    
+        
 
-      Config._id = 0;
+        
+<dl class="details">
+	
 
-      Config.prototype.addAction = function addAction(opts) {
-        if (!opts) {
-          throw new Error('$debaser: addCall() expects call options');
-        }
-        opts.callback = opts.callback || this.runner();
-        opts.context =
-          angular.isDefined(opts.context) ? opts.context : opts.object || null;
-        this.actions.push(opts);
-      };
+	
 
-      Config.prototype.next = function next() {
-        if (this._callbacks[this._cb_idx]) {
-          this._callbacks[this._cb_idx++].apply(this, arguments);
-        } else {
-          this.done();
-        }
-      };
+	
 
-      Config.prototype.done = function done() {
-        this._cb_idx = 0;
-      };
+	
 
-      Config.prototype.chain = function chain(fn) {
-        this._callbacks.push(function debaserCallbackProxy() {
-          this.next(fn.apply(this, arguments));
-        }.bind(this));
-      };
+	
 
-      Config.prototype.runner = function runner() {
-        return function run() {
-          this.next.apply(this, arguments);
-        }.bind(this);
-      };
+	
 
-      Config.prototype.isChained = function isChained() {
-        return !!this._callbacks.length;
-      };
+	
 
-      return Config;
+	
 
-    });
+	
 
-})(window.angular);
-</pre>
-	</article>
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Classes</h3>
+
+        <dl>
+            <dt><a href="Debaser.html">Debaser</a></dt>
+            <dd></dd>
+        </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
 </section>
-
 
 
 
@@ -144,18 +213,22 @@
 					
 					
 		<span class="copyright">
-		angular-debaser Copyright &copy; 2014 Decipher, Inc.
+		angular-debaser | Copyright &copy; 2014 Decipher, Inc. | Licensed MIT
 		</span>
 					<br />
 					
 		<span class="jsdoc-message">
-		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
-		on Tue Jul 8th 2014 using the <a
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha9</a>
+		on Sat Jul 26th 2014 using the <a
 			href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>
 
+			
+			<div class="span3">
+				<div id="toc"></div>
+			</div>
 			
 			<br clear="both">
 		</div>
