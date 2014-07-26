@@ -319,40 +319,29 @@ His test now looks like this:
 
 ```js
 describe('AdminDashboardCtrl', function () {
-    var sandbox;
 
-    beforeEach(function () {
-      sandbox = sinon.sandbox.create('AdminDashboardCtrl');
-
-      window.debaser()
-        .module('donny.pizzajoint.admin')
-        .module('donny.pizzajoint.common')
-        .module('donny.pizzajoint.food')
-        .module('donny.pizzajoint.account')
-        .module('donny.pizzajoint.delivery')
-        .object('Settings', {
-          location_id: 1
-        })
-        .object('User').withFunc('getAll').returns([])
-        .object('Pizza').withFunc('getAll').returns([])
-        .object('Toppings').withFunc('getAll').returns({})
-        .object('Sides').withFunc('getAll').returns([])
-        .object('Orders').withFunc('getPreviousWeek').returns([])
-        .object('Deliveries').withFunc('getPreviousWeek').returns([])
-        .debase();
-    });
-
-    afterEach(function () {
-      sandbox.restore();
-    });
-
-    it('should gather a list of users',
-      inject(function ($controller, User) {
-        var scope = $controller('AdminDashboardCtrl');
-        expect(scope.getUsers()).to.eql([]);
-        expect(User.getAll).to.have.been.calledOnce;
-      }));
+  beforeEach(function () {
+    debaser()
+      .module('donny.pizzajoint.admin')
+      .object('Settings', {
+        location_id: 1
+      })
+      .object('User').withFunc('getAll').returns([])
+      .object('Pizza').withFunc('getAll').returns([])
+      .object('Toppings').withFunc('getAll').returns({})
+      .object('Sides').withFunc('getAll').returns([])
+      .object('Orders').withFunc('getPreviousWeek').returns([])
+      .object('Deliveries').withFunc('getPreviousWeek').returns([])
+      .debase();
   });
+
+  it('should gather a list of users',
+    inject(function ($controller, User) {
+      var scope = $controller('AdminDashboardCtrl');
+      expect(scope.getUsers()).to.eql([]);
+      expect(User.getAll).to.have.been.calledOnce;
+    }));
+});
 ```
 
 It's certainly easier to write simple stubs for dependencies this way.  Good job Donny!  They lived happily ever after.
