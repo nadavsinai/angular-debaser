@@ -15,7 +15,7 @@
       "<%= pkg.main %>",
       "<%= pkg.min %>",
       "<%= pkg.map %>",
-      ".docs/**"
+      "./docs/**/*"
     ],
     "createTag": true,
     "tagName": "v%VERSION%",
