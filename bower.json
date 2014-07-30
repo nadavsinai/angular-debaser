@@ -34,7 +34,8 @@
     "tasks",
     "docs",
     "coverage",
-    "tutorials"
+    "tutorials",
+    "jsdoc.conf.json"    
   ],
   "dependencies": {
     "angular-mocks": "*",
