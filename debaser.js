@@ -1,4 +1,4 @@
-/*! angular-debaser - v0.3.1 - 2014-07-30
+/*! angular-debaser - v0.3.1 - 2014-08-07
 * https://github.com/decipherinc/angular-debaser
 * Copyright (c) 2014 Decipher, Inc.; Licensed MIT */
 
@@ -314,7 +314,7 @@
      * @param {object} [action.object] Object containing main Function to call
      * @param {function} action.func Main Function to call
      * @param {object} [action.context=null] Context to call main Function with
-     * @param {array} [action.args=[]] Context to
+     * @param {Array} [action.args=[]] Arguments to function
      * @constructor
      * @ignore
      * @memberof loadAction
@@ -325,20 +325,16 @@
       this.context = this.context || null;
     };
 
-    /**
-     *
-     * @returns {Action#assemble~action}
-     */
     Action.prototype.assemble = function assemble() {
       /**
        * @description Executes an assembled function
        * @memberof! Action#assemble
        * @inner
        */
-      return function action() {
+      return angular.bind(this, function action() {
         this.callback(!this.object ? this.func.apply(this.context, this.args) :
           this.object[this.func].apply(this.context, this.args));
-      }.bind(this);
+      });
     };
 
     /**
@@ -549,6 +545,8 @@
   angular.module('decipher.debaser').factory('debaserConfig',
     function configFactory() {
 
+      var bind = angular.bind;
+      
       /**
        * @param {(object|string)} o Raw {@link Behavior} configuration object, or {@link Aspect} name
        * @class
@@ -593,15 +591,15 @@
       };
 
       Config.prototype.chain = function chain(fn) {
-        this._callbacks.push(function debaserCallbackProxy() {
+        this._callbacks.push(bind(this, function debaserCallbackProxy() {
           this.next(fn.apply(this, arguments));
-        }.bind(this));
+        }));
       };
 
       Config.prototype.runner = function runner() {
-        return function run() {
+        return bind(this, function run() {
           this.next.apply(this, arguments);
-        }.bind(this);
+        });
       };
 
       Config.prototype.isChained = function isChained() {
@@ -791,6 +789,8 @@
               'resetBehavior',
               'isPresent'
             ],
+            
+            bind = angular.bind,
 
             // better way to do this?
             isSinon = function isSinon(value) {
@@ -971,9 +971,9 @@
             };
             // angularjs hates to inject identical functions.
             // this makes them no longer identical.
-            this.provider.toString = function toString() {
+            this.provider.toString = bind(this, function toString() {
               return 'debaserProvider-' + this._id.toString();
-            }.bind(this);
+            });
             this.provider._id = this._id;
             this.provider.$inject = ['$provide', 'debaserRunConfig'];
             this.addAction(
@@ -1007,7 +1007,7 @@
             this.stub[name] = this.func;
           } else {
             this.name = name;
-            this.chain(debaserConstantCallback.bind(this));
+            this.chain(bind(this, debaserConstantCallback));
             func.apply(this, arguments);
           }
         };
@@ -1020,7 +1020,7 @@
          */
         withObject = function withObject(name) {
           this.name = name;
-          this.chain(debaserConstantCallback.bind(this));
+          this.chain(bind(this, debaserConstantCallback));
           object.apply(this, arguments);
         };
         withObject.$aspect = ['module'];
@@ -1055,9 +1055,9 @@
                    * @function sinon.Stub#end
                    * @returns {(base.func|base.module.withFunc)}
                    */
-                  retval.end = function debaserEnd() {
+                  retval.end = bind(this, function debaserEnd() {
                     return this;
-                  }.bind(this);
+                  });
                   return retval;
                 }
               };
