@@ -1,7 +1,0 @@
-language: node_js
-node_js:
-- 0.10
-install: npm install
-notifications:
-  slack:
-    secure: Cg+xyDG9SMKyNV8PhpVnBA2YnJ6Rp2il89B8j097wHSG4c/hAy+ptA14449Bl1vAxAltrOKyh2/+YiUscepBmgpDxn8a70Rsj4JUTBhcFDLWTpBG0j/KCjp2/W4NTN+q3sKpVQsncatIn7o99kpHnKMtF2ekU9RVDVUMGYpUPVU=
