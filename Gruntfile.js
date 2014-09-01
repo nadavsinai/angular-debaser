@@ -32,7 +32,8 @@ module.exports = function (grunt) {
       ],
       test_files: [
         './test/*.js',
-        './test/e2e/*.js'
+        './test/e2e/*.js',
+        './test/issues/*.js'
       ],
       test_deps: [
         './support/angular/angular.js',
