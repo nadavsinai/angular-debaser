@@ -18,17 +18,17 @@
     "karma:dev:start",
     "watch"
   ],
-  "scratch": [
+  "adhoc": [
     "deps",
-    "karma:scratch:start",
-    "watch:scratch"
+    "karma:adhoc:start",
+    "watch:adhoc"
   ],
   "deps": [
     "bower-install-simple"
   ],
   "docs": [
     "build",
-    "clean",   
+    "clean",
     "jsdoc"
   ]
 }

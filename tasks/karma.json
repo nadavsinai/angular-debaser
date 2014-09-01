@@ -103,10 +103,10 @@
       "files": ["<%= test_deps_unstable %>", "<%= src_files %>", "<%= test_files %>"]
     }
   },
-  "scratch": {
+  "adhoc": {
     "options": {
       "background": true,
-      "files": ["<%= test_deps %>", "<%= pkg.main %>", "./test/scratch/scratch.spec.js'"]
+      "files": ["<%= test_deps %>", "<%= pkg.main %>", "./test/adhoc/*.spec.js'"]
     }
   }
 }

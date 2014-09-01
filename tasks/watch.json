@@ -19,25 +19,13 @@
       "karma:dev:run"
     ]
   },
-  "scratch": {
+  "adhoc": {
     "files": [
-      "test/scratch/scratch.spec.js",
+      "test/adhoc/*.spec.js",
       "<%= task_files %>"
     ],
     "tasks": [
-      "karma:scratch:run"
-    ]
-  },
-  "docs": {
-    "files": [
-      "<%= src_files %>",
-      "<%= task_files %>",
-      "./jsdoc.conf.json",
-      "./tutorials/*",
-      "./README.md"
-    ],
-    "tasks": [
-      "docs"
+      "karma:adhoc:run"
     ]
   }
 }
