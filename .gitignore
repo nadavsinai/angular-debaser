@@ -5,3 +5,4 @@ test/adhoc/
 coverage/
 .coveralls.yml
 .grunt
+build/
