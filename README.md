@@ -1,4 +1,4 @@
-# [angular-debaser](https://github.com/decipherinc/angular-debaser/) [![Build Status](https://travis-ci.org/decipherinc/angular-debaser.svg?branch=master)](https://travis-ci.org/decipherinc/angular-debaser) [![Coverage Status](https://img.shields.io/coveralls/decipherinc/angular-debaser.svg)](https://coveralls.io/r/decipherinc/angular-debaser?branch=master)
+# [angular-debaser](https://github.com/decipherinc/angular-debaser/) [![Build Status](https://travis-ci.org/decipherinc/angular-debaser.svg?branch=master)](https://travis-ci.org/decipherinc/angular-debaser) [![Code Climate](https://codeclimate.com/github/decipherinc/angular-debaser/badges/gpa.svg)](https://codeclimate.com/github/decipherinc/angular-debaser) [![Test Coverage](https://codeclimate.com/github/decipherinc/angular-debaser/badges/coverage.svg)](https://codeclimate.com/github/decipherinc/angular-debaser)
 
 Just a better way to test AngularJS apps.
 
