@@ -3,6 +3,5 @@ node_modules/
 npm-debug.log
 test/adhoc/
 coverage/
-.coveralls.yml
 .grunt
 build/
