@@ -10,10 +10,10 @@
     "karma:continuous",
     "karma:continuous-main",
     "karma:continuous-min",
-    "karma:unstable-continuous",
-    "karma:jasmine",
-    "coveralls"
+    "karma:continuous-unstable",
+    "karma:continuous-jasmine"
   ],
+  "coverage": ["codeclimate"],
   "default": [
     "deps",
     "karma:dev:start",

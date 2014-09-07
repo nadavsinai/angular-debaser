@@ -10,7 +10,7 @@
       "PhantomJS"
     ],
     "reporters": [
-      "story"
+      "dots"
     ],
     "autoWatch": false,
     "singleRun": false,
@@ -25,14 +25,15 @@
         "./lib/**/*.js": "coverage"
       },
       "reporters": [
-        "story",
+        "mocha",
         "coverage"
       ],
       "coverageReporter": {
+        "dir": "coverage/",
+        "subdir": ".",
         "reporters": [
           {
-            "type": "lcov",
-            "dir": "coverage/"
+            "type": "lcovonly"
           },
           {
             "type": "text-summary"
@@ -44,13 +45,45 @@
   "continuous-main": {
     "options": {
       "singleRun": true,
-      "files": ["<%= test_deps %>", "<%= pkg.main %>", "<%= test_files %>"]
+      "files": [
+        "<%= test_deps %>",
+        "<%= pkg.main %>",
+        "<%= test_files %>"
+      ]
     }
   },
   "continuous-min": {
     "options": {
       "singleRun": true,
-      "files": ["<%= test_deps %>", "<%= pkg.min %>", "<%= test_files %>"]
+      "files": [
+        "<%= test_deps %>",
+        "<%= pkg.min %>",
+        "<%= test_files %>"
+      ]
+    }
+  },
+  "continuous-unstable": {
+    "options": {
+      "singleRun": true,
+      "files": [
+        "<%= test_deps_unstable %>",
+        "<%= src_files %>",
+        "<%= test_files %>"
+      ]
+    }
+  },
+  "continuous-jasmine": {
+    "options": {
+      "frameworks": [
+        "jasmine",
+        "sinon"
+      ],
+      "singleRun": true,
+      "files": [
+        "<%= test_deps %>",
+        "<%= pkg.main %>",
+        "./test/jasmine/**/*.spec.js"
+      ]
     }
   },
   "dev": {
@@ -59,24 +92,26 @@
         "Chrome"
       ],
       "background": true,
-      "files": ["<%= test_deps %>", "<%= src_files %>", "<%= test_files %>"],
+      "files": [
+        "<%= test_deps %>",
+        "<%= src_files %>",
+        "<%= test_files %>",
+        "./test/jasmine/**/*.spec.js"
+      ],
       "preprocessors": {
         "./lib/*.js": "coverage"
       },
       "reporters": [
-        "story",
+        "mocha",
         "coverage"
       ],
       "port": 9877,
       "coverageReporter": {
+        "dir": "coverage/",
+        "subdir": ".",
         "reporters": [
           {
-            "type": "lcov",
-            "dir": "coverage/"
-          },
-          {
-            "type": "html",
-            "dir": "coverage/"
+            "type": "html"
           },
           {
             "type": "text-summary"
@@ -85,25 +120,13 @@
       }
     }
   },
-  "unstable-dev": {
+  "dev-unstable": {
     "options": {
       "browsers": [
         "Chrome"
       ],
+      "reporters": ["mocha"],
       "background": true,
-      "files": [
-        "<%= test_deps_unstable %>",
-        "<%= src_files %>",
-        "<%= test_files %>"
-      ]
-    }
-  },
-  "unstable-continuous": {
-    "options": {
-      "browsers": [
-        "PhantomJS"
-      ],
-      "singleRun": true,
       "files": [
         "<%= test_deps_unstable %>",
         "<%= src_files %>",
@@ -118,20 +141,6 @@
         "<%= test_deps %>",
         "<%= pkg.main %>",
         "./test/adhoc/*.spec.js"
-      ]
-    }
-  },
-  "jasmine": {
-    "options": {
-      "frameworks": [
-        "jasmine",
-        "sinon"
-      ],
-      "singleRun": true,
-      "files": [
-        "<%= test_deps %>",
-        "<%= pkg.main %>",
-        "./test/jasmine/**/*.spec.js"
       ]
     }
   }
