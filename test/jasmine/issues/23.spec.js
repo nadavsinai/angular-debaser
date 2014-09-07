@@ -11,12 +11,12 @@
           .object('$window',
           { lander_gon: { searchKeywords: 'Test Keyword', searchLocation: 'Test City' }, location: { replace: sinon.stub() } })
           .debase();
+
       });
 
       it('should provide $location.first', inject(function ($location) {
-        expect($location.first).to.equal('first');
+        expect($location.first).toEqual('first');
       }));
-
     });
 
     describe('second example', function () {
@@ -30,12 +30,12 @@
           .debase();
       });
 
-      it('should not provide $location.first', inject(function ($location) {
-        expect($location.first).to.not.equal('first');
+      it('should NOT provide $location.first', inject(function ($location) {
+        expect($location.first).not.toBeDefined;
       }));
 
       it('should provide $location.second', inject(function ($location) {
-        expect($location.second).to.equal('second');
+        expect($location.second).toEqual('second');
       }));
 
     });
