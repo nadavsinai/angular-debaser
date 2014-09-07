@@ -298,7 +298,7 @@
         }
         // likewise, maybe no debug() either
         $provide.decorator('$log', ['$delegate', function ($delegate) {
-          $delegate.debug = $delegate.debug || options.debugEnabled ? $delegate.log : angular.noop;
+          $delegate.debug = !$delegate.debug && options.debugEnabled ? $delegate.log : angular.noop;
           return $delegate;
         }]);
       }
