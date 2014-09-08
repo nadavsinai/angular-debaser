@@ -13,7 +13,6 @@
     "karma:continuous-unstable",
     "karma:continuous-jasmine"
   ],
-  "coverage": ["codeclimate"],
   "default": [
     "deps",
     "karma:dev:start",

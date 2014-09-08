@@ -34,8 +34,7 @@
     "time-grunt": "^0.3.2"
   },
   "scripts": {
-    "test": "grunt test",
-    "coverage": "grunt coverage"
+    "test": "grunt test"
   },
   "repository": {
     "type": "git",

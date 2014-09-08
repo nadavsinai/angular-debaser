@@ -4,6 +4,11 @@ node_js:
 install: npm install
 notifications:
   slack:
-    secure: Cg+xyDG9SMKyNV8PhpVnBA2YnJ6Rp2il89B8j097wHSG4c/hAy+ptA14449Bl1vAxAltrOKyh2/+YiUscepBmgpDxn8a70Rsj4JUTBhcFDLWTpBG0j/KCjp2/W4NTN+q3sKpVQsncatIn7o99kpHnKMtF2ekU9RVDVUMGYpUPVU=
+    secure: "Cg+xyDG9SMKyNV8PhpVnBA2YnJ6Rp2il89B8j097wHSG4c/hAy+ptA14449Bl1vAxAltrOKyh2/+YiUscepBmgpDxn8a70Rsj4JUTBhcFDLWTpBG0j/KCjp2/W4NTN+q3sKpVQsncatIn7o99kpHnKMtF2ekU9RVDVUMGYpUPVU="
+addons:
+  code_climate:
+    repo_token:
+      secure: "NM9abRaNGwnogOSHkptJYtMfVb6+SNEU9TXlwx0J8amcKbj0MNZRcOiH0ScZe0HjwBQY+i/BMI+z9q1wlBPJO1I3p8WPavF5wX8SThe3W/zhZtiZqrrCviMBUTqNx1J4xTPR08lXWHLUq/V2/ejA0ckMbj9mm4egeuXH9b/1GSk="
 after_script:
-  - npm run-script coverage
+  - npm install -g codeclimate-test-reporter
+  - cat coverage/lcov.info | codeclimate
