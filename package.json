@@ -1,6 +1,6 @@
 {
   "name": "angular-debaser",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "private": true,
   "description": "Just a better way to test AngularJS apps",
   "devDependencies": {

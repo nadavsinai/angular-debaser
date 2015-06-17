@@ -1,6 +1,6 @@
-/*! angular-debaser - v0.3.3 - 2014-09-06
+/*! angular-debaser - v0.3.4 - 2015-06-17
 * https://github.com/decipherinc/angular-debaser
-* Copyright (c) 2014 Decipher, Inc.; Licensed MIT */
+* Copyright (c) 2015 Decipher, Inc.; Licensed MIT */
 
 (function (window, angular) {
   'use strict';
@@ -960,16 +960,16 @@
               base = {};
             }
             if (angular.isObject(base)) {
-              this.stub =
-                  sinon && sinon.stub && !isSinon(base) ? sinon.stub(base) :
-                base;
+              this.stub = sinon && sinon.stub && !isSinon(base) ? sinon.stub(base) :base;
             } else {
               this.stub = base;
+
             }
+            this.stub.$get = function(){return base};
           }
           if (!this.isChained()) {
             this.name = name;
-            this.component = 'value';
+            this.component = 'provider';
             this.provider = function provider($provide, $config) {
               var cfg = $config[provider._id];
               $provide[cfg.component](cfg.name, cfg.stub);
