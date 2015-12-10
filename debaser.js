@@ -1,4 +1,4 @@
-/*! angular-debaser - v0.3.4 - 2015-06-17
+/*! angular-debaser - v0.3.5 - 2015-12-10
 * https://github.com/decipherinc/angular-debaser
 * Copyright (c) 2015 Decipher, Inc.; Licensed MIT */
 
@@ -727,12 +727,12 @@
 
         /**
          * @external sinon.Stub
-         * @description 
-         * A Stub object.  Returned when using an `*onCall*` method, instead of a {@link sinon.stub stub}.  In this context, use {@link sinon.Stub.end end()} to return to a {@link Debaser} instance. 
+         * @description
+         * A Stub object.  Returned when using an `*onCall*` method, instead of a {@link sinon.stub stub}.  In this context, use {@link sinon.Stub.end end()} to return to a {@link Debaser} instance.
          * > The `create()`, `resetBehavior()` and `isPresent()` functions of the Sinon.JS "stub" API are not used.  If someone needs these, please {@link https://github.com/decipherinc/angular-debaser/issues/ create an issue} and provide a use case.
          * @mixin sinon.Stub
          */
-        
+
         /**
          * @namespace base
          * @mixin
@@ -751,11 +751,11 @@
          * @mixin
          * @mixes sinon.stub
          */
-        
+
         /**
          * @namespace object
          * @memberof base
-         * @mixin       
+         * @mixin
          */
 
         /**
@@ -764,7 +764,7 @@
          * @mixes base.object
          * @mixin
          */
-        
+
         /**
          * @namespace withFunc
          * @memberof base.module
@@ -780,21 +780,21 @@
          * debaser
          *   .object('Foo') // we are now in the `base.object` mixin.
          *   .withFunc('bar') // we are now in the `base.withFunc` mixin.
-         *   // however, since these mixins are inherited, we always have access to 
+         *   // however, since these mixins are inherited, we always have access to
          *   // method `object`, which is on the `base` mixin.
          *   .object('Baz')
          *   .debase(); // go!
          *   // `Foo` and `Baz` are now injectable; `Foo` has a static function `bar`
-         *   
+         *
          */
-          
+
         var sinon = $window.sinon,
             SINON_EXCLUDE = [
               'create',
               'resetBehavior',
               'isPresent'
             ],
-            
+
             bind = angular.bind,
 
             // better way to do this?
@@ -820,7 +820,7 @@
         /**
          * @memberof base
          * @instance
-         * @description Stubs a module, or bootstraps an existing module.    
+         * @description Stubs a module, or bootstraps an existing module.
          * @param {string} name Module name to bootstrap/stub.
          * @param {Array<String>} [deps] Any dependencies of this module.
          * @returns {base.module}
@@ -943,7 +943,7 @@
          * @instance
          * @returns {base.object}
          * @see Action
-         */      
+         */
         object = function object(name, base) {
           if (!name) {
             return $log.debug('$debaser: ignoring empty call to object()');
@@ -965,11 +965,11 @@
               this.stub = base;
 
             }
-            this.stub.$get = function(){return base};
+            this.stub.$get = function(){return base;};
           }
           if (!this.isChained()) {
             this.name = name;
-            this.component = 'provider';
+            this.component = (typeof this.stub === 'function') ? 'value' : 'provider';
             this.provider = function provider($provide, $config) {
               var cfg = $config[provider._id];
               $provide[cfg.component](cfg.name, cfg.stub);
@@ -995,7 +995,7 @@
         object.$aspect = ['base'];
 
         /**
-         * @description Provides a function on the object, or injectable function on the module.  If used in a module context, then provides a constant.  If {@link http://sinonjs.org Sinon.JS} is present, 
+         * @description Provides a function on the object, or injectable function on the module.  If used in a module context, then provides a constant.  If {@link http://sinonjs.org Sinon.JS} is present,
          * @memberof base.object
          * @instance
          * @param {string} name Name of member function or injectable function

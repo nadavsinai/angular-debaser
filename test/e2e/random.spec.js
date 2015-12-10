@@ -76,7 +76,7 @@
             },
             object: function (name) {
               inject([name, function (stub) {
-                expect($provide.value).to.have.been.calledWith(name);
+                expect($provide.provider).to.have.been.calledWith(name);
                 expect(stub).to.be.an('object');
               }]);
             }
@@ -91,6 +91,7 @@
       beforeEach(module(function (_$provide_) {
         $provide = _$provide_;
         sandbox.spy($provide, 'value');
+        sandbox.spy($provide, 'provider');
         sandbox.spy($provide, 'constant');
       }));
       beforeEach(function () {
